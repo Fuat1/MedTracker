@@ -1,45 +1,113 @@
-import {BP_CATEGORIES, BP_LIMITS} from '@shared/config';
-import type {BPCategory} from './types';
+import {
+  BP_LIMITS,
+  BP_CATEGORIES,
+  BP_CATEGORY_COLORS,
+  type BPCategory,
+} from '../../shared/config';
+import { BP_GUIDELINES, type BPGuideline } from '../../shared/config/settings';
 
-/**
- * Classify blood pressure reading according to AHA guidelines
- */
-export function classifyBP(systolic: number, diastolic: number): BPCategory {
-  // Crisis: >180 systolic and/or >120 diastolic
-  if (systolic > 180 || diastolic > 120) {
-    return BP_CATEGORIES.CRISIS;
-  }
-
-  // Stage 2: ≥140 systolic or ≥90 diastolic
-  if (systolic >= 140 || diastolic >= 90) {
-    return BP_CATEGORIES.STAGE_2;
-  }
-
-  // Stage 1: 130-139 systolic or 80-89 diastolic
-  if (systolic >= 130 || diastolic >= 80) {
-    return BP_CATEGORIES.STAGE_1;
-  }
-
-  // Elevated: 120-129 systolic and <80 diastolic
-  if (systolic >= 120 && diastolic < 80) {
-    return BP_CATEGORIES.ELEVATED;
-  }
-
-  // Normal: <120 systolic and <80 diastolic
-  return BP_CATEGORIES.NORMAL;
+// Validation result
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
 }
 
-/**
- * Validate blood pressure values against medical limits
- */
-export function validateBPValues(
+// Classify BP reading per selected guidelines
+export function classifyBP(
   systolic: number,
   diastolic: number,
-  pulse?: number,
-): {valid: boolean; errors: string[]} {
+  guideline: BPGuideline = BP_GUIDELINES.AHA_ACC,
+): BPCategory {
+  // AHA/ACC Guidelines (USA)
+  if (guideline === BP_GUIDELINES.AHA_ACC) {
+    if (systolic > 180 || diastolic > 120) {
+      return BP_CATEGORIES.CRISIS;
+    }
+    if (systolic >= 140 || diastolic >= 90) {
+      return BP_CATEGORIES.STAGE_2;
+    }
+    if (systolic >= 130 || diastolic >= 80) {
+      return BP_CATEGORIES.STAGE_1;
+    }
+    if (systolic >= 120 && diastolic < 80) {
+      return BP_CATEGORIES.ELEVATED;
+    }
+    return BP_CATEGORIES.NORMAL;
+  }
+
+  // ESC/ESH Guidelines (Europe)
+  if (guideline === BP_GUIDELINES.ESC_ESH) {
+    if (systolic >= 180 || diastolic >= 110) {
+      return BP_CATEGORIES.CRISIS;
+    }
+    if (systolic >= 160 || diastolic >= 100) {
+      return BP_CATEGORIES.STAGE_2;
+    }
+    if (systolic >= 140 || diastolic >= 90) {
+      return BP_CATEGORIES.STAGE_1;
+    }
+    if (systolic >= 130 && diastolic < 85) {
+      return BP_CATEGORIES.ELEVATED;
+    }
+    return BP_CATEGORIES.NORMAL;
+  }
+
+  // JSH Guidelines (Japan)
+  if (guideline === BP_GUIDELINES.JSH) {
+    if (systolic >= 180 || diastolic >= 110) {
+      return BP_CATEGORIES.CRISIS;
+    }
+    if (systolic >= 160 || diastolic >= 100) {
+      return BP_CATEGORIES.STAGE_2;
+    }
+    if (systolic >= 140 || diastolic >= 90) {
+      return BP_CATEGORIES.STAGE_1;
+    }
+    if (systolic >= 130 && diastolic < 85) {
+      return BP_CATEGORIES.ELEVATED;
+    }
+    return BP_CATEGORIES.NORMAL;
+  }
+
+  // Default to AHA guidelines
+  return classifyBP(systolic, diastolic, BP_GUIDELINES.AHA_ACC);
+}
+
+// Get color for BP category
+export function getBPCategoryColor(category: BPCategory): string {
+  return BP_CATEGORY_COLORS[category];
+}
+
+// Get human-readable label for category
+export function getBPCategoryLabel(category: BPCategory): string {
+  switch (category) {
+    case BP_CATEGORIES.NORMAL:
+      return 'Normal';
+    case BP_CATEGORIES.ELEVATED:
+      return 'Elevated';
+    case BP_CATEGORIES.STAGE_1:
+      return 'High BP Stage 1';
+    case BP_CATEGORIES.STAGE_2:
+      return 'High BP Stage 2';
+    case BP_CATEGORIES.CRISIS:
+      return 'Hypertensive Crisis';
+    default:
+      return 'Unknown';
+  }
+}
+
+// Validate BP values
+export function validateBPValues(
+  systolic: number | null | undefined,
+  diastolic: number | null | undefined,
+  pulse?: number | null,
+): ValidationResult {
   const errors: string[] = [];
 
-  if (
+  // Check systolic
+  if (systolic === null || systolic === undefined) {
+    errors.push('Systolic value is required');
+  } else if (
     systolic < BP_LIMITS.systolic.min ||
     systolic > BP_LIMITS.systolic.max
   ) {
@@ -48,7 +116,10 @@ export function validateBPValues(
     );
   }
 
-  if (
+  // Check diastolic
+  if (diastolic === null || diastolic === undefined) {
+    errors.push('Diastolic value is required');
+  } else if (
     diastolic < BP_LIMITS.diastolic.min ||
     diastolic > BP_LIMITS.diastolic.max
   ) {
@@ -57,35 +128,33 @@ export function validateBPValues(
     );
   }
 
-  if (systolic <= diastolic) {
+  // Check systolic > diastolic
+  if (
+    systolic !== null &&
+    systolic !== undefined &&
+    diastolic !== null &&
+    diastolic !== undefined &&
+    systolic <= diastolic
+  ) {
     errors.push('Systolic must be greater than diastolic');
   }
 
-  if (
-    pulse !== undefined &&
-    (pulse < BP_LIMITS.pulse.min || pulse > BP_LIMITS.pulse.max)
-  ) {
-    errors.push(
-      `Pulse must be between ${BP_LIMITS.pulse.min} and ${BP_LIMITS.pulse.max}`,
-    );
+  // Check pulse (optional)
+  if (pulse !== null && pulse !== undefined) {
+    if (pulse < BP_LIMITS.pulse.min || pulse > BP_LIMITS.pulse.max) {
+      errors.push(
+        `Pulse must be between ${BP_LIMITS.pulse.min} and ${BP_LIMITS.pulse.max}`,
+      );
+    }
   }
 
   return {
-    valid: errors.length === 0,
+    isValid: errors.length === 0,
     errors,
   };
 }
 
-/**
- * Get color for BP category (AHA guidelines)
- */
-export function getBPCategoryColor(category: BPCategory): string {
-  const colors: Record<BPCategory, string> = {
-    normal: '#22c55e', // Green
-    elevated: '#eab308', // Yellow
-    stage_1: '#f97316', // Orange
-    stage_2: '#ef4444', // Red
-    crisis: '#dc2626', // Dark Red
-  };
-  return colors[category];
+// Check if reading indicates crisis
+export function isCrisisReading(systolic: number, diastolic: number): boolean {
+  return classifyBP(systolic, diastolic) === BP_CATEGORIES.CRISIS;
 }

@@ -1,10 +1,9 @@
-import {open, type DB} from '@op-engineering/op-sqlite';
+import { open, type DB } from '@op-engineering/op-sqlite';
+import { DB_CONFIG } from '../config';
 
 let db: DB | null = null;
 
-const DB_NAME = 'medtracker.db';
-
-const CREATE_BP_RECORDS_TABLE = `
+const CREATE_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS bp_records (
     id TEXT PRIMARY KEY NOT NULL,
     systolic INTEGER NOT NULL CHECK(systolic BETWEEN 40 AND 300),
@@ -21,7 +20,7 @@ const CREATE_BP_RECORDS_TABLE = `
   );
 `;
 
-const CREATE_BP_TIMESTAMP_INDEX = `
+const CREATE_INDEX_SQL = `
   CREATE INDEX IF NOT EXISTS idx_bp_records_timestamp
   ON bp_records(timestamp DESC);
 `;
@@ -31,13 +30,19 @@ export async function initDatabase(): Promise<DB> {
     return db;
   }
 
-  db = open({name: DB_NAME});
+  try {
+    db = open({ name: DB_CONFIG.name });
 
-  // Create tables
-  db.execute(CREATE_BP_RECORDS_TABLE);
-  db.execute(CREATE_BP_TIMESTAMP_INDEX);
+    // Create tables
+    db.execute(CREATE_TABLE_SQL);
+    db.execute(CREATE_INDEX_SQL);
 
-  return db;
+    console.log('Database initialized successfully');
+    return db;
+  } catch (error) {
+    console.error('Database initialization error:', error);
+    throw error;
+  }
 }
 
 export function getDatabase(): DB {
@@ -47,9 +52,10 @@ export function getDatabase(): DB {
   return db;
 }
 
-export async function closeDatabase(): Promise<void> {
+export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
+    console.log('Database closed');
   }
 }

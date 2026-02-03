@@ -1,2 +1,3 @@
-// Pages
-// Full screens like HomePage, HistoryPage
+export { HomePage } from './home';
+export { HistoryPage } from './history';
+export { SettingsPage } from './settings';
