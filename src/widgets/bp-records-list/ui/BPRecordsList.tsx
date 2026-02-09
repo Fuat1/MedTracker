@@ -1,21 +1,27 @@
 import React from 'react';
 import { View, Text, FlatList, RefreshControl, ActivityIndicator, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
 import { BPRecordCard } from '../../bp-record-card';
 import type { BPRecord } from '../../../shared/api';
+import { useTheme } from '../../../shared/lib/use-theme';
 
 interface BPRecordsListProps {
   limit?: number;
 }
 
 export function BPRecordsList({ limit }: BPRecordsListProps) {
+  const { t } = useTranslation('widgets');
+  const { colors } = useTheme();
   const { data: records, isLoading, isError, refetch, isRefetching } = useBPRecords(limit);
 
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Loading records...</Text>
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          {t('bpRecordsList.loading')}
+        </Text>
       </View>
     );
   }
@@ -23,8 +29,12 @@ export function BPRecordsList({ limit }: BPRecordsListProps) {
   if (isError) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.errorTitle}>Error loading records</Text>
-        <Text style={styles.errorSubtitle}>Pull down to retry</Text>
+        <Text style={[styles.errorTitle, { color: colors.error }]}>
+          {t('bpRecordsList.error.title')}
+        </Text>
+        <Text style={[styles.errorSubtitle, { color: colors.textSecondary }]}>
+          {t('bpRecordsList.error.subtitle')}
+        </Text>
       </View>
     );
   }
@@ -36,11 +46,11 @@ export function BPRecordsList({ limit }: BPRecordsListProps) {
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>💓</Text>
-      <Text style={styles.emptyTitle}>
-        No readings yet
+      <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+        {t('bpRecordsList.empty.title')}
       </Text>
-      <Text style={styles.emptySubtitle}>
-        Start tracking your blood pressure by adding your first reading
+      <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
+        {t('bpRecordsList.empty.subtitle')}
       </Text>
     </View>
   );
@@ -56,7 +66,8 @@ export function BPRecordsList({ limit }: BPRecordsListProps) {
         <RefreshControl
           refreshing={isRefetching}
           onRefresh={refetch}
-          colors={['#3b82f6']}
+          colors={[colors.accent]}
+          tintColor={colors.accent}
         />
       }
       showsVerticalScrollIndicator={false}
@@ -72,17 +83,13 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   loadingText: {
-    color: '#6b7280',
     marginTop: 8,
   },
   errorTitle: {
-    color: '#ef4444',
     fontSize: 18,
     marginBottom: 8,
   },
-  errorSubtitle: {
-    color: '#6b7280',
-  },
+  errorSubtitle: {},
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -90,18 +97,15 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyIcon: {
-    color: '#9ca3af',
     fontSize: 60,
     marginBottom: 16,
   },
   emptyTitle: {
-    color: '#4b5563',
     fontSize: 18,
     fontWeight: '500',
     marginBottom: 8,
   },
   emptySubtitle: {
-    color: '#9ca3af',
     textAlign: 'center',
     paddingHorizontal: 32,
   },

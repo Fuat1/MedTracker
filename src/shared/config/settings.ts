@@ -8,9 +8,10 @@ export type BPUnit = (typeof BP_UNITS)[keyof typeof BP_UNITS];
 
 // Regional classification guidelines
 export const BP_GUIDELINES = {
-  AHA_ACC: 'aha_acc', // American Heart Association / American College of Cardiology
-  ESC_ESH: 'esc_esh', // European Society of Cardiology / European Society of Hypertension
+  AHA_ACC: 'aha_acc', // American Heart Association / American College of Cardiology (2025)
+  ESC_ESH: 'esc_esh', // European Society of Cardiology / European Society of Hypertension (2024)
   JSH: 'jsh', // Japanese Society of Hypertension
+  WHO: 'who', // World Health Organization (2021)
 } as const;
 
 export type BPGuideline = (typeof BP_GUIDELINES)[keyof typeof BP_GUIDELINES];

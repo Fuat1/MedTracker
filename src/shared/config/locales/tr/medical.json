@@ -1,0 +1,39 @@
+{
+  "categories": {
+    "normal": "Normal",
+    "elevated": "Yüksek (Normal Üstü)",
+    "stage1": "1. Evre Yüksek Tansiyon",
+    "stage2": "2. Evre Yüksek Tansiyon",
+    "crisis": "Hipertansif Kriz"
+  },
+  "crisis": {
+    "title": "⚠️ Hipertansif Kriz",
+    "message": "Bu ölçüm hipertansif bir krizi işaret etmektedir. Göğüs ağrısı, nefes darlığı veya şiddetli baş ağrısı gibi belirtiler yaşıyorsanız lütfen derhal tıbbi yardım alın."
+  },
+  "guidelines": {
+    "ahaAcc": {
+      "name": "AHA/ACC",
+      "fullName": "Amerikan Kalp Derneği (ABD)",
+      "regions": "Amerika, Uluslararası"
+    },
+    "escEsh": {
+      "name": "ESC/ESH",
+      "fullName": "Avrupa Kardiyoloji Derneği (Avrupa)",
+      "regions": "Avrupa, Afrika, Orta Doğu"
+    },
+    "jsh": {
+      "name": "JSH",
+      "fullName": "Japonya Hipertansiyon Derneği",
+      "regions": "Japonya, Doğu Asya"
+    },
+    "who": {
+      "name": "DSÖ (WHO)",
+      "fullName": "Dünya Sağlık Örgütü",
+      "regions": "Uluslararası"
+    }
+  },
+  "measurementSettings": {
+    "location": "Ölçüm Yeri",
+    "posture": "Duruş"
+  }
+}

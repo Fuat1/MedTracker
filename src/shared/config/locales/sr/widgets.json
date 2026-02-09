@@ -1,0 +1,45 @@
+{
+  "bpEntry": {
+    "title": "New Reading",
+    "systolic": "Systolic",
+    "diastolic": "Diastolic",
+    "pulse": "Pulse (optional)",
+    "location": "Measurement Location",
+    "posture": "Posture",
+    "notes": "Notes",
+    "saveReading": "Save Reading",
+    "saving": "Saving...",
+    "modals": {
+      "enterSystolic": "Enter Systolic",
+      "enterDiastolic": "Enter Diastolic",
+      "enterPulse": "Enter Pulse"
+    },
+    "alerts": {
+      "success": {
+        "title": "Success",
+        "message": "Blood pressure reading saved!"
+      },
+      "error": {
+        "title": "Error",
+        "message": "Failed to save reading"
+      }
+    }
+  },
+  "bpRecordCard": {
+    "metadata": {
+      "location": "Location",
+      "posture": "Posture"
+    }
+  },
+  "bpRecordsList": {
+    "loading": "Loading records...",
+    "error": {
+      "title": "Error loading records",
+      "subtitle": "Pull down to retry"
+    },
+    "empty": {
+      "title": "No readings yet",
+      "subtitle": "Start tracking your blood pressure by adding your first reading"
+    }
+  }
+}

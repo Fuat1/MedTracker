@@ -1,0 +1,45 @@
+{
+  "bpEntry": {
+    "title": "Yeni Ölçüm",
+    "systolic": "Sistolik",
+    "diastolic": "Diyastolik",
+    "pulse": "Nabız (isteğe bağlı)",
+    "location": "Ölçüm Yeri",
+    "posture": "Duruş",
+    "notes": "Notlar",
+    "saveReading": "Ölçümü Kaydet",
+    "saving": "Kaydediliyor...",
+    "modals": {
+      "enterSystolic": "Sistolik Girin",
+      "enterDiastolic": "Diyastolik Girin",
+      "enterPulse": "Nabız Girin"
+    },
+    "alerts": {
+      "success": {
+        "title": "Başarılı",
+        "message": "Tansiyon ölçümü kaydedildi!"
+      },
+      "error": {
+        "title": "Hata",
+        "message": "Ölçüm kaydedilemedi"
+      }
+    }
+  },
+  "bpRecordCard": {
+    "metadata": {
+      "location": "Konum",
+      "posture": "Duruş"
+    }
+  },
+  "bpRecordsList": {
+    "loading": "Kayıtlar yükleniyor...",
+    "error": {
+      "title": "Kayıtlar yüklenirken hata oluştu",
+      "subtitle": "Tekrar denemek için aşağı çekin"
+    },
+    "empty": {
+      "title": "Henüz ölçüm yok",
+      "subtitle": "İlk ölçümünüzü ekleyerek tansiyonunuzu takip etmeye başlayın"
+    }
+  }
+}

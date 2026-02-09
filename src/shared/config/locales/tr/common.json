@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "MedTracker",
+    "subtitle": "Tansiyon Takipçisi"
+  },
+  "buttons": {
+    "save": "Ölçümü Kaydet",
+    "done": "Bitti",
+    "cancel": "İptal",
+    "saveAnyway": "Yine de Kaydet",
+    "back": "Geri"
+  },
+  "units": {
+    "mmhg": "mmHg",
+    "kpa": "kPa",
+    "bpm": "BPM"
+  },
+  "navigation": {
+    "home": "Ana Sayfa",
+    "history": "Geçmiş",
+    "analytics": "Analitik",
+    "settings": "Ayarlar"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "bloodPressure": "Tansiyon",
+    "pulse": "Nabız",
+    "systolic": "Sistolik",
+    "diastolic": "Diyastolik",
+    "pulseOptional": "Nabız (isteğe bağlı)",
+    "moreInfo": "Daha Fazla Bilgi",
+    "newReading": "Yeni Ölçüm"
+  },
+  "location": {
+    "leftArm": "Sol Kol",
+    "rightArm": "Sağ Kol",
+    "leftWrist": "Sol Bilek",
+    "rightWrist": "Sağ Bilek"
+  },
+  "posture": {
+    "sitting": "Oturarak",
+    "standing": "Ayakta",
+    "lying": "Yatarak"
+  },
+  "time": {
+    "justNow": "Az önce",
+    "minute_one": "{{count}} dakika önce",
+    "minute_other": "{{count}} dakika önce",
+    "hour_one": "{{count}} saat önce",
+    "hour_other": "{{count}} saat önce",
+    "day_one": "{{count}} gün önce",
+    "day_other": "{{count}} gün önce"
+  },
+  "a11y": {
+    "backspace": "Silme",
+    "clear": "Temizle"
+  }
+}

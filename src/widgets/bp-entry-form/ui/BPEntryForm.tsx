@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   Modal,
   Alert,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Numpad } from '../../../shared/ui';
 import {
   MEASUREMENT_LOCATIONS,
@@ -23,22 +23,32 @@ import {
   isCrisisReading,
 } from '../../../entities/blood-pressure';
 import { useRecordBP } from '../../../features/record-bp';
+import { useSettingsStore } from '../../../shared/lib/settings-store';
 
 type ActiveField = 'systolic' | 'diastolic' | 'pulse' | null;
 
 export function BPEntryForm() {
+  const { t } = useTranslation('widgets');
+  const { t: tCommon } = useTranslation('common');
+  const { t: tMedical } = useTranslation('medical');
+  const { t: tValidation } = useTranslation('validation');
+  const { defaultLocation, defaultPosture, setDefaultLocation, setDefaultPosture } = useSettingsStore();
+
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
   const [pulse, setPulse] = useState('');
-  const [location, setLocation] = useState<MeasurementLocation>(
-    MEASUREMENT_LOCATIONS.LEFT_ARM,
-  );
-  const [posture, setPosture] = useState<MeasurementPosture>(
-    MEASUREMENT_POSTURES.SITTING,
-  );
+  const [location, setLocation] = useState<MeasurementLocation>(defaultLocation);
+  const [posture, setPosture] = useState<MeasurementPosture>(defaultPosture);
   const [activeField, setActiveField] = useState<ActiveField>(null);
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   const recordBP = useRecordBP();
+
+  // Sync with store defaults when they change
+  useEffect(() => {
+    setLocation(defaultLocation);
+    setPosture(defaultPosture);
+  }, [defaultLocation, defaultPosture]);
 
   const systolicNum = systolic ? parseInt(systolic, 10) : null;
   const diastolicNum = diastolic ? parseInt(diastolic, 10) : null;
@@ -86,21 +96,37 @@ export function BPEntryForm() {
     }
   };
 
+  const handleLocationChange = useCallback(
+    (newLocation: MeasurementLocation) => {
+      setLocation(newLocation);
+      setDefaultLocation(newLocation); // Save to store
+    },
+    [setDefaultLocation],
+  );
+
+  const handlePostureChange = useCallback(
+    (newPosture: MeasurementPosture) => {
+      setPosture(newPosture);
+      setDefaultPosture(newPosture); // Save to store
+    },
+    [setDefaultPosture],
+  );
+
   const handleSubmit = async () => {
     if (!validation.isValid || !systolicNum || !diastolicNum) {
-      Alert.alert('Validation Error', validation.errors.join('\n'));
+      Alert.alert(tValidation('errors.validationError'), validation.errors.join('\n'));
       return;
     }
 
     // Crisis warning
     if (isCrisisReading(systolicNum, diastolicNum)) {
       Alert.alert(
-        '⚠️ Hypertensive Crisis',
-        'This reading indicates a hypertensive crisis. Please seek immediate medical attention if you are experiencing symptoms such as chest pain, shortness of breath, or severe headache.',
+        tMedical('crisis.title'),
+        tMedical('crisis.message'),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: tCommon('buttons.cancel'), style: 'cancel' },
           {
-            text: 'Save Anyway',
+            text: tCommon('buttons.saveAnyway'),
             style: 'destructive',
             onPress: () => saveRecord(),
           },
@@ -128,30 +154,30 @@ export function BPEntryForm() {
       setPulse('');
       setActiveField(null);
 
-      Alert.alert('Success', 'Blood pressure reading saved!');
+      Alert.alert(t('bpEntry.alerts.success.title'), t('bpEntry.alerts.success.message'));
     } catch (error) {
       Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'Failed to save reading',
+        t('bpEntry.alerts.error.title'),
+        error instanceof Error ? error.message : t('bpEntry.alerts.error.message'),
       );
     }
   };
 
   const locationLabels: Record<MeasurementLocation, string> = {
-    left_arm: 'Left Arm',
-    right_arm: 'Right Arm',
-    left_wrist: 'Left Wrist',
-    right_wrist: 'Right Wrist',
+    left_arm: tCommon('location.leftArm'),
+    right_arm: tCommon('location.rightArm'),
+    left_wrist: tCommon('location.leftWrist'),
+    right_wrist: tCommon('location.rightWrist'),
   };
 
   const postureLabels: Record<MeasurementPosture, string> = {
-    sitting: 'Sitting',
-    standing: 'Standing',
-    lying: 'Lying',
+    sitting: tCommon('posture.sitting'),
+    standing: tCommon('posture.standing'),
+    lying: tCommon('posture.lying'),
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.content}>
         {/* BP Values Display */}
         <View
@@ -168,7 +194,7 @@ export function BPEntryForm() {
               accessibilityRole="button"
               accessibilityLabel="Systolic input"
             >
-              <Text style={styles.valueLabel}>Systolic</Text>
+              <Text style={styles.valueLabel}>{t('bpEntry.systolic')}</Text>
               <Text
                 style={[styles.valueText, { color: categoryColor }]}
               >
@@ -188,7 +214,7 @@ export function BPEntryForm() {
               accessibilityRole="button"
               accessibilityLabel="Diastolic input"
             >
-              <Text style={styles.valueLabel}>Diastolic</Text>
+              <Text style={styles.valueLabel}>{t('bpEntry.diastolic')}</Text>
               <Text
                 style={[styles.valueText, { color: categoryColor }]}
               >
@@ -207,9 +233,9 @@ export function BPEntryForm() {
             accessibilityRole="button"
             accessibilityLabel="Pulse input"
           >
-            <Text style={styles.pulseLabel}>Pulse (optional)</Text>
+            <Text style={styles.pulseLabel}>{t('bpEntry.pulse')}</Text>
             <Text style={styles.pulseText}>
-              {pulse ? `${pulse} BPM` : '--- BPM'}
+              {pulse ? `${pulse} ${tCommon('units.bpm')}` : `--- ${tCommon('units.bpm')}`}
             </Text>
           </TouchableOpacity>
 
@@ -225,54 +251,71 @@ export function BPEntryForm() {
           )}
         </View>
 
-        {/* Location Selector */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Measurement Location
-          </Text>
-          <View style={styles.optionsRow}>
-            {Object.entries(MEASUREMENT_LOCATIONS).map(([key, value]) => (
-              <TouchableOpacity
-                key={key}
-                style={[
-                  styles.optionButton,
-                  styles.optionButtonMargin,
-                  location === value ? styles.optionButtonActive : styles.optionButtonInactive,
-                ]}
-                onPress={() => setLocation(value)}
-              >
-                <Text
-                  style={location === value ? styles.optionTextActive : styles.optionTextInactive}
-                >
-                  {locationLabels[value]}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        {/* More Info Collapsible Section */}
+        <View style={styles.moreInfoSection}>
+          <TouchableOpacity
+            style={styles.moreInfoHeader}
+            onPress={() => setShowMoreInfo(!showMoreInfo)}
+            accessibilityRole="button"
+            accessibilityLabel={showMoreInfo ? 'Hide more options' : 'Show more options'}
+          >
+            <Text style={styles.moreInfoTitle}>{tCommon('common.moreInfo')}</Text>
+            <Text style={styles.moreInfoArrow}>{showMoreInfo ? '▲' : '▼'}</Text>
+          </TouchableOpacity>
 
-        {/* Posture Selector */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Posture</Text>
-          <View style={styles.optionsRow}>
-            {Object.entries(MEASUREMENT_POSTURES).map(([key, value]) => (
-              <TouchableOpacity
-                key={key}
-                style={[
-                  styles.optionButton,
-                  styles.optionButtonMarginRight,
-                  posture === value ? styles.optionButtonActive : styles.optionButtonInactive,
-                ]}
-                onPress={() => setPosture(value)}
-              >
-                <Text
-                  style={posture === value ? styles.optionTextActive : styles.optionTextInactive}
-                >
-                  {postureLabels[value]}
+          {showMoreInfo && (
+            <View style={styles.moreInfoContent}>
+              {/* Location Selector */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>
+                  {t('bpEntry.location')}
                 </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+                <View style={styles.optionsRow}>
+                  {Object.entries(MEASUREMENT_LOCATIONS).map(([key, value]) => (
+                    <TouchableOpacity
+                      key={key}
+                      style={[
+                        styles.optionButton,
+                        styles.optionButtonMargin,
+                        location === value ? styles.optionButtonActive : styles.optionButtonInactive,
+                      ]}
+                      onPress={() => handleLocationChange(value)}
+                    >
+                      <Text
+                        style={location === value ? styles.optionTextActive : styles.optionTextInactive}
+                      >
+                        {locationLabels[value]}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              {/* Posture Selector */}
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{t('bpEntry.posture')}</Text>
+                <View style={styles.optionsRow}>
+                  {Object.entries(MEASUREMENT_POSTURES).map(([key, value]) => (
+                    <TouchableOpacity
+                      key={key}
+                      style={[
+                        styles.optionButton,
+                        styles.optionButtonMarginRight,
+                        posture === value ? styles.optionButtonActive : styles.optionButtonInactive,
+                      ]}
+                      onPress={() => handlePostureChange(value)}
+                    >
+                      <Text
+                        style={posture === value ? styles.optionTextActive : styles.optionTextInactive}
+                      >
+                        {postureLabels[value]}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Submit Button */}
@@ -287,7 +330,7 @@ export function BPEntryForm() {
           disabled={!validation.isValid || !systolic || !diastolic || recordBP.isPending}
         >
           <Text style={styles.submitButtonText}>
-            {recordBP.isPending ? 'Saving...' : 'Save Reading'}
+            {recordBP.isPending ? t('bpEntry.saving') : t('bpEntry.saveReading')}
           </Text>
         </TouchableOpacity>
 
@@ -322,10 +365,10 @@ export function BPEntryForm() {
             </View>
             <Text style={styles.modalTitle}>
               {activeField === 'systolic'
-                ? 'Enter Systolic'
+                ? t('bpEntry.modals.enterSystolic')
                 : activeField === 'diastolic'
-                  ? 'Enter Diastolic'
-                  : 'Enter Pulse'}
+                  ? t('bpEntry.modals.enterDiastolic')
+                  : t('bpEntry.modals.enterPulse')}
             </Text>
             <Text style={styles.modalValue}>
               {getCurrentValue() || '0'}
@@ -339,22 +382,21 @@ export function BPEntryForm() {
               style={styles.modalDoneButton}
               onPress={() => setActiveField(null)}
             >
-              <Text style={styles.modalDoneText}>Done</Text>
+              <Text style={styles.modalDoneText}>{tCommon('buttons.done')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'transparent',
   },
   content: {
-    padding: 16,
+    paddingVertical: 8,
   },
   valuesContainer: {
     borderRadius: 16,
@@ -425,6 +467,32 @@ const styles = StyleSheet.create({
   categoryText: {
     color: '#ffffff',
     fontWeight: '600',
+  },
+  moreInfoSection: {
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  moreInfoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+  },
+  moreInfoTitle: {
+    color: '#374151',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  moreInfoArrow: {
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  moreInfoContent: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
   },
   section: {
     marginBottom: 16,

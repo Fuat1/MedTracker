@@ -1,0 +1,39 @@
+{
+  "categories": {
+    "normal": "Normal",
+    "elevated": "Elevated",
+    "stage1": "High BP Stage 1",
+    "stage2": "High BP Stage 2",
+    "crisis": "Hypertensive Crisis"
+  },
+  "crisis": {
+    "title": "⚠️ Hypertensive Crisis",
+    "message": "This reading indicates a hypertensive crisis. Please seek immediate medical attention if you are experiencing symptoms such as chest pain, shortness of breath, or severe headache."
+  },
+  "guidelines": {
+    "ahaAcc": {
+      "name": "AHA/ACC",
+      "fullName": "American Heart Association (USA)",
+      "regions": "Americas, International"
+    },
+    "escEsh": {
+      "name": "ESC/ESH",
+      "fullName": "European Society of Cardiology (Europe)",
+      "regions": "Europe, Africa, Middle East"
+    },
+    "jsh": {
+      "name": "JSH",
+      "fullName": "Japanese Society of Hypertension",
+      "regions": "Japan, East Asia"
+    },
+    "who": {
+      "name": "WHO",
+      "fullName": "World Health Organization",
+      "regions": "International"
+    }
+  },
+  "measurementSettings": {
+    "location": "Measurement Location",
+    "posture": "Posture"
+  }
+}

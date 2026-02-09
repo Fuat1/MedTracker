@@ -1,0 +1,163 @@
+{
+  "home": {
+    "title": "MedTracker",
+    "subtitle": "Blood Pressure Monitor",
+    "lastReading": "Last Reading",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "userName": "Alex",
+    "bpReadings": "Blood Pressure readings",
+    "last7Days": "Last 7 Days Trend",
+    "noReadingsYet": "No readings yet",
+    "addFirstReading": "Tap + to add your first reading",
+    "encryptedOffline": "Encrypted\n& Offline",
+    "stats": {
+      "bloodPressure": "Blood Pressure",
+      "avgPulse": "Avg Pulse",
+      "readings": "Readings"
+    },
+    "sevenDayAverage": "7-Day Average",
+    "actions": {
+      "viewTrends": "View Trends",
+      "exportData": "Export Data"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "comingSoon": "Coming Soon",
+    "description": "Advanced analytics and insights will be available here"
+  },
+  "history": {
+    "title": "History",
+    "recordCount_one": "{{count}} reading recorded",
+    "recordCount_other": "{{count}} readings recorded",
+    "overview": "Overview",
+    "stats": {
+      "averageBP": "Average BP",
+      "highestSystolic": "Highest Systolic",
+      "thisWeek": "This Week"
+    },
+    "filters": {
+      "allTime": "All Time",
+      "thisWeek": "This Week",
+      "thisMonth": "This Month",
+      "thisYear": "This Year"
+    },
+    "empty": {
+      "title": "No readings yet",
+      "subtitle": "Start tracking your blood pressure by adding your first reading"
+    },
+    "loading": "Loading records...",
+    "error": {
+      "title": "Error loading records",
+      "subtitle": "Pull down to retry"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your blood pressure monitoring preferences",
+    "theme": {
+      "title": "Theme",
+      "description": "Choose your preferred color theme",
+      "light": {
+        "label": "Light Mode",
+        "description": "Light background with dark text"
+      },
+      "dark": {
+        "label": "Dark Mode",
+        "description": "Dark background with light text"
+      },
+      "system": {
+        "label": "System Default",
+        "description": "Follow system theme settings"
+      }
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language for the app"
+    },
+    "unit": {
+      "title": "Measurement Unit",
+      "description": "Choose your preferred unit for blood pressure values",
+      "mmhg": {
+        "label": "mmHg (Millimeters of Mercury)",
+        "description": "Standard worldwide"
+      },
+      "kpa": {
+        "label": "kPa (Kilopascals)",
+        "description": "Used in some regions"
+      },
+      "note": "ℹ️ Note: 1 kPa ≈ 7.5 mmHg. All values are stored in mmHg and converted for display."
+    },
+    "guideline": {
+      "title": "Classification Guidelines",
+      "description": "Select the regional guidelines for blood pressure categorization",
+      "note": "ℹ️ Different regions use different thresholds for categorizing blood pressure levels. Choose the guideline recommended by your healthcare provider."
+    },
+    "defaultLocation": {
+      "title": "Default Measurement Location",
+      "description": "Choose your preferred default location for blood pressure measurements",
+      "leftArm": {
+        "label": "Left Arm",
+        "description": "Standard measurement location"
+      },
+      "rightArm": {
+        "label": "Right Arm",
+        "description": "Alternative arm measurement"
+      },
+      "leftWrist": {
+        "label": "Left Wrist",
+        "description": "Wrist measurement (less accurate)"
+      },
+      "rightWrist": {
+        "label": "Right Wrist",
+        "description": "Wrist measurement (less accurate)"
+      }
+    },
+    "defaultPosture": {
+      "title": "Default Posture",
+      "description": "Choose your preferred default posture for blood pressure measurements",
+      "sitting": {
+        "label": "Sitting",
+        "description": "Standard measurement posture"
+      },
+      "standing": {
+        "label": "Standing",
+        "description": "Standing measurement"
+      },
+      "lying": {
+        "label": "Lying Down",
+        "description": "Lying down measurement"
+      }
+    },
+    "guidelinesComparison": {
+      "title": "Guidelines Comparison",
+      "table": {
+        "category": "Category",
+        "normal": "Normal",
+        "elevated": "Elevated",
+        "stage1": "Stage 1",
+        "stage2": "Stage 2",
+        "crisis": "Crisis"
+      }
+    },
+    "toast": {
+      "saved": "Settings Saved",
+      "preferenceUpdated": "{{setting}} preference updated"
+    }
+  },
+  "newReading": {
+    "title": "New Reading",
+    "saveMeasurement": "Save Measurement",
+    "saving": "Saving...",
+    "alerts": {
+      "error": {
+        "title": "Error",
+        "message": "Failed to save reading. Please try again."
+      }
+    }
+  }
+}

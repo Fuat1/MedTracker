@@ -32,7 +32,10 @@
       "Bash(powershell \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(npm start:*)",
       "Bash(npx react-native run-android:*)",
-      "Bash(npx react-native:*)"
+      "Bash(npx react-native:*)",
+      "Bash(for lang in id sr tr)",
+      "Bash(do cp en/pages.json \"$lang/pages.json\")",
+      "Bash(done)"
     ]
   }
 }

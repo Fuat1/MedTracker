@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "MedTracker",
+    "subtitle": "Blood Pressure Monitor"
+  },
+  "buttons": {
+    "save": "Save Reading",
+    "done": "Done",
+    "cancel": "Cancel",
+    "saveAnyway": "Save Anyway",
+    "back": "Back"
+  },
+  "units": {
+    "mmhg": "mmHg",
+    "kpa": "kPa",
+    "bpm": "BPM"
+  },
+  "navigation": {
+    "home": "Početna",
+    "history": "Istorija",
+    "analytics": "Analitika",
+    "settings": "Podešavanja"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "bloodPressure": "Blood Pressure",
+    "pulse": "Pulse",
+    "systolic": "Systolic",
+    "diastolic": "Diastolic",
+    "pulseOptional": "Pulse (optional)",
+    "moreInfo": "More Info",
+    "newReading": "New Reading"
+  },
+  "location": {
+    "leftArm": "Left Arm",
+    "rightArm": "Right Arm",
+    "leftWrist": "Left Wrist",
+    "rightWrist": "Right Wrist"
+  },
+  "posture": {
+    "sitting": "Sitting",
+    "standing": "Standing",
+    "lying": "Lying"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minute_one": "{{count}} minute ago",
+    "minute_other": "{{count}} minutes ago",
+    "hour_one": "{{count}} hour ago",
+    "hour_other": "{{count}} hours ago",
+    "day_one": "{{count}} day ago",
+    "day_other": "{{count}} days ago"
+  },
+  "a11y": {
+    "backspace": "Backspace",
+    "clear": "Clear"
+  }
+}

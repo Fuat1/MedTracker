@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Vibration, Platform } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withSequence,
+} from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../lib/use-theme';
 
 interface NumpadProps {
   value: string;
@@ -7,6 +15,8 @@ interface NumpadProps {
   maxLength?: number;
   disabled?: boolean;
 }
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const KEYS = [
   ['1', '2', '3'],
@@ -21,10 +31,40 @@ export function Numpad({
   maxLength = 3,
   disabled = false,
 }: NumpadProps) {
+  const { t } = useTranslation('common');
+  const { colors } = useTheme();
+  const pressedKeys = React.useRef<Record<string, Animated.SharedValue<number>>>({});
+
+  const getKeyScale = (key: string) => {
+    if (!pressedKeys.current[key]) {
+      pressedKeys.current[key] = useSharedValue(1);
+    }
+    return pressedKeys.current[key];
+  };
+
   const handleKeyPress = (key: string) => {
     if (disabled) {
       return;
     }
+
+    // Haptic feedback - wrapped in try-catch for permission issues
+    try {
+      if (Platform.OS === 'ios') {
+        Vibration.vibrate(10);
+      } else if (Platform.OS === 'android') {
+        Vibration.vibrate(20);
+      }
+    } catch (error) {
+      // Silently fail if vibration permission not granted
+      console.debug('Vibration not available:', error);
+    }
+
+    // Trigger animation
+    const scale = getKeyScale(key);
+    scale.value = withSequence(
+      withSpring(0.9, { damping: 10, stiffness: 400 }),
+      withSpring(1, { damping: 10, stiffness: 400 })
+    );
 
     if (key === 'C') {
       // Clear
@@ -48,37 +88,63 @@ export function Numpad({
     }
   };
 
+  const KeyButton = ({ keyValue }: { keyValue: string }) => {
+    const scale = getKeyScale(keyValue);
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: scale.value }],
+    }));
+
+    const isClear = keyValue === 'C';
+    const isBackspace = keyValue === '⌫';
+    const isAction = isClear || isBackspace;
+
+    return (
+      <AnimatedTouchable
+        key={keyValue}
+        style={[
+          styles.key,
+          {
+            backgroundColor: isClear
+              ? colors.numpadClearBg
+              : isBackspace
+                ? colors.numpadBackspaceBg
+                : colors.numpadKey,
+            borderColor: colors.numpadKeyBorder,
+            shadowColor: colors.shadow,
+            shadowOpacity: colors.shadowOpacity,
+          },
+          animatedStyle,
+          disabled && styles.disabledKey,
+        ]}
+        onPress={() => handleKeyPress(keyValue)}
+        disabled={disabled}
+        activeOpacity={0.95}
+        accessibilityRole="button"
+        accessibilityLabel={
+          keyValue === '⌫' ? t('a11y.backspace') : keyValue === 'C' ? t('a11y.clear') : keyValue
+        }
+      >
+        <Text
+          style={[
+            styles.keyText,
+            { color: colors.numpadKeyText },
+            isAction && styles.actionKeyText,
+            isClear && { color: colors.error },
+            disabled && { color: colors.textTertiary },
+          ]}
+        >
+          {keyValue}
+        </Text>
+      </AnimatedTouchable>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {KEYS.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {row.map((key) => (
-            <TouchableOpacity
-              key={key}
-              style={[
-                styles.key,
-                key === 'C' && styles.clearKey,
-                key === '⌫' && styles.backspaceKey,
-                disabled && styles.disabledKey,
-              ]}
-              onPress={() => handleKeyPress(key)}
-              disabled={disabled}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={
-                key === '⌫' ? 'Backspace' : key === 'C' ? 'Clear' : key
-              }
-            >
-              <Text
-                style={[
-                  styles.keyText,
-                  (key === 'C' || key === '⌫') && styles.actionKeyText,
-                  disabled && styles.disabledKeyText,
-                ]}
-              >
-                {key}
-              </Text>
-            </TouchableOpacity>
+            <KeyButton key={key} keyValue={key} />
           ))}
         </View>
       ))}
@@ -89,41 +155,37 @@ export function Numpad({
 // Minimum touch target 48x48dp per accessibility guidelines
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
+    padding: 12,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   key: {
-    width: 72,
-    height: 56,
-    marginHorizontal: 6,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
+    width: 76,
+    height: 64,
+    marginHorizontal: 8,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
   },
   keyText: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '600',
-    color: '#1f2937',
-  },
-  clearKey: {
-    backgroundColor: '#fef2f2',
-  },
-  backspaceKey: {
-    backgroundColor: '#fef2f2',
   },
   actionKeyText: {
-    color: '#dc2626',
-    fontSize: 20,
+    fontSize: 22,
+    fontWeight: '700',
   },
   disabledKey: {
-    opacity: 0.5,
-  },
-  disabledKeyText: {
-    color: '#9ca3af',
+    opacity: 0.4,
   },
 });

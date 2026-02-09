@@ -66,3 +66,6 @@ export function getRelativeTime(timestamp: number): string {
 
 // Settings store
 export { useSettingsStore } from './settings-store';
+
+// Theme
+export { useTheme } from './use-theme';

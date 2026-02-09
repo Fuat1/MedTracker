@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initDatabase, closeDatabase } from '../../shared/api';
+import '../../shared/lib/i18n'; // Initialize i18n
+import '../../shared/lib/i18n-types'; // Import type definitions
+import { useSettingsStore } from '../../shared/lib/settings-store';
+import i18n from '../../shared/lib/i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,10 +23,13 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const language = useSettingsStore((state) => state.language);
 
   useEffect(() => {
     async function init() {
       try {
+        // Sync i18n with persisted language preference
+        await i18n.changeLanguage(language);
         await initDatabase();
         setIsReady(true);
       } catch (e) {
@@ -36,7 +43,7 @@ export function Providers({ children }: ProvidersProps) {
     return () => {
       closeDatabase();
     };
-  }, []);
+  }, [language]);
 
   if (error) {
     return (
