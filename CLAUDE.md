@@ -5,6 +5,11 @@ You are a **Senior React Native Solutions Architect** specializing in "Bare" wor
 * **Priorities:** Type safety, JSI performance (op-sqlite), manual native linking mastery, and strict medical data validation.
 * **Philosophy:** The user owns their data. Local-first storage (SQLite). No backend.
 * **Constraint:** strictly adhere to Feature-Sliced Design (FSD).
+* **Planning:** When user provides strategic roadmap or feature requests:
+  1. Add to Section 15 (Strategic Roadmap) for future reference
+  2. Clarify current session priorities vs future phases
+  3. Focus implementation on explicitly requested Phase 1 features
+  4. Use FSD structure planning for multi-phase features
 
 ## 2. Tech Stack & Environment
 * **Framework:** React Native CLI (0.76+ with New Architecture enabled).
@@ -64,6 +69,13 @@ CREATE INDEX IF NOT EXISTS idx_bp_records_timestamp ON bp_records(timestamp DESC
 
 * **Input:** NEVER use standard `TextInput` with the system keyboard for BP entry. Use the custom `Numpad` component (located in `shared/ui`).
 * **Accessibility:** All touch targets ≥ 48x48dp.
+* **Senior-Centric Design (Phase 1 Priority):**
+  - Large touch targets (≥60dp for senior mode)
+  - High-contrast interfaces (black on white option)
+  - Large fonts (FONTS.extraBold for critical values)
+  - Simplified workflows (one-tap logging for power users)
+  - Haptic feedback on all interactions
+  - Voice input support (future: Siri/Assistant integration)
 * **Classification Guidelines:** The app supports multiple official international guidelines (selectable in settings). Default is 2025 AHA/ACC.
 
 ### Blood Pressure Classification (Official Guidelines)
@@ -418,13 +430,29 @@ All blood pressure classifications in this app are based on peer-reviewed, offic
 - Icons from `react-native-vector-icons/Ionicons` (active/inactive states)
 - Touch target ≥ 48dp for accessibility
 
-**FAB Pattern:**
+**FAB Pattern (Entry Mode Selection):**
 ```typescript
-// FAB navigates to modal, not showing modal directly
-<TouchableOpacity onPress={() => stackNav.navigate('NewReading')} />
+// FAB shows Alert modal to choose entry mode
+const handleFabPress = () => {
+  Alert.alert(
+    t('entryMode.title'),
+    t('entryMode.message'),
+    [
+      { text: t('entryMode.quickLog'), onPress: () => stackNav.navigate('QuickLog') },
+      { text: t('entryMode.guided'), onPress: () => stackNav.navigate('PreMeasurement') },
+      { text: t('buttons.cancel'), style: 'cancel' },
+    ]
+  );
+};
+
+<TouchableOpacity onPress={handleFabPress} />
 ```
 
-**Important:** FAB logic moved from CustomTabBar to navigation layer—keeps navigation logic separate from UI rendering.
+**Entry Modes:**
+- **Quick Log**: Streamlined entry for power users (vertical cards, auto-advance)
+- **Guided Entry**: Pre-measurement workflow with preparation guidance (future)
+
+**Important:** FAB logic in CustomTabBar uses navigation ref to access Stack navigator for modal screens.
 
 ### Design System for UI Components
 
@@ -959,9 +987,9 @@ Android uses `fontFamily` to select the correct .ttf file. iOS uses `fontWeight`
 - After adding fonts, run: `npx react-native-asset` and `cd ios && pod install`
 
 **Components Using FONTS** (all updated February 2026):
-- Pages: HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage
+- Pages: HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage, QuickLogPage
 - Widgets: BPRecordCard, BPRecordsList
-- Shared UI: Numpad, LineChart, BPTrendChart
+- Shared UI: Numpad, LineChart, BPTrendChart, DateTimePicker
 - Navigation: CustomTabBar
 
 ## 14. Analytics Page Architecture (February 2026)
@@ -1024,3 +1052,437 @@ analytics.zones.normal, analytics.zones.elevated, analytics.zones.high
 ```
 
 Available in all 4 languages: en, tr, id, sr.
+
+## 15. Date/Time Backdating & Quick Log (February 2026)
+
+### Overview
+MedTracker supports backdating measurements for scenarios where users take readings but log them later (e.g., "I measured my BP 1 hour ago"). Two entry modes cater to different user preferences:
+
+1. **Quick Log**: Streamlined entry for power users
+2. **Guided Entry**: Pre-measurement workflow (future implementation)
+
+### DateTimePicker Component (`src/shared/ui/DateTimePicker.tsx`)
+
+**Purpose:** Custom date/time picker for backdating BP measurements without external dependencies.
+
+**Key Features:**
+- **Modal UI**: +/- adjusters for Day/Hour/Minute (no native date picker dependency)
+- **Smart Time Display**: Shows "Just now", "X minutes ago", or full date/time
+- **"Set to Now" Quick Action**: One-tap reset to current time
+- **Future Date Prevention**: Cannot select dates/times in the future
+- **Theme-Aware**: Uses `useTheme()` for dark mode support
+- **Unix Timestamp Conversion**: Outputs JavaScript Date, converted to Unix seconds in mutation
+
+**Component Interface:**
+```typescript
+interface DateTimePickerProps {
+  value: Date;                      // Current selected time
+  onChange: (date: Date) => void;   // Callback when time changes
+  disabled?: boolean;               // Disable interactions during save
+}
+```
+
+**Time Adjusters:**
+```typescript
+const adjustTime = (field: 'hour' | 'minute' | 'day', delta: number) => {
+  const newDate = new Date(tempDate);
+  switch (field) {
+    case 'hour': newDate.setHours(newDate.getHours() + delta); break;
+    case 'minute': newDate.setMinutes(newDate.getMinutes() + delta); break;
+    case 'day': newDate.setDate(newDate.getDate() + delta); break;
+  }
+  setTempDate(newDate);
+};
+```
+
+**Smart Time Formatting:**
+```typescript
+function getTimeText(timestamp: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - timestamp.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+  // ... full date/time formatting
+}
+```
+
+**Usage in Pages:**
+```typescript
+// NewReadingPage.tsx or QuickLogPage.tsx
+const [measurementTime, setMeasurementTime] = useState(new Date());
+
+<DateTimePicker
+  value={measurementTime}
+  onChange={setMeasurementTime}
+  disabled={recordBP.isPending}
+/>
+
+// In saveRecord():
+await recordBP.mutateAsync({
+  systolic: systolicNum!,
+  diastolic: diastolicNum!,
+  pulse: pulseNum,
+  timestamp: Math.floor(measurementTime.getTime() / 1000), // Convert to Unix timestamp
+  location: defaultLocation,
+  posture: defaultPosture,
+});
+```
+
+**Database Schema Note:**
+The `bp_records` table expects `timestamp INTEGER NOT NULL` (Unix epoch seconds). The BPRecordInput interface supports optional `timestamp?: number` parameter. If omitted, it defaults to current time.
+
+### QuickLogPage Architecture (`src/pages/quick-log/ui/QuickLogPage.tsx`)
+
+**Purpose:** Streamlined BP entry for power users with senior-friendly design.
+
+**FSD Structure:**
+```
+src/pages/quick-log/
+├── index.ts
+└── ui/QuickLogPage.tsx
+```
+
+**Key Design Features:**
+
+1. **Vertical Card Layout** (Senior-Friendly):
+   - 90dp minimum height cards (vs 48dp standard)
+   - 44px font size for BP values (`FONTS.extraBold`)
+   - 3px border width for active field (high visibility)
+   - Large touch targets (≥60dp exceeds accessibility minimum)
+
+2. **Auto-Advance Input Flow** (Reduces Taps):
+   ```typescript
+   const handleNumpadChange = useCallback((value: string) => {
+     switch (activeField) {
+       case 'systolic':
+         setSystolic(value);
+         if (value.length === 3) setActiveField('diastolic'); // Auto-advance
+         break;
+       case 'diastolic':
+         setDiastolic(value);
+         if (value.length === 3) setActiveField('pulse'); // Auto-advance
+         break;
+       case 'pulse':
+         setPulse(value);
+         break;
+     }
+   }, [activeField]);
+   ```
+
+3. **Live BP Classification**:
+   - Category badge appears when both systolic and diastolic are entered
+   - Color-coded using `BP_COLORS_LIGHT/DARK` based on `isDark`
+   - Uses guideline from settings store (AHA/ACC, WHO, ESC/ESH, JSH)
+
+4. **Fixed Bottom Save Button**:
+   - Positioned in footer (outside ScrollView)
+   - Disabled state when validation fails or fields incomplete
+   - Shows "Saving..." text during mutation
+
+5. **Validation Error Banner**:
+   - Inline error display in footer
+   - Shows first validation error from `validateBPValues()`
+
+**Component Reuse:**
+- `DateTimePicker` (shared/ui) — Backdating support
+- `Numpad` (shared/ui) — Themed numpad input
+- `validateBPValues()` (entities) — Validation logic
+- `classifyBP()` (entities) — BP classification
+- `getBPCategoryLabel()` (entities) — Category display name
+- `useRecordBP()` (features) — Mutation hook
+- `useSettingsStore()` (shared) — Guideline, defaults
+
+### Entry Mode Selection Pattern
+
+**FAB Navigation Flow:**
+```
+User taps FAB (+)
+  ↓
+Alert.alert modal appears
+  ↓
+Options:
+  1. "Quick Log" → Navigate to QuickLogPage
+  2. "Guided Entry (Recommended)" → Navigate to PreMeasurement (future)
+  3. "Cancel" → Dismiss modal
+```
+
+**Implementation Location:** `src/app/navigation/CustomTabBar.tsx`
+
+**Translation Keys Required:**
+```json
+// common.json
+"entryMode": {
+  "title": "Log Blood Pressure",
+  "message": "Choose your preferred entry method",
+  "quickLog": "Quick Log",
+  "guided": "Guided Entry (Recommended)"
+}
+```
+
+### Translation Keys Added
+
+**common.json:**
+```json
+"dateTime": {
+  "selectTime": "Select Date & Time",
+  "day": "Day",
+  "hour": "Hour",
+  "minute": "Minute",
+  "setToNow": "Set to Now"
+},
+"entryMode": {
+  "title": "Log Blood Pressure",
+  "message": "Choose your preferred entry method",
+  "quickLog": "Quick Log",
+  "guided": "Guided Entry (Recommended)"
+}
+```
+
+**pages.json:**
+```json
+"quickLog": {
+  "title": "Quick Log",
+  "subtitle": "Fast entry for power users",
+  "saveReading": "Save Reading",
+  "saving": "Saving...",
+  "alerts": {
+    "error": {
+      "title": "Error",
+      "message": "Failed to save reading. Please try again."
+    }
+  }
+}
+```
+
+Updated for all 4 languages: `src/shared/config/locales/[en|id|sr|tr]/[common|pages].json`
+
+### Files Created/Modified
+
+**Created (3 new files):**
+- `src/shared/ui/DateTimePicker.tsx` — Custom date/time picker (350 lines)
+- `src/pages/quick-log/ui/QuickLogPage.tsx` — Streamlined entry page (420 lines)
+- `src/pages/quick-log/index.ts` — Barrel export
+
+**Modified (7 files):**
+- `src/pages/new-reading/ui/NewReadingPage.tsx` — Added DateTimePicker integration, timestamp support
+- `src/shared/ui/index.ts` — Export DateTimePicker
+- `src/shared/config/locales/en/common.json` — Added dateTime, entryMode sections
+- `src/shared/config/locales/en/pages.json` — Added quickLog section
+- `src/app/navigation/index.tsx` — Added QuickLog route to Stack
+- `src/app/navigation/CustomTabBar.tsx` — Added handleFabPress with Alert modal
+
+### Testing Guide
+
+**Test Quick Log Flow:**
+1. Tap FAB (+) → Select "Quick Log"
+2. Verify vertical card layout appears
+3. Enter systolic (3 digits) → Should auto-advance to diastolic
+4. Enter diastolic (3 digits) → Should auto-advance to pulse
+5. Enter pulse (optional)
+6. Verify category badge appears (color-coded)
+7. Tap "Select Date & Time" → Adjust time using +/- buttons
+8. Verify "Set to Now" resets time
+9. Tap "Save Reading" → Verify navigation back to HomePage
+10. Verify reading appears in HomePage with custom timestamp
+
+**Test Date/Time Picker:**
+1. Open Quick Log or New Reading
+2. Tap date/time display → Modal opens
+3. Test +/- buttons for Day, Hour, Minute
+4. Verify future dates are prevented
+5. Verify "Set to Now" quick action works
+6. Tap "Done" → Modal closes, time updates
+7. Verify "Just now" vs "X minutes ago" vs full date display
+
+**Test Dark Mode:**
+1. Settings → Theme → Dark Mode
+2. Verify DateTimePicker uses dark colors
+3. Verify QuickLogPage uses dark colors
+4. Verify BP category badge uses `BP_COLORS_DARK`
+
+**Test Validation:**
+1. Enter invalid values (e.g., systolic < diastolic)
+2. Verify error banner appears in footer
+3. Verify save button is disabled
+4. Correct values → Error disappears, button enables
+
+**Test Crisis Warning:**
+1. Enter crisis reading (≥180/120)
+2. Verify Alert modal appears with warning
+3. Test "Cancel" → Stays on page
+4. Test "Save Anyway" → Saves and navigates back
+
+## 16. Strategic Roadmap & Future Features (2026 Industry Report)
+
+### Current Status: Category A Digital Logger
+MedTracker currently provides core "table stakes" functionality:
+- ✅ Robust manual entry interface (Numpad-based)
+- ✅ Platform integration (op-sqlite local storage)
+- ✅ Data visualization (charts, trends)
+- ✅ Basic data aggregation
+- 🚧 Clinical reporting (PDF generation) - planned
+
+### Phase 1 Priorities (Current Focus)
+
+#### 1.1 Senior-Centric Manual Entry (Completed ✅)
+**Problem:** Current interface may not be accessible for elderly users with vision/dexterity issues.
+
+**Solution:**
+- ✅ **Quick Log Page**: Streamlined entry with 90dp touch targets, 44px fonts, auto-advance (COMPLETED)
+- ✅ **Date/Time Backdating**: Custom picker for logging past measurements (COMPLETED)
+- ✅ **Entry Mode Selection**: FAB modal to choose Quick Log vs Guided Entry (COMPLETED)
+- 🚧 **Large Numpad Mode**: Configurable larger touch targets (≥60dp) — Future enhancement
+- 🚧 **High-Contrast Mode**: Black-on-white or enhanced contrast option — Future enhancement
+- 🚧 **Voice Logging**: Siri/Google Assistant integration ("Log BP 120 over 80") — Phase 4
+
+**FSD Structure:**
+```
+src/pages/quick-log/               ← ✅ Simplified entry screen (COMPLETED)
+src/shared/ui/DateTimePicker.tsx   ← ✅ Custom date/time picker (COMPLETED)
+src/features/senior-mode/          ← Future: User setting toggle
+src/shared/ui/NumpadLarge.tsx      ← Future: Large variant (or prop)
+```
+
+#### 1.2 Pre-Measurement Guidance ("White Coat" Mitigation)
+**Problem:** Anxiety-induced spikes invalidate readings.
+
+**Solution:**
+- **Guided Workflow**: Before opening entry screen:
+  1. Show relaxation timer (5 minutes recommended)
+  2. Guided breathing animation (4-7-8 technique)
+  3. Checklist: "Sit with back supported, feet flat, arm at heart level"
+  4. Auto-advance to entry screen after completion
+- **Optional Skip**: Power users can bypass
+- **Reminder Toast**: "Remember to rest 5 minutes before measuring"
+
+**FSD Structure:**
+```
+src/pages/pre-measurement/         ← Guidance workflow
+src/widgets/breathing-guide/       ← Animated breathing component
+src/entities/measurement-protocol/ ← AHA preparation guidelines
+```
+
+**Medical Source:** AHA Proper Technique Guidelines (CLAUDE.md Section 9)
+
+### Phase 2: Advanced Analytics (Q2 2026)
+
+#### 2.1 Derived Metrics (Auto-Calculation)
+- **Pulse Pressure (PP)**: Systolic - Diastolic
+- **Mean Arterial Pressure (MAP)**: (Systolic + 2×Diastolic) / 3
+- Display on HomePage card alongside BP reading
+- Explain clinical significance in info modal
+
+#### 2.2 Circadian Analysis
+- **Auto-Sort Readings**: Morning (6-10am), Day (10am-6pm), Evening (6pm-10pm), Night (10pm-6am)
+- **Morning Surge Detection**: Flag rapid AM increases (stroke risk indicator)
+- **Time-in-Range Visualization**: % of readings within target zone per guideline
+
+#### 2.3 Lifestyle Tagging
+- Add optional tags to readings: Salt, Stress, Alcohol, Exercise, Medication Taken
+- Correlation analysis: "Your readings are 8 mmHg higher on high-salt days"
+- Privacy-first: All analysis local (no cloud AI)
+
+**FSD Structure:**
+```
+src/entities/derived-metrics/      ← PP, MAP calculations
+src/features/lifestyle-tags/       ← Tag management
+src/shared/lib/circadian-utils.ts  ← Time window logic
+src/widgets/correlation-card/      ← Lifestyle insights
+```
+
+### Phase 3: Platform Integration (Q3 2026)
+
+#### 3.1 Apple Health / Health Connect Sync
+- **Read**: Import BP readings from connected devices (Omron, Withings)
+- **Write**: Export MedTracker readings to platform health stores
+- **Bidirectional Sync**: Merge data without duplicates
+- Privacy: User controls what syncs
+
+**Tech Stack:**
+- iOS: `HealthKit` API
+- Android: `Health Connect` API
+- Conflict resolution: Latest timestamp wins
+
+#### 3.2 Medication Tracking
+- Medication inventory (name, dosage, schedule)
+- Adherence reminders
+- Correlate BP readings with medication timing
+- Flag missed doses that coincide with elevated readings
+
+### Phase 4: Next-Generation Features (2027+)
+
+#### 4.1 Family Sharing / Remote Monitoring
+- **Use Case**: Adult children monitoring elderly parent's BP
+- **Architecture**: End-to-end encrypted sync via Firebase/Supabase
+- **Privacy**: Explicit consent required, revocable anytime
+- **Alerts**: Notify family if reading enters Crisis zone
+
+#### 4.2 Voice Logging (Siri/Google Assistant)
+- **iOS**: Siri Shortcuts integration
+- **Android**: Google Assistant App Actions
+- **Command**: "Hey Siri, log blood pressure 120 over 80 pulse 72"
+- **Validation**: Confirm reading before saving
+
+#### 4.3 Predictive Intelligence (Experimental)
+- **Causal AI**: Multi-factor analysis (sleep, diet, stress, weather)
+- **Example**: "Your BP is elevated due to insufficient sleep (<6hrs) and high sodium intake yesterday"
+- **Regulatory**: Requires FDA clearance for medical claims
+- **Privacy**: On-device ML (CoreML, TensorFlow Lite)
+
+#### 4.4 Weather Correlation
+- **Data Source**: OpenWeather API (or device location)
+- **Analysis**: Identify patterns between barometric pressure/temperature and BP
+- **Display**: "Your BP tends to rise 5 mmHg on cold days (<50°F)"
+
+### What We Will NOT Build
+
+#### Cuffless Measurement
+**Reason:** No FDA-cleared, calibration-free solution exists (as of 2026). Samsung/Biospectal require cuff calibration. Camera-based PPG methods lack clinical validation.
+
+**Stance:** MedTracker is a **logger**, not a measurement device. We trust users' validated cuffs.
+
+#### Subscription Pricing for Core Features
+**Philosophy:** Basic logging, charting, and PDF export remain free or one-time purchase. Subscriptions only for cloud sync or premium analytics (if ever).
+
+### Feature Request Prioritization
+
+**Tier 1 (Must-Have):**
+- ✅ Manual entry (done)
+- ✅ Local storage (done)
+- ✅ Quick Log with date/time backdating (done)
+- 🚧 PDF reports (in progress)
+- 🚧 Large Numpad Mode (Phase 1)
+- 🚧 Pre-measurement guidance (Phase 1)
+
+**Tier 2 (High Value):**
+- Derived metrics (PP, MAP)
+- Circadian analysis
+- Platform sync (Apple Health, Health Connect)
+
+**Tier 3 (Nice-to-Have):**
+- Medication tracking
+- Lifestyle tags
+- Voice logging
+
+**Tier 4 (Future/Experimental):**
+- Family sharing
+- Predictive AI
+- Weather correlation
+
+### Competitive Analysis Reference
+
+**Best-in-Class Apps (2026):**
+- **SmartBP**: Gold standard for manual entry + Apple Health sync
+- **Guava Health**: EHR integration, derived metrics
+- **Welltory**: Lifestyle correlation (sleep, HRV)
+- **Biospectal**: Cuffless (requires calibration)
+
+**MedTracker's Differentiator:**
+- 🔒 **Privacy-First**: No cloud, no accounts, SQLCipher encryption
+- 🌍 **Offline-First**: Works without internet
+- 🆓 **Fair Pricing**: Core features forever free
+- 🏗️ **FSD Architecture**: Maintainable, testable, scalable
+
+**Last Updated:** February 2026

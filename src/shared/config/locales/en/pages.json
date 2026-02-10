@@ -198,6 +198,55 @@
     "darkMode": "Dark Mode",
     "useSystemDefault": "Use System Default"
   },
+  "preMeasurement": {
+    "title": "Prepare for Measurement",
+    "skip": "Skip Preparation",
+    "startMeasurement": "Start Measurement",
+    "skipWarning": {
+      "title": "Skip Preparation?",
+      "message": "For accurate readings, AHA/ACC guidelines recommend 5 minutes of rest before measurement. Are you sure you want to skip the preparation steps?",
+      "confirm": "Skip Anyway"
+    },
+    "checklist": {
+      "title": "Measurement Checklist",
+      "subtitle": "Follow these AHA/ACC guidelines for accurate readings",
+      "rest": "Rest quietly for 5 minutes before measuring",
+      "posture": "Sit with back supported and feet flat on floor",
+      "arm": "Rest arm at heart level on a flat surface",
+      "feet": "Keep feet flat on floor, legs uncrossed",
+      "quiet": "Avoid talking during measurement"
+    },
+    "breathing": {
+      "title": "Relaxation Exercise",
+      "subtitle": "Calm breathing helps reduce anxiety-induced BP spikes",
+      "inhale": "Breathe In",
+      "hold": "Hold",
+      "exhale": "Breathe Out",
+      "cycle": "Cycle {{current}} of {{total}}",
+      "complete": "Breathing complete"
+    },
+    "timer": {
+      "title": "Rest Period",
+      "subtitle": "Relax while we prepare for your measurement",
+      "hint": "Sit quietly and breathe naturally"
+    },
+    "ready": {
+      "title": "You're Ready!",
+      "subtitle": "Your body is relaxed and prepared for an accurate blood pressure reading"
+    }
+  },
+  "quickLog": {
+    "title": "Quick Log",
+    "subtitle": "Fast entry for power users",
+    "saveReading": "Save Reading",
+    "saving": "Saving...",
+    "alerts": {
+      "error": {
+        "title": "Error",
+        "message": "Failed to save reading. Please try again."
+      }
+    }
+  },
   "newReading": {
     "title": "New Reading",
     "saveMeasurement": "Save Measurement",

@@ -8,7 +8,8 @@
     "done": "Done",
     "cancel": "Cancel",
     "saveAnyway": "Save Anyway",
-    "back": "Back"
+    "back": "Back",
+    "continue": "Continue"
   },
   "units": {
     "mmhg": "mmHg",
@@ -56,5 +57,18 @@
   "a11y": {
     "backspace": "Backspace",
     "clear": "Clear"
+  },
+  "dateTime": {
+    "selectTime": "Select Date & Time",
+    "day": "Day",
+    "hour": "Hour",
+    "minute": "Minute",
+    "setToNow": "Set to Now"
+  },
+  "entryMode": {
+    "title": "Log Blood Pressure",
+    "message": "Choose your preferred entry method",
+    "quickLog": "Quick Log",
+    "guided": "Guided Entry (Recommended)"
   }
 }

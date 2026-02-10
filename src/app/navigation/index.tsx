@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage } from '../../pages';
+import { PreMeasurementPage } from '../../pages/pre-measurement';
+import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
 
 export type RootTabParamList = {
@@ -14,6 +16,8 @@ export type RootTabParamList = {
 
 export type RootStackParamList = {
   Main: undefined;
+  QuickLog: undefined;
+  PreMeasurement: undefined;
   NewReading: undefined;
 };
 
@@ -46,6 +50,22 @@ export function Navigation() {
         }}
       >
         <Stack.Screen name="Main" component={TabNavigator} />
+        <Stack.Screen
+          name="QuickLog"
+          component={QuickLogPage}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="PreMeasurement"
+          component={PreMeasurementPage}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
         <Stack.Screen
           name="NewReading"
           component={NewReadingPage}

@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   Platform,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -38,6 +39,28 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
   const leftTabs = state.routes.slice(0, 2);
   const rightTabs = state.routes.slice(2, 4);
+
+  const handleFabPress = () => {
+    Alert.alert(
+      t('entryMode.title'),
+      t('entryMode.message'),
+      [
+        {
+          text: t('entryMode.quickLog'),
+          onPress: () => stackNav.navigate('QuickLog'),
+        },
+        {
+          text: t('entryMode.guided'),
+          onPress: () => stackNav.navigate('PreMeasurement'),
+        },
+        {
+          text: t('buttons.cancel'),
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true },
+    );
+  };
 
   const renderTab = (route: typeof state.routes[0], index: number) => {
     const realIndex = state.routes.indexOf(route);
@@ -112,7 +135,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             }),
           },
         ]}
-        onPress={() => stackNav.navigate('NewReading')}
+        onPress={handleFabPress}
         activeOpacity={0.85}
       >
         <Icon name="add" size={32} color="#ffffff" />

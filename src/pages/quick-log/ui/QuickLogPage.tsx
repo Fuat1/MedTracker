@@ -25,7 +25,7 @@ import { useRecordBP } from '../../../features/record-bp';
 
 type ActiveField = 'systolic' | 'diastolic' | 'pulse';
 
-export function NewReadingPage() {
+export function QuickLogPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
@@ -58,9 +58,17 @@ export function NewReadingPage() {
       switch (activeField) {
         case 'systolic':
           setSystolic(value);
+          // Auto-advance to diastolic when systolic is complete (3 digits)
+          if (value.length === 3) {
+            setActiveField('diastolic');
+          }
           break;
         case 'diastolic':
           setDiastolic(value);
+          // Auto-advance to pulse when diastolic is complete
+          if (value.length === 3) {
+            setActiveField('pulse');
+          }
           break;
         case 'pulse':
           setPulse(value);
@@ -87,7 +95,7 @@ export function NewReadingPage() {
       return;
     }
 
-    // Crisis warning
+    // Crisis warning (no bypass in quick log)
     if (isCrisisReading(systolicNum, diastolicNum)) {
       Alert.alert(
         tMedical('crisis.title'),
@@ -113,7 +121,7 @@ export function NewReadingPage() {
         systolic: systolicNum!,
         diastolic: diastolicNum!,
         pulse: pulseNum,
-        timestamp: Math.floor(measurementTime.getTime() / 1000), // Convert to Unix timestamp
+        timestamp: Math.floor(measurementTime.getTime() / 1000),
         location: defaultLocation,
         posture: defaultPosture,
       });
@@ -122,8 +130,8 @@ export function NewReadingPage() {
       navigation.goBack();
     } catch (error) {
       Alert.alert(
-        t('newReading.alerts.error.title'),
-        error instanceof Error ? error.message : t('newReading.alerts.error.message'),
+        t('quickLog.alerts.error.title'),
+        error instanceof Error ? error.message : t('quickLog.alerts.error.message'),
       );
     }
   };
@@ -132,9 +140,14 @@ export function NewReadingPage() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-          {t('newReading.title')}
-        </Text>
+        <View>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            {t('quickLog.title')}
+          </Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+            {t('quickLog.subtitle')}
+          </Text>
+        </View>
         <TouchableOpacity
           style={[styles.closeButton, { backgroundColor: colors.surfaceSecondary }]}
           onPress={() => navigation.goBack()}
@@ -144,7 +157,7 @@ export function NewReadingPage() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Date/Time Picker */}
         <View style={styles.dateTimeContainer}>
           <DateTimePicker
@@ -154,12 +167,12 @@ export function NewReadingPage() {
           />
         </View>
 
-        {/* Value Input Row */}
-        <View style={styles.valuesRow}>
+        {/* Value Input Cards (Larger for seniors) */}
+        <View style={styles.valuesColumn}>
           {/* Systolic */}
           <TouchableOpacity
             style={[
-              styles.valueBox,
+              styles.valueCard,
               {
                 backgroundColor: colors.surface,
                 borderColor: activeField === 'systolic' ? colors.accent : colors.border,
@@ -170,12 +183,17 @@ export function NewReadingPage() {
             onPress={() => setActiveField('systolic')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
-              {tCommon('common.systolic')}
-            </Text>
+            <View style={styles.valueCardHeader}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+                {tCommon('common.systolic')}
+              </Text>
+              {activeField === 'systolic' && (
+                <Icon name="arrow-down" size={20} color={colors.accent} />
+              )}
+            </View>
             <Text
               style={[
-                styles.valueText,
+                styles.valueTextLarge,
                 {
                   color: systolic && validation.isValid ? categoryColor : colors.textPrimary,
                 },
@@ -188,7 +206,7 @@ export function NewReadingPage() {
           {/* Diastolic */}
           <TouchableOpacity
             style={[
-              styles.valueBox,
+              styles.valueCard,
               {
                 backgroundColor: colors.surface,
                 borderColor: activeField === 'diastolic' ? colors.accent : colors.border,
@@ -199,12 +217,17 @@ export function NewReadingPage() {
             onPress={() => setActiveField('diastolic')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
-              {tCommon('common.diastolic')}
-            </Text>
+            <View style={styles.valueCardHeader}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+                {tCommon('common.diastolic')}
+              </Text>
+              {activeField === 'diastolic' && (
+                <Icon name="arrow-down" size={20} color={colors.accent} />
+              )}
+            </View>
             <Text
               style={[
-                styles.valueText,
+                styles.valueTextLarge,
                 {
                   color: diastolic && validation.isValid ? categoryColor : colors.textPrimary,
                 },
@@ -217,7 +240,7 @@ export function NewReadingPage() {
           {/* Pulse */}
           <TouchableOpacity
             style={[
-              styles.valueBox,
+              styles.valueCard,
               {
                 backgroundColor: colors.surface,
                 borderColor: activeField === 'pulse' ? colors.accent : colors.border,
@@ -228,15 +251,22 @@ export function NewReadingPage() {
             onPress={() => setActiveField('pulse')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
-              {tCommon('common.pulse')}
-            </Text>
-            <Text style={[styles.valueText, { color: colors.textPrimary }]}>
-              {pulse || '---'}
-            </Text>
-            <Text style={[styles.valueUnit, { color: colors.textTertiary }]}>
-              {tCommon('units.bpm')}
-            </Text>
+            <View style={styles.valueCardHeader}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+                {tCommon('common.pulse')} {tCommon('common.pulseOptional')}
+              </Text>
+              {activeField === 'pulse' && (
+                <Icon name="arrow-down" size={20} color={colors.accent} />
+              )}
+            </View>
+            <View style={styles.pulseRow}>
+              <Text style={[styles.valueTextLarge, { color: colors.textPrimary }]}>
+                {pulse || '---'}
+              </Text>
+              <Text style={[styles.pulseUnit, { color: colors.textTertiary }]}>
+                {tCommon('units.bpm')}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -252,6 +282,7 @@ export function NewReadingPage() {
                 },
               ]}
             >
+              <Icon name="medical" size={18} color={categoryColor} />
               <Text style={[styles.categoryText, { color: categoryColor }]}>
                 {categoryLabel}
               </Text>
@@ -268,41 +299,40 @@ export function NewReadingPage() {
             disabled={recordBP.isPending}
           />
         </View>
+      </ScrollView>
 
-        {/* Save Button */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor:
-                  validation.isValid && systolic && diastolic
-                    ? colors.accent
-                    : colors.border,
-              },
-            ]}
-            onPress={handleSubmit}
-            disabled={!validation.isValid || !systolic || !diastolic || recordBP.isPending}
-            activeOpacity={0.85}
-          >
-            <Icon name="checkmark-circle" size={22} color="#ffffff" />
-            <Text style={styles.saveButtonText}>
-              {recordBP.isPending ? t('newReading.saving') : t('newReading.saveMeasurement')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+      {/* Fixed Bottom Button */}
+      <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+        <TouchableOpacity
+          style={[
+            styles.saveButton,
+            {
+              backgroundColor:
+                validation.isValid && systolic && diastolic
+                  ? colors.accent
+                  : colors.border,
+            },
+          ]}
+          onPress={handleSubmit}
+          disabled={!validation.isValid || !systolic || !diastolic || recordBP.isPending}
+          activeOpacity={0.85}
+        >
+          <Icon name="checkmark-circle" size={26} color="#ffffff" />
+          <Text style={styles.saveButtonText}>
+            {recordBP.isPending ? t('quickLog.saving') : t('quickLog.saveReading')}
+          </Text>
+        </TouchableOpacity>
 
         {/* Validation Errors */}
         {!validation.isValid && systolic && diastolic && (
-          <View style={[styles.errorContainer, { backgroundColor: colors.errorBackground }]}>
-            {validation.errors.map((error, index) => (
-              <Text key={index} style={[styles.errorText, { color: colors.error }]}>
-                • {error}
-              </Text>
-            ))}
+          <View style={[styles.errorBanner, { backgroundColor: colors.errorBackground }]}>
+            <Icon name="alert-circle" size={18} color={colors.error} />
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {validation.errors[0]}
+            </Text>
           </View>
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -320,10 +350,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    fontFamily: FONTS.regular,
+    marginTop: 2,
   },
   closeButton: {
     width: 44,
@@ -332,94 +367,110 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  scrollContent: {
+    paddingBottom: 20,
+  },
   dateTimeContainer: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
-  valuesRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    gap: 10,
+  valuesColumn: {
+    paddingHorizontal: 20,
+    gap: 12,
   },
-  valueBox: {
-    flex: 1,
-    padding: 12,
+  valueCard: {
+    padding: 18,
     borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 2,
-    minHeight: 100,
-    justifyContent: 'center',
+    minHeight: 90,
+  },
+  valueCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   valueLabel: {
-    fontSize: 11,
+    fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 6,
   },
-  valueText: {
-    fontSize: 36,
+  valueTextLarge: {
+    fontSize: 44,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
   },
-  valueUnit: {
-    fontSize: 11,
-    fontFamily: FONTS.regular,
-    marginTop: 2,
+  pulseRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+  },
+  pulseUnit: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
   categoryContainer: {
     alignItems: 'center',
+    paddingHorizontal: 20,
     marginTop: 16,
   },
   categoryBadge: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 2,
+    gap: 8,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   numpadContainer: {
-    marginTop: 12,
+    marginTop: 16,
   },
-  buttonContainer: {
+  footer: {
+    borderTopWidth: 1,
     paddingHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 20,
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 14,
-    borderRadius: 14,
-    gap: 8,
+    padding: 18,
+    borderRadius: 16,
+    gap: 10,
   },
   saveButtonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
-  errorContainer: {
-    marginHorizontal: 20,
-    marginTop: 16,
-    padding: 16,
-    borderRadius: 12,
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 10,
   },
   errorText: {
-    fontSize: 14,
-    fontFamily: FONTS.regular,
-    marginBottom: 4,
+    flex: 1,
+    fontSize: 13,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
 });
