@@ -1,19 +1,22 @@
 import React from 'react';
-import { View, Text, FlatList, RefreshControl, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, SectionList, RefreshControl, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useBPRecords } from '../../../features/record-bp';
 import { BPRecordCard } from '../../bp-record-card';
 import type { BPRecord } from '../../../shared/api';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { FONTS } from '../../../shared/config/theme';
 
 interface BPRecordsListProps {
-  limit?: number;
+  sections: Array<{ title: string; data: BPRecord[] }>;
+  isLoading: boolean;
+  isError: boolean;
+  isRefetching: boolean;
+  onRefresh: () => void;
 }
 
-export function BPRecordsList({ limit }: BPRecordsListProps) {
+export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRefresh }: BPRecordsListProps) {
   const { t } = useTranslation('widgets');
   const { colors } = useTheme();
-  const { data: records, isLoading, isError, refetch, isRefetching } = useBPRecords(limit);
 
   if (isLoading) {
     return (
@@ -40,7 +43,15 @@ export function BPRecordsList({ limit }: BPRecordsListProps) {
   }
 
   const renderItem = ({ item }: { item: BPRecord }) => (
-    <BPRecordCard record={item} />
+    <BPRecordCard record={item} variant="compact" />
+  );
+
+  const renderSectionHeader = ({ section }: { section: { title: string } }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+        {section.title}
+      </Text>
+    </View>
   );
 
   const renderEmpty = () => (
@@ -56,21 +67,23 @@ export function BPRecordsList({ limit }: BPRecordsListProps) {
   );
 
   return (
-    <FlatList
-      data={records}
+    <SectionList
+      sections={sections}
       renderItem={renderItem}
+      renderSectionHeader={renderSectionHeader}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.listContent}
       ListEmptyComponent={renderEmpty}
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
-          onRefresh={refetch}
+          onRefresh={onRefresh}
           colors={[colors.accent]}
           tintColor={colors.accent}
         />
       }
       showsVerticalScrollIndicator={false}
+      stickySectionHeadersEnabled={false}
     />
   );
 }
@@ -83,13 +96,18 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   loadingText: {
+    fontFamily: FONTS.regular,
     marginTop: 8,
   },
   errorTitle: {
     fontSize: 18,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
     marginBottom: 8,
   },
-  errorSubtitle: {},
+  errorSubtitle: {
+    fontFamily: FONTS.regular,
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -102,12 +120,26 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 18,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
   },
   emptySubtitle: {
+    fontFamily: FONTS.regular,
     textAlign: 'center',
     paddingHorizontal: 32,
+  },
+  sectionHeader: {
+    paddingHorizontal: 4,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   listContent: {
     padding: 16,

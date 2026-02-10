@@ -20,7 +20,7 @@ import {
   getBPCategoryLabel,
   isCrisisReading,
 } from '../../../entities/blood-pressure';
-import { BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
+import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
 import { useRecordBP } from '../../../features/record-bp';
 
 type ActiveField = 'systolic' | 'diastolic' | 'pulse';
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
+    fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
@@ -340,6 +341,7 @@ const styles = StyleSheet.create({
   },
   valueLabel: {
     fontSize: 12,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -347,11 +349,13 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontSize: 44,
+    fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
   },
   valueUnit: {
     fontSize: 11,
+    fontFamily: FONTS.regular,
     marginTop: 2,
   },
   categoryContainer: {
@@ -366,6 +370,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 15,
+    fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   numpadContainer: {
@@ -386,6 +391,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#ffffff',
     fontSize: 18,
+    fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   errorContainer: {
@@ -396,6 +402,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
+    fontFamily: FONTS.regular,
     marginBottom: 4,
   },
 });

@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/use-theme';
+import { FONTS } from '../config/theme';
 
 interface NumpadProps {
   value: string;
@@ -179,10 +180,12 @@ const styles = StyleSheet.create({
   },
   keyText: {
     fontSize: 28,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   actionKeyText: {
     fontSize: 22,
+    fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   disabledKey: {

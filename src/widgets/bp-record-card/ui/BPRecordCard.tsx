@@ -8,22 +8,75 @@ import {
   classifyBP,
   getBPCategoryLabel,
 } from '../../../entities/blood-pressure';
-import { formatDateTime, getRelativeTime } from '../../../shared/lib';
+import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
-import { BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
+import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
 
 interface BPRecordCardProps {
   record: BPRecord;
+  variant?: 'full' | 'compact';
 }
 
-export function BPRecordCard({ record }: BPRecordCardProps) {
+export function BPRecordCard({ record, variant = 'full' }: BPRecordCardProps) {
   const { t } = useTranslation('common');
   const { colors, isDark } = useTheme();
-  const category = classifyBP(record.systolic, record.diastolic);
+  const { guideline } = useSettingsStore();
+  const category = classifyBP(record.systolic, record.diastolic, guideline);
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
   const categoryColor = bpColors[category];
   const categoryLabel = getBPCategoryLabel(category);
 
+  // Compact variant for History page
+  if (variant === 'compact') {
+    const timeSplit = formatTimeSplit(record.timestamp);
+
+    return (
+      <Animated.View entering={FadeInRight.duration(300)}>
+        <View
+          style={[
+            compactStyles.card,
+            {
+              backgroundColor: colors.surface,
+              shadowColor: colors.shadow,
+              shadowOpacity: colors.shadowOpacity,
+            },
+          ]}
+        >
+          {/* Time Column */}
+          <View style={compactStyles.timeColumn}>
+            <Text style={[compactStyles.time, { color: colors.textPrimary }]}>
+              {timeSplit.time}
+            </Text>
+            <Text style={[compactStyles.period, { color: colors.textTertiary }]}>
+              {timeSplit.period}
+            </Text>
+          </View>
+
+          {/* Divider */}
+          <View style={[compactStyles.divider, { backgroundColor: colors.borderLight }]} />
+
+          {/* BP Value */}
+          <View style={compactStyles.valueColumn}>
+            <Text style={[compactStyles.bpValue, { color: colors.textPrimary }]}>
+              {record.systolic}/{record.diastolic}
+            </Text>
+            <Text style={[compactStyles.unit, { color: colors.textTertiary }]}>
+              {t('units.mmhg')}
+            </Text>
+          </View>
+
+          {/* Category Badge */}
+          <View style={[compactStyles.badge, { backgroundColor: categoryColor + '20' }]}>
+            <Text style={[compactStyles.badgeText, { color: categoryColor }]}>
+              {categoryLabel}
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    );
+  }
+
+  // Full variant (original design)
   const locationLabels: Record<string, string> = {
     left_arm: t('location.leftArm'),
     right_arm: t('location.rightArm'),
@@ -127,6 +180,66 @@ export function BPRecordCard({ record }: BPRecordCardProps) {
   );
 }
 
+// Compact variant styles (History page)
+const compactStyles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 8,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  timeColumn: {
+    width: 56,
+    alignItems: 'center',
+  },
+  time: {
+    fontSize: 16,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  period: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  divider: {
+    width: 1,
+    height: 32,
+    marginHorizontal: 12,
+  },
+  valueColumn: {
+    flex: 1,
+  },
+  bpValue: {
+    fontSize: 22,
+    fontFamily: FONTS.extraBold,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  unit: {
+    fontSize: 11,
+    fontFamily: FONTS.regular,
+    marginTop: 1,
+  },
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+  },
+});
+
+// Full variant styles (original)
 const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
@@ -164,19 +277,23 @@ const styles = StyleSheet.create({
   },
   valueTextLarge: {
     fontSize: 26,
+    fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   separator: {
     fontSize: 18,
+    fontFamily: FONTS.regular,
     marginHorizontal: 3,
   },
   unit: {
     fontSize: 12,
+    fontFamily: FONTS.regular,
     marginLeft: 4,
   },
   timeText: {
     fontSize: 12,
+    fontFamily: FONTS.regular,
     marginTop: 2,
   },
   badge: {
@@ -194,6 +311,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   detailsRow: {
@@ -213,6 +331,7 @@ const styles = StyleSheet.create({
   },
   detailChipText: {
     fontSize: 12,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
   },
   timestampRow: {
@@ -222,6 +341,7 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 11,
+    fontFamily: FONTS.regular,
   },
   notesContainer: {
     marginTop: 10,
@@ -234,6 +354,7 @@ const styles = StyleSheet.create({
   notesText: {
     flex: 1,
     fontSize: 13,
+    fontFamily: FONTS.regular,
     lineHeight: 18,
   },
 });

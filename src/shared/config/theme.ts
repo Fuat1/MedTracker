@@ -1,5 +1,16 @@
 import type { BPCategory } from './index';
 
+// Nunito font family mapping
+// On Android, fontFamily alone selects the weight.
+// On iOS, use fontFamily + fontWeight together for safety.
+export const FONTS = {
+  regular: 'Nunito-Regular',      // 400
+  medium: 'Nunito-Medium',        // 500
+  semiBold: 'Nunito-SemiBold',    // 600
+  bold: 'Nunito-Bold',            // 700
+  extraBold: 'Nunito-ExtraBold',  // 800
+};
+
 export interface ThemeColors {
   // Backgrounds
   background: string;
@@ -41,6 +52,20 @@ export interface ThemeColors {
   chartLine: string;
   chartDot: string;
   chartLabel: string;
+  chartLineDiastolic: string;
+  chartZoneNormal: string;
+  chartZoneElevated: string;
+  chartZoneHigh: string;
+
+  // Toggle / Switch
+  toggleTrackActive: string;
+  toggleTrackInactive: string;
+
+  // Settings card icons
+  iconCircleBg: string;
+
+  // Semantic status
+  successText: string;
 
   // Overlay
   overlay: string;
@@ -59,7 +84,7 @@ export const lightColors: ThemeColors = {
   textSecondary: '#64748b',
   textTertiary: '#94a3b8',
 
-  accent: '#4EB8A0',
+  accent: '#0D9488',
 
   border: '#e5e7eb',
   borderLight: '#f1f5f9',
@@ -67,8 +92,8 @@ export const lightColors: ThemeColors = {
   error: '#dc2626',
   errorBackground: '#fef2f2',
 
-  gradientStart: '#5CBDA5',
-  gradientEnd: '#7FCFBC',
+  gradientStart: '#0D9488',
+  gradientEnd: '#14B8A6',
 
   tabBarBackground: '#ffffff',
   tabBarBorder: '#f1f5f9',
@@ -79,9 +104,18 @@ export const lightColors: ThemeColors = {
   numpadClearBg: '#fef2f2',
   numpadBackspaceBg: '#f0f9ff',
 
-  chartLine: '#4EB8A0',
+  chartLine: '#0D9488',
   chartDot: '#ffffff',
   chartLabel: '#475569',
+  chartLineDiastolic: '#5EEAD4',
+  chartZoneNormal: '#dcfce7',
+  chartZoneElevated: '#fef9c3',
+  chartZoneHigh: '#fecaca',
+
+  toggleTrackActive: '#0D9488',
+  toggleTrackInactive: '#d1d5db',
+  iconCircleBg: 'rgba(13,148,136,0.12)',
+  successText: '#16a34a',
 
   overlay: 'rgba(0,0,0,0.3)',
 
@@ -98,7 +132,7 @@ export const darkColors: ThemeColors = {
   textSecondary: '#94a3b8',
   textTertiary: '#64748b',
 
-  accent: '#4EB8A0',
+  accent: '#14B8A6',
 
   border: '#334155',
   borderLight: '#1e293b',
@@ -106,8 +140,8 @@ export const darkColors: ThemeColors = {
   error: '#f87171',
   errorBackground: '#451a1a',
 
-  gradientStart: '#14b8a6',
-  gradientEnd: '#0d9488',
+  gradientStart: '#0D9488',
+  gradientEnd: '#115E59',
 
   tabBarBackground: '#1e293b',
   tabBarBorder: '#334155',
@@ -118,9 +152,18 @@ export const darkColors: ThemeColors = {
   numpadClearBg: '#3b1c1c',
   numpadBackspaceBg: '#1c2d3b',
 
-  chartLine: '#4EB8A0',
+  chartLine: '#14B8A6',
   chartDot: '#1e293b',
   chartLabel: '#94a3b8',
+  chartLineDiastolic: '#2DD4BF',
+  chartZoneNormal: '#14532d',
+  chartZoneElevated: '#422006',
+  chartZoneHigh: '#450a0a',
+
+  toggleTrackActive: '#14B8A6',
+  toggleTrackInactive: '#4b5563',
+  iconCircleBg: 'rgba(20,184,166,0.15)',
+  successText: '#4ade80',
 
   overlay: 'rgba(0,0,0,0.6)',
 

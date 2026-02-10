@@ -69,3 +69,26 @@ export { useSettingsStore } from './settings-store';
 
 // Theme
 export { useTheme } from './use-theme';
+
+// Record utilities
+export {
+  groupRecordsByTimePeriod,
+  filterRecords,
+  formatTimeSplit,
+  type RecordSection,
+  type HistoryFilterType,
+} from './record-utils';
+
+// Analytics utilities
+export {
+  computeWeeklyAverage,
+  computeAmPmComparison,
+  type WeeklyAverage,
+  type AmPmComparison,
+} from './analytics-utils';
+
+// Region settings
+export {
+  getSettingsForRegion,
+  type RegionSettings,
+} from './region-settings';

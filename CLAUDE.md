@@ -335,6 +335,7 @@ export type Language = 'en' | 'id' | 'sr' | 'tr' | 'new';
 5. **Verify medical accuracy** - consult with medical professionals
 6. **Handle missing translations** - fallback to English is automatic
 7. **Keep medical abbreviations unchanged** - mmHg, BPM are universal
+8. **Only add translations to English (`en/`) JSON files** - other languages (tr, id, sr) will be translated separately later. Do NOT add or modify non-English locale files when adding new translation keys.
 
 ## 8. Workflow Checklist for AI Generation
 
@@ -480,10 +481,11 @@ All blood pressure classifications in this app are based on peer-reviewed, offic
    - Theme: Always contrasts against background
 
 **AnalyticsPage Pattern:**
-- Placeholder with "Coming Soon" design
-- Reusable template: icon + title + description centered on screen
-- Easy to replace with real analytics later
-- Maintains consistent spacing and typography
+- Full analytics dashboard with BP Trend Chart, Weekly Average, AM/PM comparison, and PDF export button
+- `BPTrendChart` (shared/ui) — custom SVG chart with colored zone backgrounds and dual systolic/diastolic lines
+- `computeWeeklyAverage()` and `computeAmPmComparison()` — pure utility functions in shared/lib
+- Data sourced via `useBPRecords(30)` from features layer
+- Themed with `useTheme()` for dark mode support
 
 ## 11. Dark Mode & Theme System (February 2026)
 
@@ -636,15 +638,22 @@ Used by:
 
 ### Design System Colors
 
+**Primary Color:** Medical Teal `#0D9488` (updated February 2026)
+
 **Light Mode Palette** (`src/shared/config/theme.ts`):
 ```typescript
 export const lightColors: ThemeColors = {
   background: '#EDF5F0',      // Mint (HomePage default)
   surface: '#ffffff',          // White cards
-  accent: '#4EB8A0',           // Teal (interactive elements, FAB)
-  gradientStart: '#5CBDA5',    // BP card gradient start
-  gradientEnd: '#7FCFBC',      // BP card gradient end
-  error: '#ef4444',            // Red for errors/crisis
+  accent: '#0D9488',           // Medical Teal (interactive elements, FAB)
+  gradientStart: '#0D9488',    // BP card gradient start
+  gradientEnd: '#14B8A6',      // BP card gradient end
+  chartLine: '#0D9488',        // Chart systolic line
+  chartLineDiastolic: '#5EEAD4', // Chart diastolic line (lighter teal)
+  chartZoneNormal: '#dcfce7',  // Green zone background
+  chartZoneElevated: '#fef9c3', // Yellow zone background
+  chartZoneHigh: '#fecaca',    // Red zone background
+  error: '#dc2626',            // Red for errors/crisis
   textPrimary: '#1a1a2e',      // Dark text
   textSecondary: '#64748b',    // Gray text
   // ... 10+ more tokens
@@ -652,10 +661,19 @@ export const lightColors: ThemeColors = {
 ```
 
 **Dark Mode Enhancements:**
-- Surfaces: `#1e293b` (dark slate) instead of white
-- Backgrounds: `#0f172a` (very dark blue)
+- Surfaces: `#1e293b` (Slate-800 cards) instead of white
+- Backgrounds: `#0f172a` (Slate-900)
+- Accent: `#14B8A6` (brighter teal for dark backgrounds)
 - **BP Category Colors Brightened**: `#4ade80` (green) instead of `#22c55e` for visibility
+- **Chart Zone Colors Darkened**: `#14532d`, `#422006`, `#450a0a` for subtlety
 - All text lightened for contrast
+
+**Alert Colors (AHA Standard):**
+- Green (`#22c55e` / `#4ade80` dark): Normal
+- Yellow (`#eab308` / `#fbbf24` dark): Elevated
+- Orange (`#f97316` / `#fb923c` dark): Stage 1 Hypertension
+- Red (`#ef4444` / `#f87171` dark): Stage 2 Hypertension
+- Deep Red (`#dc2626` / `#ef4444` dark): Hypertensive Crisis
 
 ### Translation Structure for UI Components
 
@@ -899,3 +917,110 @@ widgets/bp-entry-form/
 - ❌ Difficult refactoring
 
 Updated for all 4 languages: `src/shared/config/locales/[en|id|sr|tr]/pages.json`
+
+## 13. Typography & Font System (February 2026)
+
+### Nunito Font Family
+
+MedTracker uses **Nunito** — a rounded sans-serif typeface optimized for readability in medical apps.
+
+**Font Files:** `assets/fonts/`
+- `Nunito-Regular.ttf` (400)
+- `Nunito-Medium.ttf` (500)
+- `Nunito-SemiBold.ttf` (600)
+- `Nunito-Bold.ttf` (700)
+- `Nunito-ExtraBold.ttf` (800)
+
+**FONTS Constant** (`src/shared/config/theme.ts`):
+```typescript
+export const FONTS = {
+  regular: 'Nunito-Regular',      // 400 — body text, descriptions
+  medium: 'Nunito-Medium',        // 500 — labels, badges, tab labels
+  semiBold: 'Nunito-SemiBold',    // 600 — card titles, section headers
+  bold: 'Nunito-Bold',            // 700 — buttons, emphasis
+  extraBold: 'Nunito-ExtraBold',  // 800 — page titles, BP values
+};
+```
+
+**Cross-Platform Rule:** Always use BOTH `fontFamily` and `fontWeight` together:
+```typescript
+// ✓ CORRECT: Works on both Android and iOS
+{ fontFamily: FONTS.bold, fontWeight: '700' }
+
+// ❌ WRONG: fontWeight alone won't select Nunito-Bold on Android
+{ fontWeight: '700' }
+```
+
+Android uses `fontFamily` to select the correct .ttf file. iOS uses `fontWeight` for rendering. Using both ensures consistent behavior across platforms.
+
+**Font Linking:**
+- Config: `react-native.config.js` includes `'./assets/fonts'` in assets array
+- iOS: `Info.plist` includes all 5 Nunito entries in `UIAppFonts`
+- After adding fonts, run: `npx react-native-asset` and `cd ios && pod install`
+
+**Components Using FONTS** (all updated February 2026):
+- Pages: HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage
+- Widgets: BPRecordCard, BPRecordsList
+- Shared UI: Numpad, LineChart, BPTrendChart
+- Navigation: CustomTabBar
+
+## 14. Analytics Page Architecture (February 2026)
+
+### Overview
+
+The Analytics page provides BP trend visualization and statistical summaries. It replaces the original "Coming Soon" placeholder.
+
+### FSD Structure
+```
+src/pages/analytics/
+├── index.ts
+└── ui/AnalyticsPage.tsx        ← Full page component
+
+src/shared/lib/
+├── analytics-utils.ts          ← Pure computation (computeWeeklyAverage, computeAmPmComparison)
+└── index.ts                    ← Re-exports analytics utils
+
+src/shared/ui/
+├── BPTrendChart.tsx            ← SVG chart with colored zones
+└── index.ts                    ← Re-exports BPTrendChart
+```
+
+### BPTrendChart Component (`src/shared/ui/BPTrendChart.tsx`)
+
+Custom SVG chart with:
+- **Three colored zone backgrounds** (Normal green, Elevated yellow, High red)
+- **Dual lines**: Systolic (solid, 2.5px, accent color) + Diastolic (dashed, 2px, lighter teal)
+- **Fixed Y-axis range**: 70-180 mmHg
+- **Zone thresholds**: 120 (Normal/Elevated) and 140 (Elevated/High) per AHA/ACC
+- **Props**: `data`, `width`, `height`, `emptyText`, `zoneLabels`, `legendLabels`
+- **Theme-aware**: Uses `useTheme()` for all colors including zone backgrounds
+
+### Analytics Utility Functions (`src/shared/lib/analytics-utils.ts`)
+
+Pure functions (no React dependencies):
+
+1. **`computeWeeklyAverage(records)`**: Filters records from last 7 days, returns mean systolic/diastolic
+2. **`computeAmPmComparison(records)`**: Splits records by hour (<12 = AM, >=12 = PM), returns averages for each
+
+### Page Layout
+```
+SafeAreaView
+└── ScrollView
+    ├── Header (greeting + "Encrypted & Offline" badge)
+    ├── BP Trends Card (BPTrendChart in surface card)
+    ├── Stats Row (two side-by-side cards)
+    │   ├── Weekly Average (systolic/diastolic + mmHg unit)
+    │   └── Morning vs Evening (AM/PM comparison)
+    └── Export PDF Button (full-width accent button, placeholder alert)
+```
+
+### Translation Keys (analytics namespace in `pages.json`)
+```
+analytics.title, analytics.bpTrends, analytics.weeklyAverage,
+analytics.morningVsEvening, analytics.morning, analytics.evening,
+analytics.exportPdf, analytics.exportComingSoon, analytics.noData,
+analytics.noDataSubtitle, analytics.legend.systolic, analytics.legend.diastolic,
+analytics.zones.normal, analytics.zones.elevated, analytics.zones.high
+```
+
+Available in all 4 languages: en, tr, id, sr.

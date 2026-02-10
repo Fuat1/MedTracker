@@ -1,29 +1,28 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Switch, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
+import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore, type Language, type ThemeMode } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_UNITS, BP_GUIDELINES } from '../../../shared/config/settings';
+import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import {
   MEASUREMENT_LOCATIONS,
   MEASUREMENT_POSTURES,
   type MeasurementLocation,
   type MeasurementPosture,
 } from '../../../shared/config';
-
-const THEME_OPTIONS: Array<{ value: ThemeMode; icon: string }> = [
-  { value: 'light', icon: 'sunny' },
-  { value: 'dark', icon: 'moon' },
-  { value: 'system', icon: 'phone-portrait-outline' },
-];
+import { getLocales } from 'react-native-localize';
+import { getSettingsForRegion } from '../../../shared/lib/region-settings';
 
 export function SettingsPage() {
   const { t } = useTranslation('pages');
   const { t: tMedical } = useTranslation('medical');
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
 
   const {
     unit,
@@ -40,55 +39,7 @@ export function SettingsPage() {
     setTheme,
   } = useSettingsStore();
 
-  const languageOptions: Array<{
-    code: Language;
-    name: string;
-    nativeName: string;
-  }> = [
-    { code: 'en', name: 'English', nativeName: 'English' },
-    { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
-    { code: 'sr', name: 'Serbian', nativeName: 'Српски' },
-    { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
-  ];
-
-  const units = [
-    { value: BP_UNITS.MMHG, label: t('settings.unit.mmhg.label'), description: t('settings.unit.mmhg.description') },
-    { value: BP_UNITS.KPA, label: t('settings.unit.kpa.label'), description: t('settings.unit.kpa.description') },
-  ];
-
-  const guidelines = [
-    {
-      value: BP_GUIDELINES.AHA_ACC,
-      label: tMedical('guidelines.ahaAcc.name'),
-      description: tMedical('guidelines.ahaAcc.fullName'),
-      regions: tMedical('guidelines.ahaAcc.regions'),
-    },
-    {
-      value: BP_GUIDELINES.ESC_ESH,
-      label: tMedical('guidelines.escEsh.name'),
-      description: tMedical('guidelines.escEsh.fullName'),
-      regions: tMedical('guidelines.escEsh.regions'),
-    },
-    {
-      value: BP_GUIDELINES.JSH,
-      label: tMedical('guidelines.jsh.name'),
-      description: tMedical('guidelines.jsh.fullName'),
-      regions: tMedical('guidelines.jsh.regions'),
-    },
-  ];
-
-  const locations = [
-    { value: MEASUREMENT_LOCATIONS.LEFT_ARM, label: t('settings.defaultLocation.leftArm.label'), description: t('settings.defaultLocation.leftArm.description') },
-    { value: MEASUREMENT_LOCATIONS.RIGHT_ARM, label: t('settings.defaultLocation.rightArm.label'), description: t('settings.defaultLocation.rightArm.description') },
-    { value: MEASUREMENT_LOCATIONS.LEFT_WRIST, label: t('settings.defaultLocation.leftWrist.label'), description: t('settings.defaultLocation.leftWrist.description') },
-    { value: MEASUREMENT_LOCATIONS.RIGHT_WRIST, label: t('settings.defaultLocation.rightWrist.label'), description: t('settings.defaultLocation.rightWrist.description') },
-  ];
-
-  const postures = [
-    { value: MEASUREMENT_POSTURES.SITTING, label: t('settings.defaultPosture.sitting.label'), description: t('settings.defaultPosture.sitting.description') },
-    { value: MEASUREMENT_POSTURES.STANDING, label: t('settings.defaultPosture.standing.label'), description: t('settings.defaultPosture.standing.description') },
-    { value: MEASUREMENT_POSTURES.LYING, label: t('settings.defaultPosture.lying.label'), description: t('settings.defaultPosture.lying.description') },
-  ];
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
 
   const showSavedToast = (setting: string) => {
     Toast.show({
@@ -100,8 +51,28 @@ export function SettingsPage() {
     });
   };
 
-  const handleThemeChange = (newTheme: ThemeMode) => {
-    setTheme(newTheme);
+  const handleBiometricToggle = (value: boolean) => {
+    Alert.alert(
+      t('settings.dataPrivacy.comingSoon'),
+      t('settings.dataPrivacy.comingSoonMessage'),
+    );
+    setBiometricEnabled(false);
+  };
+
+  const handleCloudAction = () => {
+    Alert.alert(
+      t('settings.cloudSync.comingSoon'),
+      t('settings.cloudSync.comingSoonMessage'),
+    );
+  };
+
+  const handleThemeToggle = (value: boolean) => {
+    setTheme(value ? 'dark' : 'light');
+    showSavedToast(t('settings.theme.title'));
+  };
+
+  const handleSystemTheme = () => {
+    setTheme('system');
     showSavedToast(t('settings.theme.title'));
   };
 
@@ -110,14 +81,14 @@ export function SettingsPage() {
     showSavedToast(t('settings.language.title'));
   };
 
-  const handleUnitChange = (newUnit: typeof BP_UNITS[keyof typeof BP_UNITS]) => {
-    setUnit(newUnit);
-    showSavedToast(t('settings.unit.title'));
-  };
-
   const handleGuidelineChange = (newGuideline: typeof BP_GUIDELINES[keyof typeof BP_GUIDELINES]) => {
     setGuideline(newGuideline);
     showSavedToast(t('settings.guideline.title'));
+  };
+
+  const handleUnitChange = (newUnit: typeof BP_UNITS[keyof typeof BP_UNITS]) => {
+    setUnit(newUnit);
+    showSavedToast(t('settings.unit.title'));
   };
 
   const handleLocationChange = (newLocation: MeasurementLocation) => {
@@ -130,319 +101,452 @@ export function SettingsPage() {
     showSavedToast(t('settings.defaultPosture.title'));
   };
 
+  const handleDetectRegion = () => {
+    const locales = getLocales();
+    const countryCode = locales[0]?.countryCode ?? '';
+    const recommended = getSettingsForRegion(countryCode);
+
+    const changed = recommended.guideline !== guideline || recommended.unit !== unit;
+    if (changed) {
+      if (recommended.guideline !== guideline) setGuideline(recommended.guideline);
+      if (recommended.unit !== unit) setUnit(recommended.unit);
+      Toast.show({
+        type: 'success',
+        text1: t('settings.detectRegion.updated'),
+        position: 'bottom',
+        visibilityTime: 2500,
+      });
+    } else {
+      Toast.show({
+        type: 'info',
+        text1: t('settings.detectRegion.noChange'),
+        position: 'bottom',
+        visibilityTime: 2500,
+      });
+    }
+  };
+
+  // Resolve theme for switch state
+  const isDarkToggled = theme === 'dark' || (theme === 'system' && isDark);
+
+  // Get guideline display name
+  const guidelineNameMap: Record<string, string> = {
+    [BP_GUIDELINES.AHA_ACC]: tMedical('guidelines.ahaAcc.name'),
+    [BP_GUIDELINES.ESC_ESH]: tMedical('guidelines.escEsh.name'),
+    [BP_GUIDELINES.JSH]: tMedical('guidelines.jsh.name'),
+  };
+  const guidelineName = guidelineNameMap[guideline] || 'AHA/ACC';
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-      <ScrollView>
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
-            {t('settings.title')}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Profile Header */}
+        <Animated.View entering={FadeInDown.duration(400)} style={styles.profileSection}>
+          <Icon name="person-circle" size={80} color={colors.accent} />
+          <Text style={[styles.profileName, { color: colors.textPrimary }]}>
+            {t('settings.profile.defaultName')}
           </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            {t('settings.subtitle')}
-          </Text>
-        </View>
+        </Animated.View>
 
-        {/* Theme Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+        {/* Data Privacy Card */}
+        <Animated.View
+          entering={FadeInUp.delay(100).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="lock-closed" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.dataPrivacy.title')}
+            </Text>
+          </View>
+
+          <View style={styles.settingRow}>
+            <Text style={[styles.settingLabel, { color: colors.textSecondary }]}>
+              {t('settings.dataPrivacy.localEncrypted')}
+            </Text>
+            <Text style={[styles.activeText, { color: colors.successText }]}>
+              {t('settings.dataPrivacy.active')}
+            </Text>
+          </View>
+
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.settingRow}>
+            <View style={styles.settingLabelRow}>
+              <Icon name="finger-print" size={20} color={colors.textSecondary} />
+              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+                {t('settings.dataPrivacy.biometricLock')}
+              </Text>
+            </View>
+            <Switch
+              value={biometricEnabled}
+              onValueChange={handleBiometricToggle}
+              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+              thumbColor="#ffffff"
+            />
+          </View>
+        </Animated.View>
+
+        {/* Cloud Sync Card */}
+        <Animated.View
+          entering={FadeInUp.delay(200).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="cloud-outline" size={20} color={colors.accent} />
+            </View>
+            <View style={styles.cardHeaderTextCol}>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+                {t('settings.cloudSync.title')}
+              </Text>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+                {t('settings.cloudSync.lastBackup', { time: t('settings.cloudSync.neverSynced') })}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={handleCloudAction} style={styles.syncIconBtn}>
+              <Icon name="sync-outline" size={22} color={colors.accent} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.warningBanner, { backgroundColor: isDark ? '#422006' : '#fef3c7', borderColor: isDark ? '#92400e' : '#f59e0b' }]}>
+            <Icon name="warning-outline" size={18} color={isDark ? '#fbbf24' : '#d97706'} />
+            <Text style={[styles.warningText, { color: isDark ? '#fde68a' : '#92400e' }]}>
+              {t('settings.cloudSync.privacyWarning')}
+            </Text>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[styles.outlineButton, { borderColor: colors.border }]}
+              onPress={handleCloudAction}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.outlineButtonText, { color: colors.textSecondary }]}>
+                {t('settings.cloudSync.googleDrive')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.filledButton, { backgroundColor: colors.accent }]}
+              onPress={handleCloudAction}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.filledButtonText}>
+                {t('settings.cloudSync.syncNow')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+
+        {/* AHA Standard Legend Card */}
+        <Animated.View
+          entering={FadeInUp.delay(300).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, marginBottom: 16 }]}>
+            {t('settings.bpLegend.title', { guideline: guidelineName })}
+          </Text>
+
+          <View style={styles.legendGrid}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: bpColors.normal }]} />
+              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+                {t('settings.bpLegend.normal')}
+              </Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: bpColors.elevated }]} />
+              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+                {t('settings.bpLegend.elevated')}
+              </Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: bpColors.stage_1 }]} />
+              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+                {t('settings.bpLegend.stage1')}
+              </Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: bpColors.stage_2 }]} />
+              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+                {t('settings.bpLegend.stage2')}
+              </Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Theme Card */}
+        <Animated.View
+          entering={FadeInUp.delay(400).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, marginBottom: 16 }]}>
             {t('settings.theme.title')}
           </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.theme.description')}
-          </Text>
 
-          {THEME_OPTIONS.map((option) => (
-            <TouchableOpacity
-              key={option.value}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                theme === option.value && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handleThemeChange(option.value)}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: theme === option.value ? colors.accent : colors.border },
-                ]}>
-                  {theme === option.value && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-                <View style={styles.optionText}>
-                  <View style={styles.optionLabelRow}>
-                    <Icon name={option.icon} size={18} color={theme === option.value ? colors.accent : colors.textSecondary} />
-                    <Text style={[styles.optionLabel, { color: colors.textPrimary }]}>
-                      {t(`settings.theme.${option.value}.label`)}
-                    </Text>
-                  </View>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
-                    {t(`settings.theme.${option.value}.description`)}
-                  </Text>
-                </View>
-              </View>
+          <View style={styles.settingRow}>
+            <View style={styles.settingLabelRow}>
+              <Icon name="moon" size={20} color={colors.textSecondary} />
+              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+                {t('settings.darkMode')}
+              </Text>
+            </View>
+            <Switch
+              value={isDarkToggled}
+              onValueChange={handleThemeToggle}
+              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+              thumbColor="#ffffff"
+            />
+          </View>
+
+          {theme !== 'system' && (
+            <TouchableOpacity onPress={handleSystemTheme} style={styles.systemThemeLink}>
+              <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
+              <Text style={[styles.systemThemeText, { color: colors.accent }]}>
+                {t('settings.useSystemDefault')}
+              </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          )}
+          {theme === 'system' && (
+            <View style={styles.systemThemeLink}>
+              <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
+              <Text style={[styles.systemThemeText, { color: colors.accent }]}>
+                {t('settings.theme.system.label')}
+              </Text>
+            </View>
+          )}
+        </Animated.View>
 
-        {/* Language Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.language.title')}
-          </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.language.description')}
-          </Text>
-
-          {languageOptions.map((option) => (
-            <TouchableOpacity
-              key={option.code}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                language === option.code && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handleLanguageChange(option.code)}
-            >
-              <View style={styles.optionContent}>
-                <View style={styles.optionTextContainer}>
-                  <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>
-                    {option.nativeName}
-                  </Text>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
-                    {option.name}
-                  </Text>
-                </View>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: language === option.code ? colors.accent : colors.border },
-                ]}>
-                  {language === option.code && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Measurement Unit Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.unit.title')}
-          </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.unit.description')}
-          </Text>
-
-          {units.map((item) => (
-            <TouchableOpacity
-              key={item.value}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                unit === item.value && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handleUnitChange(item.value)}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: unit === item.value ? colors.accent : colors.border },
-                ]}>
-                  {unit === item.value && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-                <View style={styles.optionText}>
-                  <Text style={[styles.optionLabel, { color: colors.textPrimary }]}>{item.label}</Text>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>{item.description}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-
-          <View style={[styles.infoBox, { backgroundColor: colors.accent + '15', borderLeftColor: colors.accent }]}>
-            <Text style={[styles.infoText, { color: colors.accent }]}>
-              {t('settings.unit.note')}
+        {/* Language Card */}
+        <Animated.View
+          entering={FadeInUp.delay(500).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="language-outline" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.language.title')}
             </Text>
           </View>
-        </View>
+          <View style={styles.chipRow}>
+            {([
+              { code: 'en' as Language, label: 'EN' },
+              { code: 'id' as Language, label: 'ID' },
+              { code: 'sr' as Language, label: 'SR' },
+              { code: 'tr' as Language, label: 'TR' },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.code}
+                style={[
+                  styles.chip,
+                  language === opt.code
+                    ? { backgroundColor: colors.accent }
+                    : { backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => handleLanguageChange(opt.code)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    { color: language === opt.code ? '#ffffff' : colors.textSecondary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
 
-        {/* Classification Guidelines Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.guideline.title')}
-          </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.guideline.description')}
-          </Text>
-
-          {guidelines.map((item) => (
-            <TouchableOpacity
-              key={item.value}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                guideline === item.value && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handleGuidelineChange(item.value)}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: guideline === item.value ? colors.accent : colors.border },
-                ]}>
-                  {guideline === item.value && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-                <View style={styles.optionText}>
-                  <Text style={[styles.optionLabel, { color: colors.textPrimary }]}>{item.label}</Text>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>{item.description}</Text>
-                  <Text style={[styles.optionRegions, { color: colors.textTertiary }]}>Regions: {item.regions}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-
-          <View style={[styles.infoBox, { backgroundColor: colors.accent + '15', borderLeftColor: colors.accent }]}>
-            <Text style={[styles.infoText, { color: colors.accent }]}>
-              {t('settings.guideline.note')}
+        {/* Guideline Card */}
+        <Animated.View
+          entering={FadeInUp.delay(550).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="medical-outline" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.guideline.title')}
             </Text>
           </View>
-        </View>
-
-        {/* Default Measurement Location Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.defaultLocation.title')}
-          </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.defaultLocation.description')}
-          </Text>
-
-          {locations.map((item) => (
-            <TouchableOpacity
-              key={item.value}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                defaultLocation === item.value && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handleLocationChange(item.value)}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: defaultLocation === item.value ? colors.accent : colors.border },
-                ]}>
-                  {defaultLocation === item.value && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-                <View style={styles.optionText}>
-                  <Text style={[styles.optionLabel, { color: colors.textPrimary }]}>{item.label}</Text>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>{item.description}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Default Posture Section */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.defaultPosture.title')}
-          </Text>
-          <Text style={[styles.sectionDescription, { color: colors.textSecondary }]}>
-            {t('settings.defaultPosture.description')}
-          </Text>
-
-          {postures.map((item) => (
-            <TouchableOpacity
-              key={item.value}
-              style={[
-                styles.option,
-                { borderColor: colors.border },
-                defaultPosture === item.value && { borderColor: colors.accent, backgroundColor: colors.accent + '10' },
-              ]}
-              onPress={() => handlePostureChange(item.value)}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.radioOuter,
-                  { borderColor: defaultPosture === item.value ? colors.accent : colors.border },
-                ]}>
-                  {defaultPosture === item.value && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.accent }]} />
-                  )}
-                </View>
-                <View style={styles.optionText}>
-                  <Text style={[styles.optionLabel, { color: colors.textPrimary }]}>{item.label}</Text>
-                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>{item.description}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Comparison Table */}
-        <View style={[styles.section, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t('settings.guidelinesComparison.title')}
-          </Text>
-          <View style={styles.comparisonTable}>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableHeader, { color: colors.textPrimary }]}>
-                {t('settings.guidelinesComparison.table.category')}
-              </Text>
-              <Text style={[styles.tableHeader, { color: colors.textPrimary }]}>
-                {tMedical('guidelines.ahaAcc.name')}
-              </Text>
-              <Text style={[styles.tableHeader, { color: colors.textPrimary }]}>
-                {tMedical('guidelines.escEsh.name')}
-              </Text>
-            </View>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>
-                {t('settings.guidelinesComparison.table.normal')}
-              </Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>&lt;120/80</Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>&lt;130/85</Text>
-            </View>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>
-                {t('settings.guidelinesComparison.table.elevated')}
-              </Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>120-129/&lt;80</Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>130-139/85-89</Text>
-            </View>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>
-                {t('settings.guidelinesComparison.table.stage1')}
-              </Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>130-139/80-89</Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>140-159/90-99</Text>
-            </View>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>
-                {t('settings.guidelinesComparison.table.stage2')}
-              </Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>≥140/90</Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>≥160/100</Text>
-            </View>
-            <View style={[styles.tableRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>
-                {t('settings.guidelinesComparison.table.crisis')}
-              </Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>&gt;180/120</Text>
-              <Text style={[styles.tableCell, { color: colors.textSecondary }]}>≥180/110</Text>
-            </View>
+          <TouchableOpacity
+            style={[styles.detectRegionButton, { borderColor: colors.accent }]}
+            onPress={handleDetectRegion}
+            activeOpacity={0.7}
+          >
+            <Icon name="earth-outline" size={18} color={colors.accent} />
+            <Text style={[styles.detectRegionText, { color: colors.accent }]}>
+              {t('settings.detectRegion.button')}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.chipRow}>
+            {([
+              { value: BP_GUIDELINES.AHA_ACC, label: tMedical('guidelines.ahaAcc.name') },
+              { value: BP_GUIDELINES.ESC_ESH, label: tMedical('guidelines.escEsh.name') },
+              { value: BP_GUIDELINES.JSH, label: tMedical('guidelines.jsh.name') },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.chip,
+                  guideline === opt.value
+                    ? { backgroundColor: colors.accent }
+                    : { backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => handleGuidelineChange(opt.value)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    { color: guideline === opt.value ? '#ffffff' : colors.textSecondary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        </View>
+        </Animated.View>
+
+        {/* Unit Card */}
+        <Animated.View
+          entering={FadeInUp.delay(600).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="speedometer-outline" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.unit.title')}
+            </Text>
+          </View>
+          <View style={styles.chipRow}>
+            {([
+              { value: BP_UNITS.MMHG, label: 'mmHg' },
+              { value: BP_UNITS.KPA, label: 'kPa' },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.chip,
+                  unit === opt.value
+                    ? { backgroundColor: colors.accent }
+                    : { backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => handleUnitChange(opt.value)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    { color: unit === opt.value ? '#ffffff' : colors.textSecondary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
+
+        {/* Location Card */}
+        <Animated.View
+          entering={FadeInUp.delay(650).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="body-outline" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.defaultLocation.title')}
+            </Text>
+          </View>
+          <View style={styles.chipRow}>
+            {([
+              { value: MEASUREMENT_LOCATIONS.LEFT_ARM, label: t('settings.defaultLocation.leftArm.label') },
+              { value: MEASUREMENT_LOCATIONS.RIGHT_ARM, label: t('settings.defaultLocation.rightArm.label') },
+              { value: MEASUREMENT_LOCATIONS.LEFT_WRIST, label: t('settings.defaultLocation.leftWrist.label') },
+              { value: MEASUREMENT_LOCATIONS.RIGHT_WRIST, label: t('settings.defaultLocation.rightWrist.label') },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.chip,
+                  defaultLocation === opt.value
+                    ? { backgroundColor: colors.accent }
+                    : { backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => handleLocationChange(opt.value)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    { color: defaultLocation === opt.value ? '#ffffff' : colors.textSecondary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
+
+        {/* Posture Card */}
+        <Animated.View
+          entering={FadeInUp.delay(700).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="accessibility-outline" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t('settings.defaultPosture.title')}
+            </Text>
+          </View>
+          <View style={styles.chipRow}>
+            {([
+              { value: MEASUREMENT_POSTURES.SITTING, label: t('settings.defaultPosture.sitting.label') },
+              { value: MEASUREMENT_POSTURES.STANDING, label: t('settings.defaultPosture.standing.label') },
+              { value: MEASUREMENT_POSTURES.LYING, label: t('settings.defaultPosture.lying.label') },
+            ]).map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  styles.chip,
+                  defaultPosture === opt.value
+                    ? { backgroundColor: colors.accent }
+                    : { backgroundColor: colors.surfaceSecondary },
+                ]}
+                onPress={() => handlePostureChange(opt.value)}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    { color: defaultPosture === opt.value ? '#ffffff' : colors.textSecondary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -452,108 +556,203 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 100,
   },
-  headerTitle: {
+
+  // Profile
+  profileSection: {
+    alignItems: 'center',
+    paddingTop: 20,
+    paddingBottom: 24,
+  },
+  profileName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+    marginTop: 12,
   },
-  headerSubtitle: {
-    fontSize: 14,
+
+  // Card
+  card: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  section: {
-    marginTop: 16,
-    padding: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  sectionDescription: {
-    fontSize: 14,
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     marginBottom: 16,
   },
-  option: {
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 2,
-    marginBottom: 12,
+  cardHeaderTextCol: {
+    flex: 1,
   },
-  optionContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  cardTitle: {
+    fontSize: 18,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
   },
-  radioOuter: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    marginRight: 12,
+  cardSubtitle: {
+    fontSize: 13,
+    fontFamily: FONTS.regular,
+    marginTop: 2,
+  },
+
+  // Icon circle
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  radioInner: {
+
+  // Settings rows
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  settingLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  settingLabel: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  activeText: {
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  divider: {
+    height: 1,
+    marginVertical: 4,
+  },
+
+  // Sync icon
+  syncIconBtn: {
+    padding: 8,
+  },
+
+  // Buttons
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 4,
+  },
+  outlineButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  outlineButtonText: {
+    fontSize: 14,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+  },
+  filledButton: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  filledButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+
+  // System theme link
+  systemThemeLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+  },
+  systemThemeText: {
+    fontSize: 13,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+
+  // Legend
+  legendGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    width: '45%',
+    paddingVertical: 4,
+  },
+  legendDot: {
     width: 12,
     height: 12,
     borderRadius: 6,
   },
-  optionText: {
-    flex: 1,
+  legendText: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
-  optionTextContainer: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  optionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  optionLabelRow: {
+
+  // Detect region
+  detectRegionButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
-    marginBottom: 2,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    marginBottom: 12,
+    minHeight: 48,
   },
-  optionDescription: {
+  detectRegionText: {
     fontSize: 14,
-  },
-  optionRegions: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  infoBox: {
-    padding: 12,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-  },
-  infoText: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  comparisonTable: {
-    marginTop: 8,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    paddingVertical: 8,
-  },
-  tableHeader: {
-    flex: 1,
-    fontSize: 12,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
-  tableCell: {
-    flex: 1,
-    fontSize: 12,
+
+  // Chips
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chipText: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
 });

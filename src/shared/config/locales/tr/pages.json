@@ -26,34 +26,48 @@
     }
   },
   "analytics": {
-    "title": "Analytics",
-    "comingSoon": "Coming Soon",
-    "description": "Advanced analytics and insights will be available here"
+    "title": "Analitik",
+    "bpTrends": "Tansiyon Trendleri",
+    "weeklyAverage": "Haftalık Ortalama",
+    "morningVsEvening": "Sabah ve Akşam",
+    "morning": "Sabah",
+    "evening": "Akşam",
+    "exportPdf": "Doktor için PDF raporu dışa aktar",
+    "exportComingSoon": "PDF dışa aktarma yakında!",
+    "noData": "Yeterli veri yok",
+    "noDataSubtitle": "Trendleri görmek için daha fazla ölçüm ekleyin",
+    "legend": {
+      "systolic": "Sistolik",
+      "diastolic": "Diastolik"
+    },
+    "zones": {
+      "normal": "Normal",
+      "elevated": "Yüksek",
+      "high": "Çok Yüksek"
+    }
   },
   "history": {
-    "title": "History",
-    "recordCount_one": "{{count}} reading recorded",
-    "recordCount_other": "{{count}} readings recorded",
-    "overview": "Overview",
-    "stats": {
-      "averageBP": "Average BP",
-      "highestSystolic": "Highest Systolic",
-      "thisWeek": "This Week"
-    },
+    "title": "Ge\u00e7mi\u015f",
     "filters": {
-      "allTime": "All Time",
-      "thisWeek": "This Week",
-      "thisMonth": "This Month",
-      "thisYear": "This Year"
+      "all": "Hepsi",
+      "morning": "Sabah",
+      "evening": "Ak\u015fam",
+      "highAlert": "Y\u00fcksek Uyar\u0131"
+    },
+    "sections": {
+      "today": "Bug\u00fcn",
+      "yesterday": "D\u00fcn",
+      "lastWeek": "Ge\u00e7en Hafta",
+      "older": "Daha Eski"
     },
     "empty": {
-      "title": "No readings yet",
-      "subtitle": "Start tracking your blood pressure by adding your first reading"
+      "title": "Hen\u00fcz \u00f6l\u00e7\u00fcm yok",
+      "subtitle": "\u0130lk \u00f6l\u00e7\u00fcm\u00fcn\u00fcz\u00fc ekleyerek tansiyon takibine ba\u015flay\u0131n"
     },
-    "loading": "Loading records...",
+    "loading": "Kay\u0131tlar y\u00fckleniyor...",
     "error": {
-      "title": "Error loading records",
-      "subtitle": "Pull down to retry"
+      "title": "Kay\u0131tlar y\u00fcklenirken hata",
+      "subtitle": "Yeniden denemek i\u00e7in a\u015fa\u011f\u0131 \u00e7ekin"
     }
   },
   "settings": {
@@ -145,9 +159,39 @@
       }
     },
     "toast": {
-      "saved": "Settings Saved",
-      "preferenceUpdated": "{{setting}} preference updated"
-    }
+      "saved": "Ayarlar Kaydedildi",
+      "preferenceUpdated": "{{setting}} tercihi g\u00fcncellendi"
+    },
+    "profile": {
+      "defaultName": "Alex"
+    },
+    "dataPrivacy": {
+      "title": "Veri Gizlili\u011fi",
+      "localEncrypted": "Yerel \u015eifrelenmis Depolama:",
+      "active": "Aktif",
+      "biometricLock": "Biyometrik Kilit\n(FaceID/TouchID)",
+      "comingSoon": "Yak\u0131nda",
+      "comingSoonMessage": "Biyometrik kilit gelecek bir g\u00fcncellemede kullan\u0131labilir olacak."
+    },
+    "cloudSync": {
+      "title": "Bulut Senkronizasyonu",
+      "lastBackup": "Son Yedekleme: {{time}}",
+      "neverSynced": "Hi\u00e7 senkronize edilmedi",
+      "googleDrive": "Google Drive",
+      "syncNow": "\u015eimdi Senkronize Et",
+      "comingSoon": "Yak\u0131nda",
+      "comingSoonMessage": "Bulut senkronizasyonu gelecek bir g\u00fcncellemede kullan\u0131labilir olacak.",
+      "privacyWarning": "Verileriniz Google sunucular\u0131na y\u00fcklenecektir. Senkronize edildikten sonra sa\u011fl\u0131k verileriniz tam olarak gizli olmayacak ve Google'un gizlilik politikas\u0131na tabi olacakt\u0131r."
+    },
+    "bpLegend": {
+      "title": "{{guideline}} Standart G\u00f6sterge",
+      "normal": "Normal (Ye\u015fil)",
+      "elevated": "Y\u00fcksek (Sar\u0131)",
+      "stage1": "Evre 1 (Turuncu)",
+      "stage2": "Evre 2 (K\u0131rm\u0131z\u0131)"
+    },
+    "darkMode": "Karanl\u0131k Mod",
+    "useSystemDefault": "Sistem Varsay\u0131lan\u0131n\u0131 Kullan"
   },
   "newReading": {
     "title": "New Reading",

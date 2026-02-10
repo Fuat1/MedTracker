@@ -13,6 +13,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../shared/lib/use-theme';
+import { FONTS } from '../../shared/config/theme';
 import type { RootStackParamList } from './index';
 
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
@@ -149,6 +150,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 2,
   },

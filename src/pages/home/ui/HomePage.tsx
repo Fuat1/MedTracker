@@ -13,12 +13,38 @@ import {
 import { useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { LineChart } from '../../../shared/ui/LineChart';
+import { FONTS } from '../../../shared/config/theme';
 
 function getGreetingKey() {
   const hour = new Date().getHours();
   if (hour < 12) return 'home.greeting.morning' as const;
   if (hour < 18) return 'home.greeting.afternoon' as const;
   return 'home.greeting.evening' as const;
+}
+
+function getBPCardGradient(
+  category: string | null,
+  isDark: boolean,
+  fallbackStart: string,
+  fallbackEnd: string,
+): [string, string] {
+  if (!category) return [fallbackStart, fallbackEnd];
+  const gradients: Record<string, [string, string]> = isDark
+    ? {
+        normal:   ['#4ade80', '#22c55e'],
+        elevated: ['#fbbf24', '#d97706'],
+        stage_1:  ['#fb923c', '#ea580c'],
+        stage_2:  ['#f87171', '#ef4444'],
+        crisis:   ['#ef4444', '#dc2626'],
+      }
+    : {
+        normal:   ['#22c55e', '#16a34a'],
+        elevated: ['#eab308', '#ca8a04'],
+        stage_1:  ['#f97316', '#ea580c'],
+        stage_2:  ['#ef4444', '#dc2626'],
+        crisis:   ['#dc2626', '#991b1b'],
+      };
+  return gradients[category] ?? [fallbackStart, fallbackEnd];
 }
 
 export function HomePage() {
@@ -28,11 +54,18 @@ export function HomePage() {
   const { data: latestRecord } = useLatestBPRecord();
   const { data: recentRecords } = useBPRecords(7);
   const { guideline } = useSettingsStore();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const latestCategory = latestRecord
     ? classifyBP(latestRecord.systolic, latestRecord.diastolic, guideline)
     : null;
+
+  const gradientColors = getBPCardGradient(
+    latestCategory,
+    isDark,
+    colors.gradientStart,
+    colors.gradientEnd,
+  );
 
   const categoryLabel = latestCategory
     ? getBPCategoryLabel(latestCategory)
@@ -77,7 +110,7 @@ export function HomePage() {
         {/* Main BP Reading Card */}
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.bpCardWrapper}>
           <LinearGradient
-            colors={[colors.gradientStart, colors.gradientEnd]}
+            colors={gradientColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.bpCard}
@@ -168,10 +201,12 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     fontSize: 22,
+    fontFamily: FONTS.regular,
     fontWeight: '400',
   },
   userName: {
     fontSize: 28,
+    fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
@@ -189,6 +224,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
   },
 
@@ -215,6 +251,7 @@ const styles = StyleSheet.create({
   bpCardLabel: {
     fontSize: 16,
     color: 'rgba(255,255,255,0.85)',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 12,
   },
@@ -223,6 +260,7 @@ const styles = StyleSheet.create({
   },
   bpValueLarge: {
     fontSize: 56,
+    fontFamily: FONTS.extraBold,
     fontWeight: '800',
     color: '#ffffff',
     letterSpacing: -1,
@@ -230,6 +268,7 @@ const styles = StyleSheet.create({
   bpUnit: {
     fontSize: 16,
     color: 'rgba(255,255,255,0.7)',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 20,
   },
@@ -246,11 +285,13 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 15,
     color: '#ffffff',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   categoryTextEmpty: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.7)',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
   },
   pulseBadge: {
@@ -264,12 +305,14 @@ const styles = StyleSheet.create({
   },
   pulseValue: {
     fontSize: 22,
+    fontFamily: FONTS.bold,
     fontWeight: '700',
     color: '#ffffff',
   },
   pulseUnit: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.8)',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
   },
 
@@ -285,6 +328,7 @@ const styles = StyleSheet.create({
   },
   trendTitle: {
     fontSize: 18,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 16,
   },

@@ -26,34 +26,48 @@
     }
   },
   "analytics": {
-    "title": "Analytics",
-    "comingSoon": "Coming Soon",
-    "description": "Advanced analytics and insights will be available here"
+    "title": "Analitik",
+    "bpTrends": "Tren Tekanan Darah",
+    "weeklyAverage": "Rata-rata Mingguan",
+    "morningVsEvening": "Pagi vs. Sore",
+    "morning": "Pagi",
+    "evening": "Sore",
+    "exportPdf": "Ekspor laporan PDF untuk Dokter",
+    "exportComingSoon": "Ekspor PDF segera hadir!",
+    "noData": "Data belum cukup",
+    "noDataSubtitle": "Tambahkan lebih banyak catatan untuk melihat tren",
+    "legend": {
+      "systolic": "Sistolik",
+      "diastolic": "Diastolik"
+    },
+    "zones": {
+      "normal": "Normal",
+      "elevated": "Meningkat",
+      "high": "Tinggi"
+    }
   },
   "history": {
-    "title": "History",
-    "recordCount_one": "{{count}} reading recorded",
-    "recordCount_other": "{{count}} readings recorded",
-    "overview": "Overview",
-    "stats": {
-      "averageBP": "Average BP",
-      "highestSystolic": "Highest Systolic",
-      "thisWeek": "This Week"
-    },
+    "title": "Riwayat",
     "filters": {
-      "allTime": "All Time",
-      "thisWeek": "This Week",
-      "thisMonth": "This Month",
-      "thisYear": "This Year"
+      "all": "Semua",
+      "morning": "Pagi",
+      "evening": "Sore",
+      "highAlert": "Peringatan Tinggi"
+    },
+    "sections": {
+      "today": "Hari Ini",
+      "yesterday": "Kemarin",
+      "lastWeek": "Minggu Lalu",
+      "older": "Lebih Lama"
     },
     "empty": {
-      "title": "No readings yet",
-      "subtitle": "Start tracking your blood pressure by adding your first reading"
+      "title": "Belum ada catatan",
+      "subtitle": "Mulai pantau tekanan darah Anda dengan menambahkan catatan pertama"
     },
-    "loading": "Loading records...",
+    "loading": "Memuat catatan...",
     "error": {
-      "title": "Error loading records",
-      "subtitle": "Pull down to retry"
+      "title": "Gagal memuat catatan",
+      "subtitle": "Tarik ke bawah untuk mencoba lagi"
     }
   },
   "settings": {
@@ -145,9 +159,39 @@
       }
     },
     "toast": {
-      "saved": "Settings Saved",
-      "preferenceUpdated": "{{setting}} preference updated"
-    }
+      "saved": "Pengaturan Disimpan",
+      "preferenceUpdated": "Preferensi {{setting}} diperbarui"
+    },
+    "profile": {
+      "defaultName": "Alex"
+    },
+    "dataPrivacy": {
+      "title": "Privasi Data",
+      "localEncrypted": "Penyimpanan Terenkripsi Lokal:",
+      "active": "Aktif",
+      "biometricLock": "Kunci Biometrik\n(FaceID/TouchID)",
+      "comingSoon": "Segera Hadir",
+      "comingSoonMessage": "Kunci biometrik akan tersedia di pembaruan mendatang."
+    },
+    "cloudSync": {
+      "title": "Sinkronisasi Cloud",
+      "lastBackup": "Cadangan Terakhir: {{time}}",
+      "neverSynced": "Belum pernah disinkronkan",
+      "googleDrive": "Google Drive",
+      "syncNow": "Sinkronkan Sekarang",
+      "comingSoon": "Segera Hadir",
+      "comingSoonMessage": "Sinkronisasi cloud akan tersedia di pembaruan mendatang.",
+      "privacyWarning": "Data Anda akan diunggah ke server Google. Setelah disinkronkan, data kesehatan Anda tidak lagi sepenuhnya pribadi dan akan tunduk pada kebijakan privasi Google."
+    },
+    "bpLegend": {
+      "title": "Legenda Standar {{guideline}}",
+      "normal": "Normal (Hijau)",
+      "elevated": "Meningkat (Kuning)",
+      "stage1": "Tahap 1 (Oranye)",
+      "stage2": "Tahap 2 (Merah)"
+    },
+    "darkMode": "Mode Gelap",
+    "useSystemDefault": "Gunakan Default Sistem"
   },
   "newReading": {
     "title": "New Reading",

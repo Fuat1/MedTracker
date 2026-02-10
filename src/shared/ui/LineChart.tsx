@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Circle, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../lib/use-theme';
+import { FONTS } from '../config/theme';
 
 interface DataPoint {
   systolic: number;
@@ -98,6 +99,7 @@ export function LineChart({
                 x={x}
                 y={y - 12}
                 fontSize={11}
+                fontFamily={FONTS.medium}
                 fontWeight="500"
                 fill={colors.chartLabel}
                 textAnchor="middle"
@@ -119,5 +121,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
+    fontFamily: FONTS.regular,
   },
 });

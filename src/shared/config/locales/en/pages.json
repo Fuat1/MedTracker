@@ -27,24 +27,38 @@
   },
   "analytics": {
     "title": "Analytics",
-    "comingSoon": "Coming Soon",
-    "description": "Advanced analytics and insights will be available here"
+    "bpTrends": "Blood Pressure Trends",
+    "weeklyAverage": "Weekly Average",
+    "morningVsEvening": "Morning vs. Evening",
+    "morning": "Morning",
+    "evening": "Evening",
+    "exportPdf": "Export PDF report for Doctor",
+    "exportComingSoon": "PDF export coming soon!",
+    "noData": "Not enough data",
+    "noDataSubtitle": "Add more readings to see trends",
+    "legend": {
+      "systolic": "Systolic",
+      "diastolic": "Diastolic"
+    },
+    "zones": {
+      "normal": "Normal",
+      "elevated": "Elevated",
+      "high": "High"
+    }
   },
   "history": {
     "title": "History",
-    "recordCount_one": "{{count}} reading recorded",
-    "recordCount_other": "{{count}} readings recorded",
-    "overview": "Overview",
-    "stats": {
-      "averageBP": "Average BP",
-      "highestSystolic": "Highest Systolic",
-      "thisWeek": "This Week"
-    },
     "filters": {
-      "allTime": "All Time",
-      "thisWeek": "This Week",
-      "thisMonth": "This Month",
-      "thisYear": "This Year"
+      "all": "All",
+      "morning": "Morning",
+      "evening": "Evening",
+      "highAlert": "High Alert"
+    },
+    "sections": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "lastWeek": "Last Week",
+      "older": "Older"
     },
     "empty": {
       "title": "No readings yet",
@@ -147,7 +161,42 @@
     "toast": {
       "saved": "Settings Saved",
       "preferenceUpdated": "{{setting}} preference updated"
-    }
+    },
+    "profile": {
+      "defaultName": "Alex"
+    },
+    "dataPrivacy": {
+      "title": "Data Privacy",
+      "localEncrypted": "Local Encrypted Storage:",
+      "active": "Active",
+      "biometricLock": "Biometric Lock\n(FaceID/TouchID)",
+      "comingSoon": "Coming Soon",
+      "comingSoonMessage": "Biometric lock will be available in a future update."
+    },
+    "cloudSync": {
+      "title": "Cloud Sync",
+      "lastBackup": "Last Backup: {{time}}",
+      "neverSynced": "Never synced",
+      "googleDrive": "Google Drive",
+      "syncNow": "Sync Now",
+      "comingSoon": "Coming Soon",
+      "comingSoonMessage": "Cloud sync will be available in a future update.",
+      "privacyWarning": "Your data will be uploaded to Google servers. Once synced, your health data will no longer be fully private and will be subject to Google's privacy policy."
+    },
+    "bpLegend": {
+      "title": "{{guideline}} Standard Legend",
+      "normal": "Normal (Green)",
+      "elevated": "Elevated (Yellow)",
+      "stage1": "Stage 1 (Orange)",
+      "stage2": "Stage 2 (Red)"
+    },
+    "detectRegion": {
+      "button": "Detect My Region",
+      "updated": "Settings updated for your region",
+      "noChange": "Your settings already match your region"
+    },
+    "darkMode": "Dark Mode",
+    "useSystemDefault": "Use System Default"
   },
   "newReading": {
     "title": "New Reading",
