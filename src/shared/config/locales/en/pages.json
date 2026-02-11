@@ -89,6 +89,15 @@
         "description": "Follow system theme settings"
       }
     },
+    "seniorMode": {
+      "label": "Senior Mode",
+      "description": "Larger buttons and text for easier reading"
+    },
+    "highContrast": {
+      "label": "High Contrast",
+      "description": "Black text on white background for maximum readability",
+      "note": "⚠️ Forces light mode when enabled"
+    },
     "language": {
       "title": "Language",
       "description": "Choose your preferred language for the app"
