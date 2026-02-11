@@ -17,12 +17,16 @@ interface SettingsState {
   defaultPosture: MeasurementPosture;
   language: Language;
   theme: ThemeMode;
+  seniorMode: boolean;
+  highContrast: boolean;
   setUnit: (unit: BPUnit) => void;
   setGuideline: (guideline: BPGuideline) => void;
   setDefaultLocation: (location: MeasurementLocation) => void;
   setDefaultPosture: (posture: MeasurementPosture) => void;
   setLanguage: (language: Language) => void;
   setTheme: (theme: ThemeMode) => void;
+  setSeniorMode: (enabled: boolean) => void;
+  setHighContrast: (enabled: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -34,6 +38,8 @@ export const useSettingsStore = create<SettingsState>()(
       defaultPosture: MEASUREMENT_POSTURES.SITTING,
       language: 'en',
       theme: 'system',
+      seniorMode: false,
+      highContrast: false,
       setUnit: (unit) => set({ unit }),
       setGuideline: (guideline) => set({ guideline }),
       setDefaultLocation: (location) => set({ defaultLocation: location }),
@@ -43,6 +49,8 @@ export const useSettingsStore = create<SettingsState>()(
         i18n.changeLanguage(language);
       },
       setTheme: (theme) => set({ theme }),
+      setSeniorMode: (enabled) => set({ seniorMode: enabled }),
+      setHighContrast: (enabled) => set({ highContrast: enabled }),
     }),
     {
       name: 'medtracker-settings',
