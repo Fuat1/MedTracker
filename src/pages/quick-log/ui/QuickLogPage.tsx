@@ -30,7 +30,7 @@ export function QuickLogPage() {
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
   const { t: tValidation } = useTranslation('validation');
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, fontScale } = useTheme();
   const navigation = useNavigation();
   const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
   const recordBP = useRecordBP();
@@ -184,7 +184,7 @@ export function QuickLogPage() {
             activeOpacity={0.9}
           >
             <View style={styles.valueCardHeader}>
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
                 {tCommon('common.systolic')}
               </Text>
               {activeField === 'systolic' && (
@@ -196,6 +196,7 @@ export function QuickLogPage() {
                 styles.valueTextLarge,
                 {
                   color: systolic && validation.isValid ? categoryColor : colors.textPrimary,
+                  fontSize: 44 * fontScale,
                 },
               ]}
             >
@@ -218,7 +219,7 @@ export function QuickLogPage() {
             activeOpacity={0.9}
           >
             <View style={styles.valueCardHeader}>
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
                 {tCommon('common.diastolic')}
               </Text>
               {activeField === 'diastolic' && (
@@ -230,6 +231,7 @@ export function QuickLogPage() {
                 styles.valueTextLarge,
                 {
                   color: diastolic && validation.isValid ? categoryColor : colors.textPrimary,
+                  fontSize: 44 * fontScale,
                 },
               ]}
             >
@@ -252,7 +254,7 @@ export function QuickLogPage() {
             activeOpacity={0.9}
           >
             <View style={styles.valueCardHeader}>
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
                 {tCommon('common.pulse')} {tCommon('common.pulseOptional')}
               </Text>
               {activeField === 'pulse' && (
@@ -260,7 +262,7 @@ export function QuickLogPage() {
               )}
             </View>
             <View style={styles.pulseRow}>
-              <Text style={[styles.valueTextLarge, { color: colors.textPrimary }]}>
+              <Text style={[styles.valueTextLarge, { color: colors.textPrimary, fontSize: 44 * fontScale }]}>
                 {pulse || '---'}
               </Text>
               <Text style={[styles.pulseUnit, { color: colors.textTertiary }]}>
@@ -283,7 +285,7 @@ export function QuickLogPage() {
               ]}
             >
               <Icon name="medical" size={18} color={categoryColor} />
-              <Text style={[styles.categoryText, { color: categoryColor }]}>
+              <Text style={[styles.categoryText, { color: categoryColor, fontSize: 16 * fontScale }]}>
                 {categoryLabel}
               </Text>
             </View>
@@ -318,7 +320,7 @@ export function QuickLogPage() {
           activeOpacity={0.85}
         >
           <Icon name="checkmark-circle" size={26} color="#ffffff" />
-          <Text style={styles.saveButtonText}>
+          <Text style={[styles.saveButtonText, { fontSize: 18 * fontScale }]}>
             {recordBP.isPending ? t('quickLog.saving') : t('quickLog.saveReading')}
           </Text>
         </TouchableOpacity>
@@ -395,14 +397,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   valueLabel: {
-    fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   valueTextLarge: {
-    fontSize: 44,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
@@ -432,7 +432,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryText: {
-    fontSize: 15,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
@@ -455,7 +454,6 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#ffffff',
-    fontSize: 18,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
