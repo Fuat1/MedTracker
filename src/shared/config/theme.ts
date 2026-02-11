@@ -171,6 +171,65 @@ export const darkColors: ThemeColors = {
   shadowOpacity: 0.3,
 };
 
+export const highContrastColors: ThemeColors = {
+  // Pure white/black base
+  background: '#FFFFFF',
+  surface: '#FFFFFF',
+  surfaceSecondary: '#F5F5F5',
+
+  // Maximum contrast text
+  textPrimary: '#000000',
+  textSecondary: '#000000',
+  textTertiary: '#4A4A4A',
+
+  // Solid accent (no gradient)
+  accent: '#0D9488',
+
+  // Bold borders (no subtle grays)
+  border: '#000000',
+  borderLight: '#CCCCCC',
+
+  // High-contrast errors
+  error: '#CC0000',
+  errorBackground: '#FFE6E6',
+
+  // Solid colors (no gradients - same color for both)
+  gradientStart: '#0D9488',
+  gradientEnd: '#0D9488', // Same = solid color
+
+  // Tab bar
+  tabBarBackground: '#FFFFFF',
+  tabBarBorder: '#000000',
+
+  // Numpad - high contrast
+  numpadKey: '#FFFFFF',
+  numpadKeyText: '#000000',
+  numpadKeyBorder: '#000000',
+  numpadClearBg: '#FFE6E6',
+  numpadBackspaceBg: '#E6F3FF',
+
+  // Charts - solid colors, high contrast
+  chartLine: '#0D9488',
+  chartDot: '#000000',
+  chartLabel: '#000000',
+  chartLineDiastolic: '#14B8A6',
+  chartZoneNormal: '#E8F5E9',
+  chartZoneElevated: '#FFF9C4',
+  chartZoneHigh: '#FFEBEE',
+
+  // Toggle
+  toggleTrackActive: '#0D9488',
+  toggleTrackInactive: '#CCCCCC',
+  iconCircleBg: '#E6E6E6',
+  successText: '#006600',
+
+  overlay: 'rgba(0,0,0,0.5)',
+
+  // No shadows in high contrast
+  shadow: '#000000',
+  shadowOpacity: 0,
+};
+
 // BP category colors per theme
 export const BP_COLORS_LIGHT: Record<BPCategory, string> = {
   normal: '#22c55e',
