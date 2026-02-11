@@ -31,12 +31,16 @@ export function SettingsPage() {
     defaultPosture,
     language,
     theme,
+    seniorMode,
+    highContrast,
     setUnit,
     setGuideline,
     setDefaultLocation,
     setDefaultPosture,
     setLanguage,
     setTheme,
+    setSeniorMode,
+    setHighContrast,
   } = useSettingsStore();
 
   const [biometricEnabled, setBiometricEnabled] = useState(false);
@@ -99,6 +103,16 @@ export function SettingsPage() {
   const handlePostureChange = (newPosture: MeasurementPosture) => {
     setDefaultPosture(newPosture);
     showSavedToast(t('settings.defaultPosture.title'));
+  };
+
+  const handleSeniorModeToggle = (value: boolean) => {
+    setSeniorMode(value);
+    showSavedToast(t('settings.seniorMode.label'));
+  };
+
+  const handleHighContrastToggle = (value: boolean) => {
+    setHighContrast(value);
+    showSavedToast(t('settings.highContrast.label'));
   };
 
   const handleDetectRegion = () => {
@@ -320,6 +334,57 @@ export function SettingsPage() {
               </Text>
             </View>
           )}
+        </Animated.View>
+
+        {/* Senior Mode Card */}
+        <Animated.View
+          entering={FadeInUp.delay(450).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+                {t('settings.seniorMode.label')}
+              </Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                {t('settings.seniorMode.description')}
+              </Text>
+            </View>
+            <Switch
+              value={seniorMode}
+              onValueChange={handleSeniorModeToggle}
+              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+              thumbColor="#ffffff"
+            />
+          </View>
+        </Animated.View>
+
+        {/* High Contrast Card */}
+        <Animated.View
+          entering={FadeInUp.delay(475).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+                {t('settings.highContrast.label')}
+              </Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                {t('settings.highContrast.description')}
+              </Text>
+              {highContrast && (
+                <Text style={[styles.noteText, { color: colors.accent }]}>
+                  {t('settings.highContrast.note')}
+                </Text>
+              )}
+            </View>
+            <Switch
+              value={highContrast}
+              onValueChange={handleHighContrastToggle}
+              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+              thumbColor="#ffffff"
+            />
+          </View>
         </Animated.View>
 
         {/* Language Card */}
@@ -630,6 +695,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: FONTS.medium,
     fontWeight: '500',
+  },
+  settingInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  settingDescription: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  noteText: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    marginTop: 8,
   },
   activeText: {
     fontSize: 14,
