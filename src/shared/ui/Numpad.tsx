@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/use-theme';
+import { useSettingsStore } from '../lib/settings-store';
 import { FONTS } from '../config/theme';
 
 interface NumpadProps {
@@ -33,8 +34,14 @@ export function Numpad({
   disabled = false,
 }: NumpadProps) {
   const { t } = useTranslation('common');
-  const { colors } = useTheme();
+  const { colors, fontScale } = useTheme();
+  const { seniorMode } = useSettingsStore();
   const pressedKeys = React.useRef<Record<string, Animated.SharedValue<number>>>({});
+
+  // Dynamic button sizing based on Senior Mode
+  const keySize = seniorMode
+    ? { width: 90, height: 80 }
+    : { width: 76, height: 64 };
 
   const getKeyScale = (key: string) => {
     if (!pressedKeys.current[key]) {
@@ -105,6 +112,8 @@ export function Numpad({
         style={[
           styles.key,
           {
+            width: keySize.width,
+            height: keySize.height,
             backgroundColor: isClear
               ? colors.numpadClearBg
               : isBackspace
@@ -128,8 +137,10 @@ export function Numpad({
         <Text
           style={[
             styles.keyText,
-            { color: colors.numpadKeyText },
-            isAction && styles.actionKeyText,
+            {
+              color: colors.numpadKeyText,
+              fontSize: isAction ? 22 * fontScale : 28 * fontScale,
+            },
             isClear && { color: colors.error },
             disabled && { color: colors.textTertiary },
           ]}
@@ -164,8 +175,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   key: {
-    width: 76,
-    height: 64,
     marginHorizontal: 8,
     borderRadius: 16,
     justifyContent: 'center',
@@ -179,14 +188,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   keyText: {
-    fontSize: 28,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
-  },
-  actionKeyText: {
-    fontSize: 22,
-    fontFamily: FONTS.bold,
-    fontWeight: '700',
   },
   disabledKey: {
     opacity: 0.4,
