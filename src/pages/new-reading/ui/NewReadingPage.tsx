@@ -30,7 +30,7 @@ export function NewReadingPage() {
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
   const { t: tValidation } = useTranslation('validation');
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, fontScale } = useTheme();
   const navigation = useNavigation();
   const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
   const recordBP = useRecordBP();
@@ -170,7 +170,7 @@ export function NewReadingPage() {
             onPress={() => setActiveField('systolic')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
               {tCommon('common.systolic')}
             </Text>
             <Text
@@ -178,6 +178,7 @@ export function NewReadingPage() {
                 styles.valueText,
                 {
                   color: systolic && validation.isValid ? categoryColor : colors.textPrimary,
+                  fontSize: 32 * fontScale,
                 },
               ]}
             >
@@ -199,7 +200,7 @@ export function NewReadingPage() {
             onPress={() => setActiveField('diastolic')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
               {tCommon('common.diastolic')}
             </Text>
             <Text
@@ -207,6 +208,7 @@ export function NewReadingPage() {
                 styles.valueText,
                 {
                   color: diastolic && validation.isValid ? categoryColor : colors.textPrimary,
+                  fontSize: 32 * fontScale,
                 },
               ]}
             >
@@ -228,10 +230,10 @@ export function NewReadingPage() {
             onPress={() => setActiveField('pulse')}
             activeOpacity={0.9}
           >
-            <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: 14 * fontScale }]}>
               {tCommon('common.pulse')}
             </Text>
-            <Text style={[styles.valueText, { color: colors.textPrimary }]}>
+            <Text style={[styles.valueText, { color: colors.textPrimary, fontSize: 32 * fontScale }]}>
               {pulse || '---'}
             </Text>
             <Text style={[styles.valueUnit, { color: colors.textTertiary }]}>
@@ -252,7 +254,7 @@ export function NewReadingPage() {
                 },
               ]}
             >
-              <Text style={[styles.categoryText, { color: categoryColor }]}>
+              <Text style={[styles.categoryText, { color: categoryColor, fontSize: 14 * fontScale }]}>
                 {categoryLabel}
               </Text>
             </View>
@@ -286,7 +288,7 @@ export function NewReadingPage() {
             activeOpacity={0.85}
           >
             <Icon name="checkmark-circle" size={22} color="#ffffff" />
-            <Text style={styles.saveButtonText}>
+            <Text style={[styles.saveButtonText, { fontSize: 18 * fontScale }]}>
               {recordBP.isPending ? t('newReading.saving') : t('newReading.saveMeasurement')}
             </Text>
           </TouchableOpacity>
@@ -356,7 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   valueLabel: {
-    fontSize: 11,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -364,7 +365,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   valueText: {
-    fontSize: 36,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
@@ -385,7 +385,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   categoryText: {
-    fontSize: 14,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
@@ -407,7 +406,6 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
