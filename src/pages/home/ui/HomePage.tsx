@@ -54,7 +54,7 @@ export function HomePage() {
   const { data: latestRecord } = useLatestBPRecord();
   const { data: recentRecords } = useBPRecords(7);
   const { guideline } = useSettingsStore();
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, fontScale } = useTheme();
 
   const latestCategory = latestRecord
     ? classifyBP(latestRecord.systolic, latestRecord.diastolic, guideline)
@@ -121,7 +121,7 @@ export function HomePage() {
             <Text style={styles.bpCardLabel}>{t('home.bpReadings')}</Text>
 
             <View style={styles.bpValueRow}>
-              <Text style={styles.bpValueLarge}>
+              <Text style={[styles.bpValueLarge, { fontSize: 56 * fontScale }]}>
                 {latestRecord
                   ? `${latestRecord.systolic}/${latestRecord.diastolic}`
                   : '---/---'}
@@ -135,7 +135,7 @@ export function HomePage() {
                 {latestCategory ? (
                   <>
                     <Icon name="checkmark-circle" size={20} color="#ffffff" />
-                    <Text style={styles.categoryText}>{categoryLabel}</Text>
+                    <Text style={[styles.categoryText, { fontSize: 15 * fontScale }]}>{categoryLabel}</Text>
                   </>
                 ) : (
                   <Text style={styles.categoryTextEmpty}>
@@ -148,7 +148,7 @@ export function HomePage() {
               {latestRecord?.pulse ? (
                 <View style={styles.pulseBadge}>
                   <Icon name="heart" size={18} color="#ffffff" />
-                  <Text style={styles.pulseValue}>{latestRecord.pulse}</Text>
+                  <Text style={[styles.pulseValue, { fontSize: 22 * fontScale }]}>{latestRecord.pulse}</Text>
                   <Text style={styles.pulseUnit}>{tCommon('units.bpm')}</Text>
                 </View>
               ) : null}
@@ -259,7 +259,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   bpValueLarge: {
-    fontSize: 56,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     color: '#ffffff',
@@ -283,7 +282,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   categoryText: {
-    fontSize: 15,
     color: '#ffffff',
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
@@ -304,7 +302,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   pulseValue: {
-    fontSize: 22,
     fontFamily: FONTS.bold,
     fontWeight: '700',
     color: '#ffffff',
