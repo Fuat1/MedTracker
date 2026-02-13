@@ -1554,6 +1554,59 @@ FAB pressed → preferredEntryMode?
 
 **Medical Source:** AHA Proper Technique Guidelines (CLAUDE.md Section 9)
 
+#### 1.3 PDF Report Export — Completed ✅
+
+**Purpose:** Generate a clinical-quality, shareable PDF of BP readings for doctor visits.
+
+**Implementation (February 2026):**
+
+**FSD Structure:**
+```
+src/features/export-pdf/
+├── index.ts
+└── lib/
+    ├── use-export-pdf.ts           ← React hook: orchestrates export
+    ├── generate-report-html.ts     ← Pure fn: records + options → HTML string
+    ├── generate-bp-chart-svg.ts    ← Pure fn: records → raw SVG XML string
+    └── compute-report-stats.ts     ← Pure fn: records → stats + category breakdown
+
+src/shared/api/pdf-client.ts        ← react-native-html-to-pdf thin wrapper
+__mocks__/react-native-html-to-pdf.js  ← Jest mock
+```
+
+**Key Technical Decisions:**
+- `react-native-html-to-pdf` converts HTML string → PDF file (1 native dependency)
+- Inline SVG chart: pure TypeScript, no React component — testable in Jest without native mocks
+- All business logic in pure functions (testable without React): `computeReportStats`, `generateBPChartSvg`, `generateReportHtml`
+- Report language: always English (consistent for medical professionals)
+- Category keys in entities: `'normal'`, `'elevated'`, `'stage_1'`, `'stage_2'`, `'crisis'` (note underscores)
+- Guideline values (from settings store): `'aha_acc'`, `'esc_esh'`, `'jsh'`, `'who'` (lowercase)
+
+**Analytics Page Changes:**
+- Period selector: 6 OptionChip options (7d / 14d / 30d / 90d / All Time / Custom Range)
+- Custom range: two inline `DateTimePicker` components (no modal)
+- All records fetched without limit (`useBPRecords()`), filtered in memory
+- Doctor notes: optional `TextInput` (max 500 chars) — appears in PDF if non-empty
+- Export button calls `useExportPdf().exportPdf()` with filtered records + options
+
+**PDF Report Sections:**
+1. Header (patient name, period, guideline, generated date)
+2. Summary stats grid (total, avg BP/pulse, min/max systolic, diastolic range)
+3. Patient notes (only if non-empty)
+4. BP Trend SVG chart (zone backgrounds: green <120, yellow 120-140, red >140; dual systolic/diastolic lines)
+5. Category breakdown table (color-coded by AHA category)
+6. All readings table (sorted newest first; date/time, sys, dia, pulse, category, location, notes)
+
+**npm package:** `react-native-html-to-pdf@^1.3.0`
+_(iOS: `cd ios && pod install` required after installation)_
+
+**Translation keys added to `en/pages.json`:**
+- `analytics.period.*` — period chip labels
+- `analytics.customRange.*` — from/to labels
+- `analytics.doctorNote.*` — notes field label + placeholder
+- `analytics.report.*` — PDF content strings (not shown in app UI)
+- `analytics.generatingPdf` — export button loading state
+
 ### Phase 2: Advanced Analytics (Q2 2026)
 
 #### 2.1 Derived Metrics (Auto-Calculation)
@@ -1643,7 +1696,7 @@ src/widgets/correlation-card/      ← Lifestyle insights
 - ✅ Senior Mode + Large Numpad (done February 2026)
 - ✅ High-Contrast Mode (done February 2026)
 - ✅ Shared component refactor: hooks, PageHeader, OptionChip, SaveButton, CrisisModal (done February 2026)
-- 🚧 PDF reports (in progress)
+- ✅ PDF reports (done February 2026)
 - ✅ Pre-measurement guidance (done February 2026)
 
 **Tier 2 (High Value):**
