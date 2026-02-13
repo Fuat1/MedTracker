@@ -82,6 +82,14 @@
       "noDataMessage": "There are no readings in the selected period to export.",
       "exportFailedTitle": "Export Failed",
       "exportFailedMessage": "Could not generate the PDF. Please try again."
+    },
+    "circadian": {
+      "title": "Circadian Patterns",
+      "timeInRange": "Time in Range",
+      "morningSurge_one": "Morning Surge detected {{count}} day",
+      "morningSurge_other": "Morning Surge detected {{count}} days",
+      "noData": "Not enough data for circadian analysis",
+      "windowAvg": "avg"
     }
   },
   "history": {

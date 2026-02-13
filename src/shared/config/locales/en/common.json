@@ -54,6 +54,14 @@
     "day_one": "{{count}} day ago",
     "day_other": "{{count}} days ago"
   },
+  "timeWindow": {
+    "morning": "Morning",
+    "day": "Day",
+    "evening": "Evening",
+    "night": "Night"
+  },
+  "morningSurge": "Morning Surge",
+  "morningSurgeAlert": "Morning surge detected: +{{delta}} mmHg above last night's average",
   "a11y": {
     "backspace": "Backspace",
     "clear": "Clear"
