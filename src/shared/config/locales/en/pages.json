@@ -77,7 +77,11 @@
       "categoryBreakdown": "Category Breakdown",
       "allReadings": "All Readings",
       "fileName": "bp-report",
-      "noData": "No readings in this period to export."
+      "noData": "No readings in this period to export.",
+      "noDataTitle": "No Data",
+      "noDataMessage": "There are no readings in the selected period to export.",
+      "exportFailedTitle": "Export Failed",
+      "exportFailedMessage": "Could not generate the PDF. Please try again."
     }
   },
   "history": {

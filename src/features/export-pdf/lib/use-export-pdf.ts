@@ -5,6 +5,7 @@ import { generateBPChartSvg } from './generate-bp-chart-svg';
 import { generateReportHtml } from './generate-report-html';
 import { convertHtmlToPdf } from '../../../shared/api';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
+import i18n from '../../../shared/lib/i18n';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { ReportOptions } from './generate-report-html';
 
@@ -21,7 +22,10 @@ export function useExportPdf() {
   const exportPdf = useCallback(
     async (records: BPRecord[], options: ExportPdfOptions) => {
       if (records.length === 0) {
-        Alert.alert('No Data', 'There are no readings in the selected period to export.');
+        Alert.alert(
+          i18n.t('pages:analytics.report.noDataTitle'),
+          i18n.t('pages:analytics.report.noDataMessage'),
+        );
         return;
       }
 
@@ -39,6 +43,7 @@ export function useExportPdf() {
           }),
           guidelineName: guideline.replace('_', '/').toUpperCase(),
           doctorNote: options.doctorNote,
+          guideline,
         };
 
         const html = generateReportHtml(records, stats, chartSvg, reportOptions);
@@ -47,7 +52,10 @@ export function useExportPdf() {
 
         await Linking.openURL(`file://${filePath}`);
       } catch (error) {
-        Alert.alert('Export Failed', 'Could not generate the PDF. Please try again.');
+        Alert.alert(
+          i18n.t('pages:analytics.report.exportFailedTitle'),
+          i18n.t('pages:analytics.report.exportFailedMessage'),
+        );
         console.error('[useExportPdf]', error);
       } finally {
         setIsExporting(false);

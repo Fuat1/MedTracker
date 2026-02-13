@@ -1,4 +1,6 @@
+import { classifyBP } from '../../../entities/blood-pressure/lib';
 import type { BPRecord } from '../../../shared/api/bp-repository';
+import type { BPGuideline } from '../../../shared/config/settings';
 import type { ReportStats } from './compute-report-stats';
 
 export interface ReportOptions {
@@ -7,6 +9,15 @@ export interface ReportOptions {
   generatedDate: string;
   guidelineName: string;
   doctorNote?: string;
+  guideline?: string; // BPGuideline value e.g. 'aha_acc', 'who', 'esc_esh', 'jsh'
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function formatTimestamp(unix: number): string {
@@ -24,13 +35,13 @@ function formatLocation(loc: string): string {
   return loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function getCategoryLabel(sys: number, dia: number): { label: string; color: string } {
-  if (sys >= 180 || dia >= 120) return { label: 'Crisis', color: '#dc2626' };
-  if (sys >= 140 || dia >= 90)  return { label: 'Stage 2', color: '#ef4444' };
-  if (sys >= 130 || dia >= 80)  return { label: 'Stage 1', color: '#f97316' };
-  if (sys >= 120 && dia < 80)   return { label: 'Elevated', color: '#eab308' };
-  return { label: 'Normal', color: '#22c55e' };
-}
+const CATEGORY_DISPLAY: Record<string, { label: string; color: string }> = {
+  normal:   { label: 'Normal',  color: '#22c55e' },
+  elevated: { label: 'Elevated', color: '#eab308' },
+  stage_1:  { label: 'Stage 1', color: '#f97316' },
+  stage_2:  { label: 'Stage 2', color: '#ef4444' },
+  crisis:   { label: 'Crisis',  color: '#dc2626' },
+};
 
 export function generateReportHtml(
   records: BPRecord[],
@@ -55,15 +66,16 @@ export function generateReportHtml(
 
   const readingRows = sorted
     .map(r => {
-      const cat = getCategoryLabel(r.systolic, r.diastolic);
+      const catKey = classifyBP(r.systolic, r.diastolic, (options.guideline ?? 'aha_acc') as BPGuideline);
+      const cat = CATEGORY_DISPLAY[catKey] ?? CATEGORY_DISPLAY['normal'];
       return `<tr>
         <td>${formatTimestamp(r.timestamp)}</td>
         <td style="text-align:center;font-weight:600;">${r.systolic}</td>
         <td style="text-align:center;font-weight:600;">${r.diastolic}</td>
         <td style="text-align:center;">${r.pulse ?? '–'}</td>
         <td style="text-align:center;color:${cat.color};font-weight:600;">${cat.label}</td>
-        <td>${formatLocation(r.location)}</td>
-        <td>${r.notes ?? ''}</td>
+        <td>${escapeHtml(formatLocation(r.location))}</td>
+        <td>${escapeHtml(r.notes ?? '')}</td>
       </tr>`;
     })
     .join('\n');
@@ -71,7 +83,7 @@ export function generateReportHtml(
   const doctorNoteSection = doctorNote?.trim()
     ? `<div class="notes-box">
         <h3 style="margin:0 0 8px;color:#1a1a2e;">Patient Notes</h3>
-        <p style="margin:0;color:#374151;">${doctorNote.trim()}</p>
+        <p style="margin:0;color:#374151;">${escapeHtml(doctorNote.trim())}</p>
       </div>`
     : '';
 
@@ -80,7 +92,7 @@ export function generateReportHtml(
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Blood Pressure Report – ${userName}</title>
+<title>Blood Pressure Report – ${escapeHtml(userName)}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #1a1a2e; background: #fff; padding: 32px; }
@@ -110,10 +122,10 @@ export function generateReportHtml(
   <div class="header-left">
     <h1>MedTracker — Blood Pressure Report</h1>
     <div class="header-meta">
-      <strong>Patient:</strong> ${userName} &nbsp;|&nbsp;
-      <strong>Generated:</strong> ${generatedDate}<br/>
-      <strong>Period:</strong> ${period} &nbsp;|&nbsp;
-      <strong>Guideline:</strong> ${guidelineName}
+      <strong>Patient:</strong> ${escapeHtml(userName)} &nbsp;|&nbsp;
+      <strong>Generated:</strong> ${escapeHtml(generatedDate)}<br/>
+      <strong>Period:</strong> ${escapeHtml(period)} &nbsp;|&nbsp;
+      <strong>Guideline:</strong> ${escapeHtml(guidelineName)}
     </div>
   </div>
 </div>
