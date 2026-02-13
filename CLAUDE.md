@@ -494,14 +494,9 @@ const handleFabPress = () => {
    - Theme colors via `useTheme()`
 
 3. **Time-Based Greeting**:
-   ```typescript
-   function getGreetingKey() {
-     const hour = new Date().getHours();
-     if (hour < 12) return 'home.greeting.morning';
-     if (hour < 18) return 'home.greeting.afternoon';
-     return 'home.greeting.evening';
-   }
-   ```
+   - `getGreetingKey()` extracted to `shared/lib/greeting-utils.ts` (no longer inline in pages)
+   - Used by `PageHeader` widget (greeting variant) — single source of truth
+   - Returns i18n key (`'home.greeting.morning'` | `'.afternoon'` | `'.evening'`) based on current hour
 
 4. **"Encrypted & Offline" Badge**:
    - Info icon + text in white pill on homepage
@@ -595,11 +590,13 @@ src/pages/new-reading/
    - Proper contrast in both modes
 
 **Component Reuse Pattern** (Key Best Practice):
-- `Numpad` shared component (themed)
-- `useTheme` hook for colors
-- `validateBPValues()` from entities
-- `classifyBP()` from entities
-- `getBPCategoryLabel()` from entities
+- `useBPInput()` hook (shared/lib) — BP field state, numpad handler, active field management
+- `useBPClassification()` hook (entities) — Parsing, validation, classification, colors (all-in-one)
+- `useToast()` hook (shared/lib) — Toast state + show/hide actions
+- `SaveButton` component (shared/ui) — Themed save button with icon and loading state
+- `CrisisModal` component (shared/ui) — Animated crisis warning overlay
+- `Numpad` component (shared/ui) — Themed numeric input
+- `useTheme` hook for colors/fontScale
 - `useRecordBP()` mutation from features
 - Settings guideline & defaults from store
 
@@ -635,8 +632,106 @@ shared/ui/Numpad.tsx
 
 Used by:
 ├── NewReadingPage (inline)
+├── QuickLogPage (inline)
 ├── BPEntryForm (modal)
 └── Future: Any numeric input field
+```
+
+**Example: CrisisModal Component**
+```
+shared/ui/CrisisModal.tsx
+├── Animated backdrop + spring card entrance
+├── Displays crisis BP values (systolic/diastolic)
+├── i18n via medical namespace (crisis.title, crisis.message)
+├── Cancel and "Save Anyway" actions
+└── Theme-aware surface colors
+
+Used by:
+├── NewReadingPage (overlay modal)
+└── QuickLogPage (overlay modal)
+```
+
+**Example: Toast Component**
+```
+shared/ui/Toast.tsx
+├── Slide-in + fade animation (spring)
+├── Auto-dismiss after configurable duration
+├── Types: 'error' (red) | 'warning' (amber)
+└── Theme-aware colors
+
+Used by:
+├── NewReadingPage (validation/save errors)
+└── QuickLogPage (validation/save errors)
+```
+
+**Example: Shared Hooks (February 2026)**
+```
+shared/lib/use-bp-input.ts
+├── useBPInput({ autoAdvance?: boolean })
+├── Manages systolic/diastolic/pulse state + activeField
+├── handleNumpadChange (with optional auto-advance at 3 digits)
+└── getCurrentValue() — returns value for currently active field
+
+shared/lib/use-toast.ts
+├── useToast()
+├── showToast(message, type) — triggers toast
+└── hideToast() — dismisses toast
+
+entities/blood-pressure/use-bp-classification.ts
+├── useBPClassification(systolic, diastolic, pulse, guideline)
+├── Parses strings to numbers (systolicNum, diastolicNum, pulseNum)
+├── validateBPValues() + classifyBP() + getBPCategoryLabel()
+├── categoryColor via BP_COLORS_LIGHT/DARK (theme-aware)
+└── Placed in entities (not shared) to avoid FSD upward import violation
+
+Used together by:
+├── NewReadingPage (no autoAdvance)
+└── QuickLogPage (autoAdvance: true — auto-advance at 3 digits)
+```
+
+**Example: SaveButton Component**
+```
+shared/ui/SaveButton.tsx
+├── Props: label, isValid, isLoading, onPress, fontScale?
+├── Disabled when !isValid || isLoading
+├── accent color when valid, border color otherwise
+└── checkmark-circle icon + label text
+
+Replaces inline TouchableOpacity save button in:
+├── NewReadingPage
+└── QuickLogPage
+```
+
+**Example: OptionChip Component**
+```
+shared/ui/OptionChip.tsx
+├── Props: label, selected, onPress
+├── accent background + white text when selected
+├── surfaceSecondary background + textSecondary otherwise
+└── Theme-aware via useTheme()
+
+Used in SettingsPage for 6 chip selector groups:
+├── Guideline (AHA/ACC, ESC/ESH, JSH, WHO)
+├── Language (EN, ID, SR, TR)
+├── Theme (Light, Dark, System)
+├── Location (Left Arm, Right Arm, Wrist)
+├── Posture (Sitting, Standing, Lying Down)
+└── Export Format (PDF, CSV, both)
+```
+
+**Example: PageHeader Widget**
+```
+widgets/page-header/ui/PageHeader.tsx
+├── variant='greeting': time-based greeting + username + badge
+│   └── Uses getGreetingKey() from shared/lib/greeting-utils
+├── variant='title': static title text + badge
+│   └── Accepts optional title prop
+└── badge: shield-checkmark + 'Encrypted & Offline' (i18n)
+
+Used by:
+├── HomePage (variant='greeting')
+├── AnalyticsPage (variant='greeting')
+└── HistoryPage (variant='title', title={t('history.title')})
 ```
 
 **Benefits:**
@@ -1154,21 +1249,13 @@ src/pages/quick-log/
 
 2. **Auto-Advance Input Flow** (Reduces Taps):
    ```typescript
-   const handleNumpadChange = useCallback((value: string) => {
-     switch (activeField) {
-       case 'systolic':
-         setSystolic(value);
-         if (value.length === 3) setActiveField('diastolic'); // Auto-advance
-         break;
-       case 'diastolic':
-         setDiastolic(value);
-         if (value.length === 3) setActiveField('pulse'); // Auto-advance
-         break;
-       case 'pulse':
-         setPulse(value);
-         break;
-     }
-   }, [activeField]);
+   // Handled by useBPInput hook from shared/lib
+   const {
+     systolic, diastolic, pulse,
+     activeField, setActiveField,
+     handleNumpadChange, getCurrentValue,
+   } = useBPInput({ autoAdvance: true });
+   // handleNumpadChange automatically advances field at 3 digits
    ```
 
 3. **Live BP Classification**:
@@ -1188,9 +1275,11 @@ src/pages/quick-log/
 **Component Reuse:**
 - `DateTimePicker` (shared/ui) — Backdating support
 - `Numpad` (shared/ui) — Themed numpad input
-- `validateBPValues()` (entities) — Validation logic
-- `classifyBP()` (entities) — BP classification
-- `getBPCategoryLabel()` (entities) — Category display name
+- `useBPInput({ autoAdvance: true })` (shared/lib) — Field state + auto-advance handler
+- `useBPClassification()` (entities) — Validation, classification, colors
+- `useToast()` (shared/lib) — Toast error messages
+- `SaveButton` (shared/ui) — Themed save button with loading state
+- `CrisisModal` (shared/ui) — Crisis warning overlay
 - `useRecordBP()` (features) — Mutation hook
 - `useSettingsStore()` (shared) — Guideline, defaults
 
@@ -1260,9 +1349,9 @@ Updated for all 4 languages: `src/shared/config/locales/[en|id|sr|tr]/[common|pa
 
 ### Files Created/Modified
 
-**Created (3 new files):**
+**Created (3 new files for QuickLog + DateTimePicker):**
 - `src/shared/ui/DateTimePicker.tsx` — Custom date/time picker (350 lines)
-- `src/pages/quick-log/ui/QuickLogPage.tsx` — Streamlined entry page (420 lines)
+- `src/pages/quick-log/ui/QuickLogPage.tsx` — Streamlined entry page
 - `src/pages/quick-log/index.ts` — Barrel export
 
 **Modified (7 files):**
@@ -1272,6 +1361,31 @@ Updated for all 4 languages: `src/shared/config/locales/[en|id|sr|tr]/[common|pa
 - `src/shared/config/locales/en/pages.json` — Added quickLog section
 - `src/app/navigation/index.tsx` — Added QuickLog route to Stack
 - `src/app/navigation/CustomTabBar.tsx` — Added handleFabPress with Alert modal
+
+### Shared Component Refactor (February 2026)
+
+**Created (9 new files for reuse extraction):**
+- `src/shared/lib/greeting-utils.ts` — `getGreetingKey()` pure utility
+- `src/shared/lib/use-bp-input.ts` — `useBPInput({ autoAdvance? })` hook
+- `src/shared/lib/use-toast.ts` — `useToast()` hook
+- `src/entities/blood-pressure/use-bp-classification.ts` — `useBPClassification()` entity hook
+- `src/shared/ui/OptionChip.tsx` — Settings chip selector component
+- `src/shared/ui/SaveButton.tsx` — Reusable save button with loading state
+- `src/shared/ui/CrisisModal.tsx` — Animated crisis warning overlay
+- `src/shared/ui/Toast.tsx` — Animated slide-in toast notification
+- `src/widgets/page-header/ui/PageHeader.tsx` — Unified header widget (greeting + title variants)
+- `src/widgets/page-header/index.ts` — Barrel export
+
+**Modified (9 files):**
+- `src/shared/ui/index.ts` — Added CrisisModal, OptionChip, SaveButton exports
+- `src/shared/lib/index.ts` — Added getGreetingKey, useBPInput, useToast exports
+- `src/entities/blood-pressure/index.ts` — Added useBPClassification export
+- `src/pages/new-reading/ui/NewReadingPage.tsx` — Refactored to use new hooks + SaveButton (−196 lines)
+- `src/pages/quick-log/ui/QuickLogPage.tsx` — Refactored to use new hooks + SaveButton (−208 lines)
+- `src/pages/home/ui/HomePage.tsx` — Uses PageHeader (greeting variant)
+- `src/pages/analytics/ui/AnalyticsPage.tsx` — Uses PageHeader (greeting variant)
+- `src/pages/history/ui/HistoryPage.tsx` — Uses PageHeader (title variant)
+- `src/pages/settings/ui/SettingsPage.tsx` — Uses OptionChip for all 6 chip groups (−96 lines)
 
 ### Testing Guide
 
@@ -1371,9 +1485,18 @@ src/shared/config/theme.ts             ← ✅ highContrastColors palette (COMPL
 src/shared/lib/use-theme.ts            ← ✅ fontScale and highContrast logic (COMPLETED)
 src/shared/ui/Numpad.tsx               ← ✅ Dynamic sizing based on seniorMode (COMPLETED)
 src/pages/home/ui/HomePage.tsx         ← ✅ Font scaling applied (COMPLETED)
-src/pages/new-reading/ui/NewReadingPage.tsx ← ✅ Font scaling applied (COMPLETED)
-src/pages/quick-log/ui/QuickLogPage.tsx     ← ✅ Font scaling applied (COMPLETED)
-src/pages/settings/ui/SettingsPage.tsx      ← ✅ Toggle switches added (COMPLETED)
+src/pages/new-reading/ui/NewReadingPage.tsx ← ✅ Font scaling applied + useBPInput/useToast/useBPClassification/SaveButton (COMPLETED)
+src/pages/quick-log/ui/QuickLogPage.tsx     ← ✅ Font scaling applied + hooks refactor (COMPLETED)
+src/pages/settings/ui/SettingsPage.tsx      ← ✅ Toggle switches added + OptionChip refactor (COMPLETED)
+src/shared/lib/use-bp-input.ts         ← ✅ BP field state hook with autoAdvance (COMPLETED)
+src/shared/lib/use-toast.ts            ← ✅ Toast state hook (COMPLETED)
+src/shared/lib/greeting-utils.ts       ← ✅ getGreetingKey() shared utility (COMPLETED)
+src/entities/blood-pressure/use-bp-classification.ts ← ✅ Entity classification hook (COMPLETED)
+src/shared/ui/SaveButton.tsx           ← ✅ Reusable save button (COMPLETED)
+src/shared/ui/OptionChip.tsx           ← ✅ Settings chip selector (COMPLETED)
+src/shared/ui/CrisisModal.tsx          ← ✅ Animated crisis warning overlay (COMPLETED)
+src/shared/ui/Toast.tsx                ← ✅ Animated toast notification (COMPLETED)
+src/widgets/page-header/               ← ✅ Unified PageHeader widget (COMPLETED)
 ```
 
 **Translation Support:**
@@ -1385,23 +1508,48 @@ All accessibility settings translated in 4 languages (en, tr, id, sr):
 - Color contrast ratios validated for users with low vision
 - Senior mode touch targets exceed ADA accessibility standards
 
-#### 1.2 Pre-Measurement Guidance ("White Coat" Mitigation)
+#### 1.2 Pre-Measurement Guidance ("White Coat" Mitigation) — Completed ✅
 **Problem:** Anxiety-induced spikes invalidate readings.
 
 **Solution:**
-- **Guided Workflow**: Before opening entry screen:
-  1. Show relaxation timer (5 minutes recommended)
-  2. Guided breathing animation (4-7-8 technique)
-  3. Checklist: "Sit with back supported, feet flat, arm at heart level"
-  4. Auto-advance to entry screen after completion
-- **Optional Skip**: Power users can bypass
-- **Reminder Toast**: "Remember to rest 5 minutes before measuring"
+- ✅ **Guided Workflow**: 4-step flow before measurement (checklist → breathing → timer → ready)
+- ✅ **AHA Checklist**: 5 evidence-based preparation steps (rest, posture, arm level, feet flat, quiet)
+- ✅ **4-7-8 Breathing Exercise**: Animated guided breathing with 3 cycles (inhale 4s / hold 7s / exhale 8s)
+- ✅ **5-Minute Rest Timer**: Countdown with auto-advance to "ready" state
+- ✅ **Optional Skip**: Power users can bypass with an AHA warning alert
+- ✅ **Remember Entry Mode**: FAB "remember this choice" dialog (persisted in settings store)
+
+**Implementation Details (February 2026):**
 
 **FSD Structure:**
 ```
-src/pages/pre-measurement/         ← Guidance workflow
-src/widgets/breathing-guide/       ← Animated breathing component
-src/entities/measurement-protocol/ ← AHA preparation guidelines
+src/pages/pre-measurement/ui/PreMeasurementPage.tsx  ← ✅ 4-step guidance workflow
+src/widgets/breathing-guide/ui/BreathingGuide.tsx    ← ✅ Animated breathing component (Reanimated)
+src/entities/measurement-protocol/lib.ts             ← ✅ MEASUREMENT_CHECKLIST, BREATHING_TECHNIQUE, durations
+src/entities/measurement-protocol/index.ts           ← ✅ Barrel export
+src/widgets/breathing-guide/index.ts                 ← ✅ Barrel export
+src/pages/pre-measurement/index.ts                   ← ✅ Barrel export
+src/app/navigation/index.tsx                         ← ✅ PreMeasurement Stack route (slide_from_bottom modal)
+src/app/navigation/CustomTabBar.tsx                  ← ✅ FAB → showEntryModeDialog() + askRemember() flow
+src/shared/lib/settings-store.ts                     ← ✅ EntryMode type + preferredEntryMode state
+src/pages/settings/ui/SettingsPage.tsx               ← ✅ entryMode OptionChip group (Always Ask / Quick Log / Guided)
+src/shared/config/locales/en/pages.json              ← ✅ Full preMeasurement translation namespace
+src/shared/config/locales/en/common.json             ← ✅ entryMode.rememberTitle/Message/Yes/No keys
+```
+
+**Key Components:**
+- `PreMeasurementPage` — `WorkflowStep` state machine: `checklist → breathing → timer → ready`
+- `BreathingGuide` — Reanimated scale/opacity spring animation, `cyclesCompleted` counter, countdown timer
+- `MEASUREMENT_CHECKLIST` — 5 AHA steps with icon names and importance flags
+- `BREATHING_TECHNIQUE` — `{ inhale: 4, hold: 7, exhale: 8, cycles: 3 }`
+- `RECOMMENDED_REST_DURATION` — 300 seconds (5 minutes)
+
+**Navigation Flow:**
+```
+FAB pressed → preferredEntryMode?
+  ├── null → showEntryModeDialog() → "Quick Log" or "Guided Entry (Recommended)"
+  │           → askRemember() → setPreferredEntryMode() + navigate
+  └── set  → navigate directly (long-press FAB to reset)
 ```
 
 **Medical Source:** AHA Proper Technique Guidelines (CLAUDE.md Section 9)
@@ -1492,9 +1640,11 @@ src/widgets/correlation-card/      ← Lifestyle insights
 - ✅ Manual entry (done)
 - ✅ Local storage (done)
 - ✅ Quick Log with date/time backdating (done)
+- ✅ Senior Mode + Large Numpad (done February 2026)
+- ✅ High-Contrast Mode (done February 2026)
+- ✅ Shared component refactor: hooks, PageHeader, OptionChip, SaveButton, CrisisModal (done February 2026)
 - 🚧 PDF reports (in progress)
-- 🚧 Large Numpad Mode (Phase 1)
-- 🚧 Pre-measurement guidance (Phase 1)
+- ✅ Pre-measurement guidance (done February 2026)
 
 **Tier 2 (High Value):**
 - Derived metrics (PP, MAP)
