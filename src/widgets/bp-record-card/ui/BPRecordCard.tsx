@@ -9,8 +9,16 @@ import {
   getBPCategoryLabel,
 } from '../../../entities/blood-pressure';
 import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore, getTimeWindow } from '../../../shared/lib';
+import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
+
+const WINDOW_ICONS: Record<TimeWindow, string> = {
+  morning: 'sunny-outline',
+  day: 'partly-sunny-outline',
+  evening: 'cloudy-night-outline',
+  night: 'moon-outline',
+};
 
 interface BPRecordCardProps {
   record: BPRecord;
@@ -27,13 +35,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
   const categoryColor = bpColors[category];
   const categoryLabel = getBPCategoryLabel(category);
   const timeWindow = getTimeWindow(record.timestamp);
-  const windowIcons: Record<string, string> = {
-    morning: 'sunny-outline',
-    day: 'partly-sunny-outline',
-    evening: 'cloudy-night-outline',
-    night: 'moon-outline',
-  };
-  const windowIcon = windowIcons[timeWindow];
+  const windowIcon = WINDOW_ICONS[timeWindow];
 
   // Compact variant for History page
   if (variant === 'compact') {
