@@ -101,3 +101,17 @@ export { useBPInput, type BPActiveField } from './use-bp-input';
 
 // Toast hook
 export { useToast } from './use-toast';
+
+// Circadian utilities
+export {
+  getTimeWindow,
+  computeCircadianBreakdown,
+  detectMorningSurge,
+  computeTimeInRange,
+  type TimeWindow,
+  type CircadianAvg,
+  type CircadianBreakdown,
+  type MorningSurgeResult,
+  type TimeInRangeWindow,
+  type TimeInRangeResult,
+} from './circadian-utils';
