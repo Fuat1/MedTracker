@@ -504,10 +504,13 @@ const handleFabPress = () => {
    - Theme: Always contrasts against background
 
 **AnalyticsPage Pattern:**
-- Full analytics dashboard with BP Trend Chart, Weekly Average, AM/PM comparison, and PDF export button
+- Full analytics dashboard with period selector, BP Trend Chart, Weekly Average, AM/PM comparison, doctor notes, and functional PDF export
 - `BPTrendChart` (shared/ui) — custom SVG chart with colored zone backgrounds and dual systolic/diastolic lines
 - `computeWeeklyAverage()` and `computeAmPmComparison()` — pure utility functions in shared/lib
-- Data sourced via `useBPRecords(30)` from features layer
+- Data sourced via `useBPRecords()` (no limit) from features layer — filtered in memory by selected period
+- Period selector: 6 `OptionChip` options (7d / 14d / 30d / 90d / All Time / Custom Range)
+- Doctor notes: optional `TextInput` (max 500 chars) passed to PDF export
+- Export PDF: calls `useExportPdf()` from `features/export-pdf` — generates HTML + SVG → PDF via `react-native-html-to-pdf`
 - Themed with `useTheme()` for dark mode support
 
 ## 11. Dark Mode & Theme System (February 2026)
@@ -1436,7 +1439,7 @@ MedTracker currently provides core "table stakes" functionality:
 - ✅ Platform integration (op-sqlite local storage)
 - ✅ Data visualization (charts, trends)
 - ✅ Basic data aggregation
-- 🚧 Clinical reporting (PDF generation) - planned
+- ✅ Clinical reporting (PDF generation) - done February 2026
 
 ### Phase 1 Priorities (Current Focus)
 
