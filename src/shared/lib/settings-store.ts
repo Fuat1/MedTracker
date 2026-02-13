@@ -9,6 +9,7 @@ import i18n from './i18n';
 
 export type Language = 'en' | 'id' | 'sr' | 'tr';
 export type ThemeMode = 'light' | 'dark' | 'system';
+export type EntryMode = 'quickLog' | 'guided' | null;
 
 interface SettingsState {
   unit: BPUnit;
@@ -19,6 +20,7 @@ interface SettingsState {
   theme: ThemeMode;
   seniorMode: boolean;
   highContrast: boolean;
+  preferredEntryMode: EntryMode;
   setUnit: (unit: BPUnit) => void;
   setGuideline: (guideline: BPGuideline) => void;
   setDefaultLocation: (location: MeasurementLocation) => void;
@@ -27,6 +29,7 @@ interface SettingsState {
   setTheme: (theme: ThemeMode) => void;
   setSeniorMode: (enabled: boolean) => void;
   setHighContrast: (enabled: boolean) => void;
+  setPreferredEntryMode: (mode: EntryMode) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -40,6 +43,7 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'system',
       seniorMode: false,
       highContrast: false,
+      preferredEntryMode: null,
       setUnit: (unit) => set({ unit }),
       setGuideline: (guideline) => set({ guideline }),
       setDefaultLocation: (location) => set({ defaultLocation: location }),
@@ -51,6 +55,7 @@ export const useSettingsStore = create<SettingsState>()(
       setTheme: (theme) => set({ theme }),
       setSeniorMode: (enabled) => set({ seniorMode: enabled }),
       setHighContrast: (enabled) => set({ highContrast: enabled }),
+      setPreferredEntryMode: (mode) => set({ preferredEntryMode: mode }),
     }),
     {
       name: 'medtracker-settings',

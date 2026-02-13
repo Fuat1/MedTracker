@@ -69,6 +69,10 @@
     "title": "Log Blood Pressure",
     "message": "Choose your preferred entry method",
     "quickLog": "Quick Log",
-    "guided": "Guided Entry (Recommended)"
+    "guided": "Guided Entry (Recommended)",
+    "rememberTitle": "Remember this choice?",
+    "rememberMessage": "You can change this in Settings, or long-press the + button to see this menu again.",
+    "rememberYes": "Yes, remember",
+    "rememberNo": "No, ask every time"
   }
 }

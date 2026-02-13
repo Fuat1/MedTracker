@@ -14,6 +14,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../shared/lib/use-theme';
+import { useSettingsStore } from '../../shared/lib/settings-store';
+import type { EntryMode } from '../../shared/lib/settings-store';
 import { FONTS } from '../../shared/config/theme';
 import type { RootStackParamList } from './index';
 
@@ -36,22 +38,53 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const stackNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { preferredEntryMode, setPreferredEntryMode } = useSettingsStore();
 
   const leftTabs = state.routes.slice(0, 2);
   const rightTabs = state.routes.slice(2, 4);
 
-  const handleFabPress = () => {
+  const navigateToMode = (mode: 'quickLog' | 'guided') => {
+    if (mode === 'quickLog') {
+      stackNav.navigate('QuickLog');
+    } else {
+      stackNav.navigate('PreMeasurement');
+    }
+  };
+
+  const askRemember = (mode: 'quickLog' | 'guided') => {
+    Alert.alert(
+      t('entryMode.rememberTitle'),
+      t('entryMode.rememberMessage'),
+      [
+        {
+          text: t('entryMode.rememberNo'),
+          style: 'cancel',
+          onPress: () => navigateToMode(mode),
+        },
+        {
+          text: t('entryMode.rememberYes'),
+          onPress: () => {
+            setPreferredEntryMode(mode);
+            navigateToMode(mode);
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const showEntryModeDialog = () => {
     Alert.alert(
       t('entryMode.title'),
       t('entryMode.message'),
       [
         {
           text: t('entryMode.quickLog'),
-          onPress: () => stackNav.navigate('QuickLog'),
+          onPress: () => askRemember('quickLog'),
         },
         {
           text: t('entryMode.guided'),
-          onPress: () => stackNav.navigate('PreMeasurement'),
+          onPress: () => askRemember('guided'),
         },
         {
           text: t('buttons.cancel'),
@@ -60,6 +93,18 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
       ],
       { cancelable: true },
     );
+  };
+
+  const handleFabPress = () => {
+    if (preferredEntryMode) {
+      navigateToMode(preferredEntryMode);
+    } else {
+      showEntryModeDialog();
+    }
+  };
+
+  const handleFabLongPress = () => {
+    showEntryModeDialog();
   };
 
   const renderTab = (route: typeof state.routes[0], index: number) => {
@@ -136,6 +181,8 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           },
         ]}
         onPress={handleFabPress}
+        onLongPress={handleFabLongPress}
+        delayLongPress={800}
         activeOpacity={0.85}
       >
         <Icon name="add" size={32} color="#ffffff" />
