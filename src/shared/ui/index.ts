@@ -9,3 +9,5 @@ export { OptionChip } from './OptionChip';
 export { SaveButton } from './SaveButton';
 export { DonutChart } from './DonutChart';
 export type { DonutSegment } from './DonutChart';
+export { CircadianBreakdownBars } from './CircadianBreakdownBars';
+export type { CircadianWindowData } from './CircadianBreakdownBars';
