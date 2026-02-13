@@ -11,3 +11,5 @@ export {
   type BPRecordInput,
   type BPRecordRow,
 } from './bp-repository';
+export { convertHtmlToPdf } from './pdf-client';
+export type { PdfOptions, PdfResult } from './pdf-client';
