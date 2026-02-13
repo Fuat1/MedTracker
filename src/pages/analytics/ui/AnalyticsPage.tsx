@@ -1,22 +1,74 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, useWindowDimensions } from 'react-native';
+import React, { useMemo, useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  useWindowDimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
+import { useExportPdf } from '../../../features/export-pdf';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { computeWeeklyAverage, computeAmPmComparison } from '../../../shared/lib';
-import { BPTrendChart } from '../../../shared/ui';
+import { BPTrendChart, OptionChip, DateTimePicker } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
+import type { BPRecord } from '../../../shared/api/bp-repository';
+
+type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
 
 export function AnalyticsPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { colors } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
-  const { data: records } = useBPRecords(30);
+  const { data: allRecords } = useBPRecords();
+  const { exportPdf, isExporting } = useExportPdf();
+
+  const [period, setPeriod] = useState<PeriodKey>('30d');
+  const [customStart, setCustomStart] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d;
+  });
+  const [customEnd, setCustomEnd] = useState<Date>(() => new Date());
+  const [doctorNote, setDoctorNote] = useState('');
+
+  const filterByPeriod = useCallback(
+    (recs: BPRecord[]): BPRecord[] => {
+      const nowSec = Math.floor(Date.now() / 1000);
+      if (period === 'all') return recs;
+      if (period === 'custom') {
+        const startSec = Math.floor(customStart.getTime() / 1000);
+        const endSec = Math.floor(customEnd.getTime() / 1000);
+        return recs.filter(r => r.timestamp >= startSec && r.timestamp <= endSec);
+      }
+      const daysMap: Record<string, number> = { '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
+      const cutoffSec = nowSec - daysMap[period] * 86400;
+      return recs.filter(r => r.timestamp >= cutoffSec);
+    },
+    [period, customStart, customEnd],
+  );
+
+  const records = useMemo(
+    () => filterByPeriod(allRecords ?? []),
+    [filterByPeriod, allRecords],
+  );
+
+  const getPeriodLabel = (): string => {
+    if (period === 'all') return t('analytics.period.all');
+    if (period === 'custom') {
+      return `${customStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} \u2013 ${customEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    }
+    const keyMap: Record<string, string> = { '7d': 'days7', '14d': 'days14', '30d': 'days30', '90d': 'days90' };
+    return t(`analytics.period.${keyMap[period]}`);
+  };
 
   const chartData = useMemo(() => {
     if (!records || records.length === 0) return [];
@@ -27,20 +79,16 @@ export function AnalyticsPage() {
   }, [records]);
 
   const weeklyAvg = useMemo(
-    () => computeWeeklyAverage(records || []),
+    () => computeWeeklyAverage(records),
     [records],
   );
 
   const amPm = useMemo(
-    () => computeAmPmComparison(records || []),
+    () => computeAmPmComparison(records),
     [records],
   );
 
   const chartWidth = screenWidth - 40;
-
-  const handleExportPdf = () => {
-    Alert.alert(t('analytics.title'), t('analytics.exportComingSoon'));
-  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -50,6 +98,45 @@ export function AnalyticsPage() {
       >
         {/* Header */}
         <PageHeader variant="greeting" />
+
+        {/* Period Selector */}
+        <Animated.View
+          entering={FadeInUp.delay(50).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            {t('analytics.period.title')}
+          </Text>
+          <View style={styles.chipsRow}>
+            {(['7d', '14d', '30d', '90d', 'all', 'custom'] as PeriodKey[]).map(p => (
+              <OptionChip
+                key={p}
+                label={
+                  p === '7d' ? t('analytics.period.days7') :
+                  p === '14d' ? t('analytics.period.days14') :
+                  p === '30d' ? t('analytics.period.days30') :
+                  p === '90d' ? t('analytics.period.days90') :
+                  p === 'all' ? t('analytics.period.all') :
+                  t('analytics.period.custom')
+                }
+                selected={period === p}
+                onPress={() => setPeriod(p)}
+              />
+            ))}
+          </View>
+          {period === 'custom' && (
+            <View style={styles.customRangeRow}>
+              <Text style={[styles.rangeLabel, { color: colors.textSecondary }]}>
+                {t('analytics.customRange.from')}
+              </Text>
+              <DateTimePicker value={customStart} onChange={setCustomStart} />
+              <Text style={[styles.rangeLabel, { color: colors.textSecondary }]}>
+                {t('analytics.customRange.to')}
+              </Text>
+              <DateTimePicker value={customEnd} onChange={setCustomEnd} />
+            </View>
+          )}
+        </Animated.View>
 
         {/* BP Trends Card */}
         <Animated.View
@@ -134,16 +221,51 @@ export function AnalyticsPage() {
           </View>
         </Animated.View>
 
+        {/* Doctor Notes */}
+        <Animated.View
+          entering={FadeInUp.delay(280).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            {t('analytics.doctorNote.label')}
+          </Text>
+          <TextInput
+            value={doctorNote}
+            onChangeText={setDoctorNote}
+            placeholder={t('analytics.doctorNote.placeholder')}
+            placeholderTextColor={colors.textSecondary}
+            multiline
+            maxLength={500}
+            style={[
+              styles.notesInput,
+              {
+                color: colors.textPrimary,
+                backgroundColor: colors.surfaceSecondary,
+                borderColor: colors.border,
+              },
+            ]}
+          />
+        </Animated.View>
+
         {/* Export PDF Button */}
-        <Animated.View entering={FadeInUp.delay(300).duration(500)} style={styles.exportContainer}>
+        <Animated.View entering={FadeInUp.delay(350).duration(500)} style={styles.exportContainer}>
           <TouchableOpacity
-            style={[styles.exportButton, { backgroundColor: colors.accent }]}
-            onPress={handleExportPdf}
+            style={[
+              styles.exportButton,
+              { backgroundColor: isExporting ? colors.border : colors.accent },
+            ]}
+            onPress={() =>
+              exportPdf(records, {
+                period: getPeriodLabel(),
+                doctorNote: doctorNote.trim() || undefined,
+              })
+            }
+            disabled={isExporting}
             activeOpacity={0.85}
           >
-            <Icon name="document-text" size={22} color="#ffffff" />
+            <Icon name="document-text-outline" size={22} color="#ffffff" />
             <Text style={styles.exportButtonText}>
-              {t('analytics.exportPdf')}
+              {isExporting ? 'Generating PDF...' : t('analytics.exportPdf')}
             </Text>
           </TouchableOpacity>
         </Animated.View>
@@ -160,7 +282,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // Chart card
+  // Chart card / generic card
   card: {
     marginHorizontal: 20,
     borderRadius: 20,
@@ -176,6 +298,37 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 12,
+  },
+
+  // Period selector chips
+  chipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 10,
+  },
+  customRangeRow: {
+    marginTop: 14,
+    gap: 8,
+  },
+  rangeLabel: {
+    fontSize: 13,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+
+  // Doctor notes
+  notesInput: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    minHeight: 80,
+    fontSize: 14,
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    textAlignVertical: 'top',
   },
 
   // Stats
