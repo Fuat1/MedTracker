@@ -8,16 +8,17 @@ import {
   classifyBP,
   getBPCategoryLabel,
 } from '../../../entities/blood-pressure';
-import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore } from '../../../shared/lib';
+import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore, getTimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
 
 interface BPRecordCardProps {
   record: BPRecord;
   variant?: 'full' | 'compact';
+  isMorningSurge?: boolean;
 }
 
-export function BPRecordCard({ record, variant = 'full' }: BPRecordCardProps) {
+export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRecordCardProps) {
   const { t } = useTranslation('common');
   const { colors, isDark } = useTheme();
   const { guideline } = useSettingsStore();
@@ -25,6 +26,14 @@ export function BPRecordCard({ record, variant = 'full' }: BPRecordCardProps) {
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
   const categoryColor = bpColors[category];
   const categoryLabel = getBPCategoryLabel(category);
+  const timeWindow = getTimeWindow(record.timestamp);
+  const windowIcons: Record<string, string> = {
+    morning: 'sunny-outline',
+    day: 'partly-sunny-outline',
+    evening: 'cloudy-night-outline',
+    night: 'moon-outline',
+  };
+  const windowIcon = windowIcons[timeWindow];
 
   // Compact variant for History page
   if (variant === 'compact') {
@@ -63,6 +72,11 @@ export function BPRecordCard({ record, variant = 'full' }: BPRecordCardProps) {
             <Text style={[compactStyles.unit, { color: colors.textTertiary }]}>
               {t('units.mmhg')}
             </Text>
+          </View>
+
+          {/* Time-window icon */}
+          <View style={[compactStyles.windowPill, { backgroundColor: colors.surfaceSecondary }]}>
+            <Icon name={windowIcon} size={11} color={colors.textTertiary} />
           </View>
 
           {/* Category Badge */}
@@ -168,6 +182,24 @@ export function BPRecordCard({ record, variant = 'full' }: BPRecordCardProps) {
           </Text>
         </View>
 
+        {/* Time Window + optional Surge badges */}
+        <View style={styles.windowRow}>
+          <View style={[styles.windowChip, { backgroundColor: colors.surfaceSecondary }]}>
+            <Icon name={windowIcon} size={11} color={colors.textSecondary} />
+            <Text style={[styles.windowChipText, { color: colors.textSecondary }]}>
+              {t('timeWindow.' + timeWindow)}
+            </Text>
+          </View>
+          {isMorningSurge && (
+            <View style={[styles.surgeChip, { backgroundColor: '#f97316' + '20' }]}>
+              <Icon name="trending-up-outline" size={11} color="#f97316" />
+              <Text style={[styles.surgeChipText, { color: '#f97316' }]}>
+                {t('morningSurge')}
+              </Text>
+            </View>
+          )}
+        </View>
+
         {/* Notes */}
         {record.notes && (
           <View style={[styles.notesContainer, { borderTopColor: colors.borderLight }]}>
@@ -236,6 +268,14 @@ const compactStyles = StyleSheet.create({
     fontSize: 11,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
+  },
+  windowPill: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
   },
 });
 
@@ -342,6 +382,37 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize: 11,
     fontFamily: FONTS.regular,
+  },
+  windowRow: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 6,
+  },
+  windowChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  windowChipText: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  surgeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  surgeChipText: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
   notesContainer: {
     marginTop: 10,
