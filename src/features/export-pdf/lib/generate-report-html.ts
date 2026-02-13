@@ -1,4 +1,4 @@
-import { classifyBP } from '../../../entities/blood-pressure/lib';
+import { classifyBP, calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure/lib';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { BPGuideline } from '../../../shared/config/settings';
 import type { ReportStats } from './compute-report-stats';
@@ -10,6 +10,7 @@ export interface ReportOptions {
   guidelineName: string;
   doctorNote?: string;
   guideline?: string; // BPGuideline value e.g. 'aha_acc', 'who', 'esc_esh', 'jsh'
+  includePPMAP?: boolean;
 }
 
 function escapeHtml(str: string): string {
@@ -49,7 +50,7 @@ export function generateReportHtml(
   chartSvg: string,
   options: ReportOptions,
 ): string {
-  const { period, userName, generatedDate, guidelineName, doctorNote } = options;
+  const { period, userName, generatedDate, guidelineName, doctorNote, includePPMAP = false } = options;
 
   const sorted = [...records].sort((a, b) => b.timestamp - a.timestamp);
 
@@ -68,11 +69,20 @@ export function generateReportHtml(
     .map(r => {
       const catKey = classifyBP(r.systolic, r.diastolic, (options.guideline ?? 'aha_acc') as BPGuideline);
       const cat = CATEGORY_DISPLAY[catKey] ?? CATEGORY_DISPLAY['normal'];
+      const pp = calculatePulsePressure(r.systolic, r.diastolic);
+      const map = calculateMAP(r.systolic, r.diastolic);
+
+      const ppMapCells = includePPMAP
+        ? `<td style="text-align:center;">${pp}</td>
+        <td style="text-align:center;">${map}</td>`
+        : '';
+
       return `<tr>
         <td>${formatTimestamp(r.timestamp)}</td>
         <td style="text-align:center;font-weight:600;">${r.systolic}</td>
         <td style="text-align:center;font-weight:600;">${r.diastolic}</td>
         <td style="text-align:center;">${r.pulse ?? '–'}</td>
+        ${ppMapCells}
         <td style="text-align:center;color:${cat.color};font-weight:600;">${cat.label}</td>
         <td>${escapeHtml(formatLocation(r.location))}</td>
         <td>${escapeHtml(r.notes ?? '')}</td>
@@ -85,6 +95,19 @@ export function generateReportHtml(
         <h3 style="margin:0 0 8px;color:#1a1a2e;">Patient Notes</h3>
         <p style="margin:0;color:#374151;">${escapeHtml(doctorNote.trim())}</p>
       </div>`
+    : '';
+
+  const ppMapStatsBoxes = includePPMAP
+    ? `  <div class="stat-box">
+    <div class="stat-label">Average PP</div>
+    <div class="stat-value">${stats.avgPP}</div>
+    <div class="stat-unit">mmHg</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">Average MAP</div>
+    <div class="stat-value">${stats.avgMAP}</div>
+    <div class="stat-unit">mmHg</div>
+  </div>`
     : '';
 
   return `<!DOCTYPE html>
@@ -147,6 +170,7 @@ export function generateReportHtml(
     <div class="stat-value">${stats.avgPulse > 0 ? stats.avgPulse : '–'}</div>
     <div class="stat-unit">BPM</div>
   </div>
+${ppMapStatsBoxes}
   <div class="stat-box">
     <div class="stat-label">Min Systolic</div>
     <div class="stat-value">${stats.minSystolic}</div>
@@ -185,6 +209,7 @@ ${doctorNoteSection}
       <th style="text-align:center;">Systolic</th>
       <th style="text-align:center;">Diastolic</th>
       <th style="text-align:center;">Pulse</th>
+      ${includePPMAP ? '<th style="text-align:center;">PP</th><th style="text-align:center;">MAP</th>' : ''}
       <th style="text-align:center;">Category</th>
       <th>Location</th>
       <th>Notes</th>

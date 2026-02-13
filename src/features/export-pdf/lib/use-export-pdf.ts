@@ -13,6 +13,7 @@ export interface ExportPdfOptions {
   period: string;
   userName?: string;
   doctorNote?: string;
+  includePPMAP?: boolean;
 }
 
 export function useExportPdf() {
@@ -44,6 +45,7 @@ export function useExportPdf() {
           guidelineName: guideline.replace('_', '/').toUpperCase(),
           doctorNote: options.doctorNote,
           guideline,
+          includePPMAP: options.includePPMAP ?? false,
         };
 
         const html = generateReportHtml(records, stats, chartSvg, reportOptions);

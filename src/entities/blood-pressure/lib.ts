@@ -188,3 +188,47 @@ export function validateBPValues(
 export function isCrisisReading(systolic: number, diastolic: number): boolean {
   return classifyBP(systolic, diastolic) === BP_CATEGORIES.CRISIS;
 }
+
+/**
+ * Calculate Pulse Pressure (PP)
+ * PP = Systolic - Diastolic
+ * Normal: ~40 mmHg | High: >60 mmHg (cardiovascular risk)
+ */
+export function calculatePulsePressure(
+  systolic: number,
+  diastolic: number,
+): number {
+  return systolic - diastolic;
+}
+
+/**
+ * Calculate Mean Arterial Pressure (MAP)
+ * MAP = (Systolic + 2×Diastolic) / 3
+ * Normal: 70-100 mmHg | Clinical use: Organ perfusion pressure
+ */
+export function calculateMAP(
+  systolic: number,
+  diastolic: number,
+): number {
+  return Math.round((systolic + 2 * diastolic) / 3);
+}
+
+/**
+ * Interpret Pulse Pressure value
+ * Returns clinical category: 'normal' | 'borderline' | 'high'
+ */
+export function interpretPulsePressure(pp: number): 'normal' | 'borderline' | 'high' {
+  if (pp < 40) return 'normal';
+  if (pp <= 60) return 'borderline';
+  return 'high';
+}
+
+/**
+ * Interpret MAP value
+ * Returns clinical category: 'low' | 'normal' | 'high'
+ */
+export function interpretMAP(map: number): 'low' | 'normal' | 'high' {
+  if (map < 70) return 'low';
+  if (map <= 100) return 'normal';
+  return 'high';
+}

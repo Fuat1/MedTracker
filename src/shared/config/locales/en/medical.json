@@ -35,5 +35,33 @@
   "measurementSettings": {
     "location": "Measurement Location",
     "posture": "Posture"
+  },
+  "derivedMetrics": {
+    "pp": {
+      "title": "Pulse Pressure (PP)",
+      "abbr": "PP",
+      "definition": "The difference between systolic and diastolic blood pressure.",
+      "formula": "PP = Systolic − Diastolic",
+      "ranges": {
+        "normal": "Normal: <40 mmHg",
+        "borderline": "Borderline: 40-60 mmHg",
+        "high": "High: >60 mmHg"
+      },
+      "significance": "High pulse pressure (>60 mmHg) may indicate arterial stiffness and increased cardiovascular risk. Consult your healthcare provider if consistently elevated.",
+      "reference": "Based on AHA/ACC guidelines"
+    },
+    "map": {
+      "title": "Mean Arterial Pressure (MAP)",
+      "abbr": "MAP",
+      "definition": "The average arterial pressure during a single cardiac cycle.",
+      "formula": "MAP = (Systolic + 2×Diastolic) / 3",
+      "ranges": {
+        "low": "Low: <70 mmHg",
+        "normal": "Normal: 70-100 mmHg",
+        "high": "High: >100 mmHg"
+      },
+      "significance": "MAP indicates organ perfusion pressure. Values below 60 mmHg may compromise organ function. Values above 100 mmHg indicate hypertension.",
+      "reference": "Based on AHA/ACC guidelines"
+    }
   }
 }

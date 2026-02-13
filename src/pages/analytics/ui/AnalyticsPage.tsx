@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   useWindowDimensions,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,6 +15,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
 import { useExportPdf } from '../../../features/export-pdf';
+import { calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { computeWeeklyAverage, computeAmPmComparison } from '../../../shared/lib';
 import { BPTrendChart, OptionChip, DateTimePicker } from '../../../shared/ui';
@@ -39,6 +41,9 @@ export function AnalyticsPage() {
   });
   const [customEnd, setCustomEnd] = useState<Date>(() => new Date());
   const [doctorNote, setDoctorNote] = useState('');
+  const [showPP, setShowPP] = useState(false);
+  const [showMAP, setShowMAP] = useState(false);
+  const [includePPMAPInExport, setIncludePPMAPInExport] = useState(false);
 
   const filterByPeriod = useCallback(
     (recs: BPRecord[]): BPRecord[] => {
@@ -75,6 +80,8 @@ export function AnalyticsPage() {
     return [...records].reverse().map(r => ({
       systolic: r.systolic,
       diastolic: r.diastolic,
+      pp: calculatePulsePressure(r.systolic, r.diastolic),
+      map: calculateMAP(r.systolic, r.diastolic),
     }));
   }, [records]);
 
@@ -146,11 +153,40 @@ export function AnalyticsPage() {
           <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
             {t('analytics.bpTrends')}
           </Text>
+
+          {/* PP/MAP Toggles */}
+          <View style={styles.togglesRow}>
+            <View style={styles.toggleItem}>
+              <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
+                Show PP
+              </Text>
+              <Switch
+                value={showPP}
+                onValueChange={setShowPP}
+                trackColor={{ false: colors.border, true: '#a855f7' }}
+                thumbColor="#ffffff"
+              />
+            </View>
+            <View style={styles.toggleItem}>
+              <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
+                Show MAP
+              </Text>
+              <Switch
+                value={showMAP}
+                onValueChange={setShowMAP}
+                trackColor={{ false: colors.border, true: '#f97316' }}
+                thumbColor="#ffffff"
+              />
+            </View>
+          </View>
+
           <BPTrendChart
             data={chartData}
             width={chartWidth}
             height={220}
             emptyText={t('analytics.noData')}
+            showPP={showPP}
+            showMAP={showMAP}
             zoneLabels={{
               normal: t('analytics.zones.normal'),
               elevated: t('analytics.zones.elevated'),
@@ -159,6 +195,8 @@ export function AnalyticsPage() {
             legendLabels={{
               systolic: t('analytics.legend.systolic'),
               diastolic: t('analytics.legend.diastolic'),
+              pp: 'PP',
+              map: 'MAP',
             }}
           />
         </Animated.View>
@@ -249,6 +287,22 @@ export function AnalyticsPage() {
 
         {/* Export PDF Button */}
         <Animated.View entering={FadeInUp.delay(350).duration(500)} style={styles.exportContainer}>
+          {/* Include PP/MAP Checkbox */}
+          <TouchableOpacity
+            style={styles.checkboxRow}
+            onPress={() => setIncludePPMAPInExport(!includePPMAPInExport)}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.checkbox, { borderColor: colors.border }]}>
+              {includePPMAPInExport && (
+                <Icon name="checkmark" size={18} color={colors.accent} />
+              )}
+            </View>
+            <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>
+              Include PP/MAP in PDF export
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[
               styles.exportButton,
@@ -258,6 +312,7 @@ export function AnalyticsPage() {
               exportPdf(records, {
                 period: getPeriodLabel(),
                 doctorNote: doctorNote.trim() || undefined,
+                includePPMAP: includePPMAPInExport,
               })
             }
             disabled={isExporting}
@@ -400,9 +455,46 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
 
+  // Toggles
+  togglesRow: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 16,
+  },
+  toggleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  toggleLabel: {
+    fontSize: 14,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+
   // Export
   exportContainer: {
     paddingHorizontal: 20,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+    paddingVertical: 8,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxLabel: {
+    fontSize: 15,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
   exportButton: {
     flexDirection: 'row',

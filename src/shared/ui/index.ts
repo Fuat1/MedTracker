@@ -4,5 +4,6 @@ export { BPTrendChart } from './BPTrendChart';
 export { DateTimePicker } from './DateTimePicker';
 export { Toast } from './Toast';
 export { CrisisModal } from './CrisisModal';
+export { DerivedMetricsModal } from './DerivedMetricsModal';
 export { OptionChip } from './OptionChip';
 export { SaveButton } from './SaveButton';

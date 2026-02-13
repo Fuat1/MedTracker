@@ -1612,11 +1612,132 @@ _(iOS: `cd ios && pod install` required after installation)_
 
 ### Phase 2: Advanced Analytics (Q2 2026)
 
-#### 2.1 Derived Metrics (Auto-Calculation)
-- **Pulse Pressure (PP)**: Systolic - Diastolic
-- **Mean Arterial Pressure (MAP)**: (Systolic + 2×Diastolic) / 3
-- Display on HomePage card alongside BP reading
-- Explain clinical significance in info modal
+#### 2.1 Derived Metrics (PP & MAP) — Completed ✅
+
+**Purpose:** Display Pulse Pressure and Mean Arterial Pressure as additional clinical insights alongside standard BP readings.
+
+**Medical Background:**
+- **Pulse Pressure (PP)**: `Systolic - Diastolic` — Indicates arterial stiffness and cardiovascular risk
+  - Normal: <40 mmHg
+  - Borderline: 40-60 mmHg
+  - High: >60 mmHg (increased cardiovascular risk)
+- **Mean Arterial Pressure (MAP)**: `(Systolic + 2×Diastolic) / 3` — Reflects organ perfusion pressure
+  - Low: <70 mmHg (compromised organ function)
+  - Normal: 70-100 mmHg
+  - High: >100 mmHg (hypertension indicator)
+
+**Implementation (February 2026):**
+
+**FSD Structure:**
+```
+src/entities/blood-pressure/
+├── lib.ts                              ← ✅ Added 4 pure calculation functions
+└── index.ts                            ← ✅ Exported new functions
+
+src/shared/ui/
+├── DerivedMetricsModal.tsx             ← ✅ NEW: Educational modal (350 lines)
+├── BPTrendChart.tsx                    ← ✅ Extended with PP/MAP trend lines
+└── index.ts                            ← ✅ Exported DerivedMetricsModal
+
+src/pages/home/ui/HomePage.tsx          ← ✅ Added metrics row + modal integration
+src/pages/analytics/ui/AnalyticsPage.tsx ← ✅ Added PP/MAP toggles + computed data
+src/features/export-pdf/lib/
+├── use-export-pdf.ts                   ← ✅ Added includePPMAP option
+├── compute-report-stats.ts             ← ✅ Added avgPP, avgMAP calculations
+└── generate-report-html.ts             ← ✅ Conditional PP/MAP in PDF
+
+src/shared/config/locales/en/medical.json ← ✅ Added derivedMetrics namespace
+```
+
+**Key Technical Decisions:**
+- **On-the-fly computation**: Calculate PP/MAP from existing systolic/diastolic values without database schema changes
+- **Pure functions in entity layer**: `calculatePulsePressure()`, `calculateMAP()`, `interpretPulsePressure()`, `interpretMAP()` — fully testable, no side effects
+- **Single dual-purpose modal**: `DerivedMetricsModal` with `type: 'pp' | 'map'` prop reduces code duplication (~200 lines saved)
+- **Optional PDF inclusion**: User checkbox to include/exclude PP/MAP from export (default: OFF) — user control over report content
+- **Optional Analytics trend lines**: Toggle switches to show/hide PP/MAP on chart (default: OFF) — reduces visual clutter
+
+**HomePage Integration:**
+```typescript
+// Metrics row inserted between "mmHg" unit and category/pulse row
+const ppValue = latestRecord
+  ? calculatePulsePressure(latestRecord.systolic, latestRecord.diastolic)
+  : null;
+
+const mapValue = latestRecord
+  ? calculateMAP(latestRecord.systolic, latestRecord.diastolic)
+  : null;
+
+// Visual layout: "PP: 40 [i] • MAP: 93 [i]"
+// Info buttons open DerivedMetricsModal with educational content
+```
+
+**DerivedMetricsModal Content Sections:**
+1. Icon + Title (heart-pulse for PP, analytics for MAP)
+2. Value Badge (large display with unit, e.g., "PP: 40 mmHg")
+3. Definition (1-2 sentence medical explanation)
+4. Formula (e.g., "PP = Systolic − Diastolic")
+5. Normal Ranges (color-coded: green/yellow/red)
+6. Clinical Significance (why it matters medically)
+7. Reference footer ("Based on AHA/ACC guidelines")
+8. Medical Disclaimer ("Consult healthcare provider...")
+
+**Analytics Page Enhancements:**
+- **Toggle Switches**: Independent controls to show/hide PP and MAP trend lines
+- **Chart Integration**: BPTrendChart extended with `showPP` and `showMAP` props
+  - PP line: Purple (#a855f7), dash-dot pattern
+  - MAP line: Orange (#f97316), dotted pattern
+- **Legend**: Dynamically adjusts position based on which lines are shown
+- **Computed Data**: All records mapped to include PP/MAP values via pure functions
+
+**PDF Export Integration:**
+- **"Include PP/MAP in PDF export" Checkbox**: Located in Analytics page near export button
+- **Conditional Sections**: When enabled, adds:
+  - Average PP stat box in summary grid
+  - Average MAP stat box in summary grid
+  - PP and MAP columns in all readings table
+- **Default OFF**: User must opt-in to include derived metrics in reports
+
+**Medical Content Translation** (`medical.json`):
+```json
+"derivedMetrics": {
+  "pp": {
+    "title": "Pulse Pressure (PP)",
+    "abbr": "PP",
+    "definition": "The difference between systolic and diastolic blood pressure.",
+    "formula": "PP = Systolic − Diastolic",
+    "ranges": {
+      "normal": "Normal: <40 mmHg",
+      "borderline": "Borderline: 40-60 mmHg",
+      "high": "High: >60 mmHg"
+    },
+    "significance": "High pulse pressure (>60 mmHg) may indicate arterial stiffness...",
+    "reference": "Based on AHA/ACC guidelines"
+  },
+  "map": { /* similar structure */ }
+}
+```
+
+**Component Reuse Pattern:**
+- `calculatePulsePressure()` used in: HomePage, AnalyticsPage, compute-report-stats
+- `calculateMAP()` used in: HomePage, AnalyticsPage, compute-report-stats
+- `DerivedMetricsModal` animation pattern: Reuses CrisisModal spring entrance (damping: 18, stiffness: 240)
+- `BPTrendChart` extended without breaking existing usage (backward compatible)
+
+**Testing Considerations:**
+- Unit tests for pure functions (PP/MAP calculations and interpretations)
+- Manual test scenarios:
+  1. Normal reading (120/80): PP=40, MAP=93 — both normal
+  2. High PP reading (160/80): PP=80 — high risk indicator
+  3. Crisis reading (190/120): PP=70, MAP=143 — both elevated
+  4. Toggle switches in Analytics: verify chart renders correctly with 0-4 lines
+  5. PDF export: verify conditional inclusion works (with/without PP/MAP)
+  6. Info modals: verify educational content displays correctly for both types
+  7. Dark mode: verify all PP/MAP UI elements use theme colors
+
+**Medical Accuracy Sources:**
+- Pulse Pressure: AHA Scientific Statement on Arterial Stiffness
+- MAP: Standard ICU/Critical Care formulas
+- Normal ranges: Based on consensus from AHA/ACC, ESC, and clinical literature
 
 #### 2.2 Circadian Analysis
 - **Auto-Sort Readings**: Morning (6-10am), Day (10am-6pm), Evening (6pm-10pm), Night (10pm-6am)
@@ -1703,7 +1824,7 @@ src/widgets/correlation-card/      ← Lifestyle insights
 - ✅ Pre-measurement guidance (done February 2026)
 
 **Tier 2 (High Value):**
-- Derived metrics (PP, MAP)
+- ✅ Derived metrics (PP, MAP) - done February 2026
 - Circadian analysis
 - Platform sync (Apple Health, Health Connect)
 

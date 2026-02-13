@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -9,10 +9,15 @@ import { useLatestBPRecord, useBPRecords } from '../../../features/record-bp';
 import {
   classifyBP,
   getBPCategoryLabel,
+  calculatePulsePressure,
+  calculateMAP,
+  interpretPulsePressure,
+  interpretMAP,
 } from '../../../entities/blood-pressure';
 import { useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { LineChart } from '../../../shared/ui/LineChart';
+import { DerivedMetricsModal } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
 
@@ -50,6 +55,9 @@ export function HomePage() {
   const { guideline } = useSettingsStore();
   const { colors, isDark, fontScale } = useTheme();
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<'pp' | 'map'>('pp');
+
   const latestCategory = latestRecord
     ? classifyBP(latestRecord.systolic, latestRecord.diastolic, guideline)
     : null;
@@ -64,6 +72,27 @@ export function HomePage() {
   const categoryLabel = latestCategory
     ? getBPCategoryLabel(latestCategory)
     : '';
+
+  const ppValue = latestRecord
+    ? calculatePulsePressure(latestRecord.systolic, latestRecord.diastolic)
+    : null;
+
+  const mapValue = latestRecord
+    ? calculateMAP(latestRecord.systolic, latestRecord.diastolic)
+    : null;
+
+  const ppCategory = ppValue ? interpretPulsePressure(ppValue) : null;
+  const mapCategory = mapValue ? interpretMAP(mapValue) : null;
+
+  const handlePPInfo = () => {
+    setModalType('pp');
+    setModalVisible(true);
+  };
+
+  const handleMAPInfo = () => {
+    setModalType('map');
+    setModalVisible(true);
+  };
 
   // Prepare chart data (reverse so oldest is first)
   const chartData = useMemo(() => {
@@ -108,6 +137,48 @@ export function HomePage() {
             </View>
             <Text style={styles.bpUnit}>{tCommon('units.mmhg')}</Text>
 
+            {/* Derived Metrics Row */}
+            {latestRecord && (
+              <View style={styles.metricsRow}>
+                {/* Pulse Pressure */}
+                <View style={styles.metricItem}>
+                  <Text style={[styles.metricLabel, { fontSize: 13 * fontScale }]}>
+                    PP:
+                  </Text>
+                  <Text style={[styles.metricValue, { fontSize: 18 * fontScale }]}>
+                    {ppValue}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handlePPInfo}
+                    style={styles.infoButton}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Icon name="information-circle-outline" size={16} color="rgba(255,255,255,0.7)" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Divider */}
+                <Text style={styles.metricDivider}>•</Text>
+
+                {/* Mean Arterial Pressure */}
+                <View style={styles.metricItem}>
+                  <Text style={[styles.metricLabel, { fontSize: 13 * fontScale }]}>
+                    MAP:
+                  </Text>
+                  <Text style={[styles.metricValue, { fontSize: 18 * fontScale }]}>
+                    {mapValue}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleMAPInfo}
+                    style={styles.infoButton}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Icon name="information-circle-outline" size={16} color="rgba(255,255,255,0.7)" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
             <View style={styles.bpCardBottom}>
               {/* Category label */}
               <View style={styles.categoryRow}>
@@ -151,6 +222,14 @@ export function HomePage() {
           />
         </Animated.View>
       </ScrollView>
+
+      {/* Derived Metrics Info Modal */}
+      <DerivedMetricsModal
+        visible={modalVisible}
+        type={modalType}
+        value={modalType === 'pp' ? ppValue ?? 0 : mapValue ?? 0}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -249,6 +328,38 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.8)',
     fontFamily: FONTS.medium,
     fontWeight: '500',
+  },
+
+  // Metrics Row (PP/MAP)
+  metricsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  metricItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  metricLabel: {
+    color: 'rgba(255,255,255,0.75)',
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  metricValue: {
+    color: '#ffffff',
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  metricDivider: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.4)',
+    fontFamily: FONTS.regular,
+  },
+  infoButton: {
+    padding: 2,
   },
 
   // Trend Card

@@ -7,6 +7,8 @@ import { FONTS } from '../config/theme';
 interface DataPoint {
   systolic: number;
   diastolic: number;
+  pp?: number;
+  map?: number;
 }
 
 interface BPTrendChartProps {
@@ -14,6 +16,8 @@ interface BPTrendChartProps {
   width: number;
   height?: number;
   emptyText?: string;
+  showPP?: boolean;
+  showMAP?: boolean;
   zoneLabels?: {
     normal: string;
     elevated: string;
@@ -22,6 +26,8 @@ interface BPTrendChartProps {
   legendLabels?: {
     systolic: string;
     diastolic: string;
+    pp?: string;
+    map?: string;
   };
 }
 
@@ -30,8 +36,10 @@ export function BPTrendChart({
   width,
   height = 220,
   emptyText = 'No data yet',
+  showPP = false,
+  showMAP = false,
   zoneLabels = { normal: 'Normal', elevated: 'Elevated', high: 'High' },
-  legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic' },
+  legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic', pp: 'PP', map: 'MAP' },
 }: BPTrendChartProps) {
   const { colors } = useTheme();
 
@@ -84,6 +92,8 @@ export function BPTrendChart({
 
   const systolicPath = buildPath(d => d.systolic);
   const diastolicPath = buildPath(d => d.diastolic);
+  const ppPath = showPP ? buildPath(d => d.pp || 0) : '';
+  const mapPath = showMAP ? buildPath(d => d.map || 0) : '';
 
   // Zone Y positions
   const zoneNormalTop = getY(ZONE_NORMAL_MAX);
@@ -195,6 +205,32 @@ export function BPTrendChart({
           />
         )}
 
+        {/* MAP line (dotted, orange) */}
+        {showMAP && data.length > 1 && (
+          <Path
+            d={mapPath}
+            fill="none"
+            stroke="#f97316"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray="2,4"
+          />
+        )}
+
+        {/* PP line (dash-dot, purple) */}
+        {showPP && data.length > 1 && (
+          <Path
+            d={ppPath}
+            fill="none"
+            stroke="#a855f7"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray="8,4,2,4"
+          />
+        )}
+
         {/* Systolic line (solid, primary) */}
         {data.length > 1 && (
           <Path
@@ -216,6 +252,32 @@ export function BPTrendChart({
             r={3.5}
             fill={colors.chartDot}
             stroke={colors.chartLineDiastolic}
+            strokeWidth={2}
+          />
+        ))}
+
+        {/* MAP dots */}
+        {showMAP && data.map((d, i) => (
+          <Circle
+            key={`map-${i}`}
+            cx={getX(i)}
+            cy={getY(d.map || 0)}
+            r={3}
+            fill={colors.chartDot}
+            stroke="#f97316"
+            strokeWidth={2}
+          />
+        ))}
+
+        {/* PP dots */}
+        {showPP && data.map((d, i) => (
+          <Circle
+            key={`pp-${i}`}
+            cx={getX(i)}
+            cy={getY(d.pp || 0)}
+            r={3}
+            fill={colors.chartDot}
+            stroke="#a855f7"
             strokeWidth={2}
           />
         ))}
@@ -257,6 +319,38 @@ export function BPTrendChart({
         >
           {legendLabels.diastolic}
         </SvgText>
+
+        {/* PP legend */}
+        {showPP && (
+          <>
+            <Circle cx={PADDING_LEFT + 182} cy={legendY} r={5} fill="#a855f7" />
+            <SvgText
+              x={PADDING_LEFT + 192}
+              y={legendY + 4}
+              fontSize={11}
+              fontFamily={FONTS.medium}
+              fill={colors.textSecondary}
+            >
+              {legendLabels.pp}
+            </SvgText>
+          </>
+        )}
+
+        {/* MAP legend */}
+        {showMAP && (
+          <>
+            <Circle cx={PADDING_LEFT + (showPP ? 232 : 182)} cy={legendY} r={5} fill="#f97316" />
+            <SvgText
+              x={PADDING_LEFT + (showPP ? 242 : 192)}
+              y={legendY + 4}
+              fontSize={11}
+              fontFamily={FONTS.medium}
+              fill={colors.textSecondary}
+            >
+              {legendLabels.map}
+            </SvgText>
+          </>
+        )}
       </Svg>
     </View>
   );

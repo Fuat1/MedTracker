@@ -1,4 +1,4 @@
-import { classifyBP, getBPCategoryLabel } from '../../../entities/blood-pressure/lib';
+import { classifyBP, getBPCategoryLabel, calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure/lib';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { BPGuideline } from '../../../shared/config/settings';
 import { BP_GUIDELINES } from '../../../shared/config/settings';
@@ -19,6 +19,8 @@ export interface ReportStats {
   avgSystolic: number;
   avgDiastolic: number;
   avgPulse: number;
+  avgPP: number;
+  avgMAP: number;
   minSystolic: number;
   maxSystolic: number;
   minDiastolic: number;
@@ -74,6 +76,8 @@ export function computeReportStats(
       avgSystolic: 0,
       avgDiastolic: 0,
       avgPulse: 0,
+      avgPP: 0,
+      avgMAP: 0,
       minSystolic: 0,
       maxSystolic: 0,
       minDiastolic: 0,
@@ -87,6 +91,8 @@ export function computeReportStats(
   const pulses = records
     .map(r => r.pulse)
     .filter((p): p is number => p !== null);
+  const pps = records.map(r => calculatePulsePressure(r.systolic, r.diastolic));
+  const maps = records.map(r => calculateMAP(r.systolic, r.diastolic));
 
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
   const round = (n: number) => Math.round(n);
@@ -113,6 +119,8 @@ export function computeReportStats(
     avgSystolic: round(sum(systolics) / systolics.length),
     avgDiastolic: round(sum(diastolics) / diastolics.length),
     avgPulse: pulses.length > 0 ? round(sum(pulses) / pulses.length) : 0,
+    avgPP: round(sum(pps) / pps.length),
+    avgMAP: round(sum(maps) / maps.length),
     minSystolic: Math.min(...systolics),
     maxSystolic: Math.max(...systolics),
     minDiastolic: Math.min(...diastolics),
