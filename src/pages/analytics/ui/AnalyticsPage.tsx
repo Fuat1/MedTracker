@@ -265,7 +265,7 @@ export function AnalyticsPage() {
           >
             <Icon name="document-text-outline" size={22} color="#ffffff" />
             <Text style={styles.exportButtonText}>
-              {isExporting ? 'Generating PDF...' : t('analytics.exportPdf')}
+              {isExporting ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
             </Text>
           </TouchableOpacity>
         </Animated.View>
