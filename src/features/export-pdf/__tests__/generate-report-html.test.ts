@@ -1,0 +1,80 @@
+import { generateReportHtml } from '../lib/generate-report-html';
+import type { BPRecord } from '../../../shared/api/bp-repository';
+import type { ReportStats } from '../lib/compute-report-stats';
+
+const stubStats: ReportStats = {
+  total: 5,
+  avgSystolic: 128,
+  avgDiastolic: 82,
+  avgPulse: 72,
+  minSystolic: 115,
+  maxSystolic: 145,
+  minDiastolic: 70,
+  maxDiastolic: 95,
+  categoryBreakdown: [
+    { key: 'normal', label: 'Normal', range: '<120/<80', count: 3, percent: 60, color: '#22c55e' },
+    { key: 'stage_1', label: 'Stage 1', range: '130-139', count: 2, percent: 40, color: '#f97316' },
+  ],
+};
+
+const stubRecords: BPRecord[] = [
+  {
+    id: '1',
+    systolic: 128,
+    diastolic: 82,
+    pulse: 72,
+    timestamp: Math.floor(Date.now() / 1000),
+    timezoneOffset: 0,
+    location: 'left_arm',
+    posture: 'sitting',
+    notes: null,
+    createdAt: 0,
+    updatedAt: 0,
+    isSynced: false,
+  },
+];
+
+const stubOptions = {
+  period: 'Last 30 days',
+  userName: 'Alex',
+  generatedDate: 'February 13, 2026',
+  guidelineName: 'AHA/ACC 2025',
+};
+
+describe('generateReportHtml', () => {
+  it('returns a string containing DOCTYPE html', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).toContain('<!DOCTYPE html>');
+  });
+
+  it('includes patient name in output', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).toContain('Alex');
+  });
+
+  it('includes stats values', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).toContain('128');
+    expect(html).toContain('82');
+    expect(html).toContain('5');
+  });
+
+  it('includes category breakdown', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).toContain('Normal');
+    expect(html).toContain('60%');
+  });
+
+  it('includes doctor note when provided', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', {
+      ...stubOptions,
+      doctorNote: 'On lisinopril',
+    });
+    expect(html).toContain('On lisinopril');
+  });
+
+  it('does NOT include Patient Notes section when doctorNote is empty', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).not.toContain('Patient Notes');
+  });
+});
