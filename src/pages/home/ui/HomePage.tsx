@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useLatestBPRecord, useBPRecords } from '../../../features/record-bp';
 import {
@@ -14,13 +14,7 @@ import { useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { LineChart } from '../../../shared/ui/LineChart';
 import { FONTS } from '../../../shared/config/theme';
-
-function getGreetingKey() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'home.greeting.morning' as const;
-  if (hour < 18) return 'home.greeting.afternoon' as const;
-  return 'home.greeting.evening' as const;
-}
+import { PageHeader } from '../../../widgets/page-header';
 
 function getBPCardGradient(
   category: string | null,
@@ -90,22 +84,7 @@ export function HomePage() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Header */}
-        <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
-          <View style={styles.greetingSection}>
-            <Text style={[styles.greetingText, { color: colors.textSecondary }]}>
-              {t(getGreetingKey())},
-            </Text>
-            <Text style={[styles.userName, { color: colors.textPrimary }]}>
-              {t('home.userName')}
-            </Text>
-          </View>
-          <View style={[styles.badge, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-            <Icon name="shield-checkmark" size={20} color={colors.accent} />
-            <Text style={[styles.badgeText, { color: colors.textSecondary }]}>
-              {t('home.encryptedOffline')}
-            </Text>
-          </View>
-        </Animated.View>
+        <PageHeader variant="greeting" />
 
         {/* Main BP Reading Card */}
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.bpCardWrapper}>
@@ -185,47 +164,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 100,
-  },
-
-  // Header
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  greetingSection: {
-    flex: 1,
-  },
-  greetingText: {
-    fontSize: 22,
-    fontFamily: FONTS.regular,
-    fontWeight: '400',
-  },
-  userName: {
-    fontSize: 28,
-    fontFamily: FONTS.extraBold,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 6,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
   },
 
   // BP Card

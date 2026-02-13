@@ -16,6 +16,7 @@ interface NumpadProps {
   onValueChange: (value: string) => void;
   maxLength?: number;
   disabled?: boolean;
+  compact?: boolean;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -32,16 +33,19 @@ export function Numpad({
   onValueChange,
   maxLength = 3,
   disabled = false,
+  compact = false,
 }: NumpadProps) {
   const { t } = useTranslation('common');
   const { colors, fontScale } = useTheme();
   const { seniorMode } = useSettingsStore();
   const pressedKeys = React.useRef<Record<string, Animated.SharedValue<number>>>({});
 
-  // Dynamic button sizing based on Senior Mode
-  const keySize = seniorMode
-    ? { width: 90, height: 80 }
-    : { width: 76, height: 64 };
+  // Dynamic button sizing: compact when category badge is showing
+  const keySize = compact
+    ? { width: 68, height: 44 }
+    : seniorMode
+      ? { width: 86, height: 68 }
+      : { width: 96, height: 56 };
 
   const getKeyScale = (key: string) => {
     if (!pressedKeys.current[key]) {
@@ -139,7 +143,9 @@ export function Numpad({
             styles.keyText,
             {
               color: colors.numpadKeyText,
-              fontSize: isAction ? 22 * fontScale : 28 * fontScale,
+              fontSize: compact
+                ? (isAction ? 14 * fontScale : 18 * fontScale)
+                : (isAction ? 22 * fontScale : 28 * fontScale),
             },
             isClear && { color: colors.error },
             disabled && { color: colors.textTertiary },
@@ -152,9 +158,9 @@ export function Numpad({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, compact && styles.containerCompact]}>
       {KEYS.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
+        <View key={rowIndex} style={[styles.row, compact && styles.rowCompact]}>
           {row.map((key) => (
             <KeyButton key={key} keyValue={key} />
           ))}
@@ -167,16 +173,22 @@ export function Numpad({
 // Minimum touch target 48x48dp per accessibility guidelines
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
+    padding: 4,
+  },
+  containerCompact: {
+    padding: 4,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 12,
   },
+  rowCompact: {
+    marginBottom: 4,
+  },
   key: {
-    marginHorizontal: 8,
-    borderRadius: 16,
+    marginHorizontal: 14,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: {

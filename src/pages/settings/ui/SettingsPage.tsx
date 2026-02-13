@@ -5,8 +5,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useSettingsStore, type Language, type ThemeMode } from '../../../shared/lib/settings-store';
+import { useSettingsStore, type Language, type ThemeMode, type EntryMode } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { OptionChip } from '../../../shared/ui';
 import { BP_UNITS, BP_GUIDELINES } from '../../../shared/config/settings';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import {
@@ -33,6 +34,7 @@ export function SettingsPage() {
     theme,
     seniorMode,
     highContrast,
+    preferredEntryMode,
     setUnit,
     setGuideline,
     setDefaultLocation,
@@ -41,6 +43,7 @@ export function SettingsPage() {
     setTheme,
     setSeniorMode,
     setHighContrast,
+    setPreferredEntryMode,
   } = useSettingsStore();
 
   const [biometricEnabled, setBiometricEnabled] = useState(false);
@@ -113,6 +116,11 @@ export function SettingsPage() {
   const handleHighContrastToggle = (value: boolean) => {
     setHighContrast(value);
     showSavedToast(t('settings.highContrast.label'));
+  };
+
+  const handleEntryModeChange = (mode: EntryMode) => {
+    setPreferredEntryMode(mode);
+    showSavedToast(t('settings.entryMode.label'));
   };
 
   const handleDetectRegion = () => {
@@ -387,6 +395,40 @@ export function SettingsPage() {
           </View>
         </Animated.View>
 
+        {/* Entry Mode Card */}
+        <Animated.View
+          entering={FadeInUp.delay(490).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="add-circle-outline" size={20} color={colors.accent} />
+            </View>
+            <View style={styles.cardHeaderTextCol}>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+                {t('settings.entryMode.label')}
+              </Text>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+                {t('settings.entryMode.description')}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.chipRow}>
+            {([
+              { value: null as EntryMode, label: t('settings.entryMode.alwaysAsk') },
+              { value: 'quickLog' as EntryMode, label: t('settings.entryMode.quickLog') },
+              { value: 'guided' as EntryMode, label: t('settings.entryMode.guided') },
+            ]).map((opt) => (
+              <OptionChip
+                key={String(opt.value)}
+                label={opt.label}
+                selected={preferredEntryMode === opt.value}
+                onPress={() => handleEntryModeChange(opt.value)}
+              />
+            ))}
+          </View>
+        </Animated.View>
+
         {/* Language Card */}
         <Animated.View
           entering={FadeInUp.delay(500).duration(500)}
@@ -407,26 +449,12 @@ export function SettingsPage() {
               { code: 'sr' as Language, label: 'SR' },
               { code: 'tr' as Language, label: 'TR' },
             ]).map((opt) => (
-              <TouchableOpacity
+              <OptionChip
                 key={opt.code}
-                style={[
-                  styles.chip,
-                  language === opt.code
-                    ? { backgroundColor: colors.accent }
-                    : { backgroundColor: colors.surfaceSecondary },
-                ]}
+                label={opt.label}
+                selected={language === opt.code}
                 onPress={() => handleLanguageChange(opt.code)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    { color: language === opt.code ? '#ffffff' : colors.textSecondary },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </Animated.View>
@@ -460,26 +488,12 @@ export function SettingsPage() {
               { value: BP_GUIDELINES.ESC_ESH, label: tMedical('guidelines.escEsh.name') },
               { value: BP_GUIDELINES.JSH, label: tMedical('guidelines.jsh.name') },
             ]).map((opt) => (
-              <TouchableOpacity
+              <OptionChip
                 key={opt.value}
-                style={[
-                  styles.chip,
-                  guideline === opt.value
-                    ? { backgroundColor: colors.accent }
-                    : { backgroundColor: colors.surfaceSecondary },
-                ]}
+                label={opt.label}
+                selected={guideline === opt.value}
                 onPress={() => handleGuidelineChange(opt.value)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    { color: guideline === opt.value ? '#ffffff' : colors.textSecondary },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </Animated.View>
@@ -502,26 +516,12 @@ export function SettingsPage() {
               { value: BP_UNITS.MMHG, label: 'mmHg' },
               { value: BP_UNITS.KPA, label: 'kPa' },
             ]).map((opt) => (
-              <TouchableOpacity
+              <OptionChip
                 key={opt.value}
-                style={[
-                  styles.chip,
-                  unit === opt.value
-                    ? { backgroundColor: colors.accent }
-                    : { backgroundColor: colors.surfaceSecondary },
-                ]}
+                label={opt.label}
+                selected={unit === opt.value}
                 onPress={() => handleUnitChange(opt.value)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    { color: unit === opt.value ? '#ffffff' : colors.textSecondary },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </Animated.View>
@@ -546,26 +546,12 @@ export function SettingsPage() {
               { value: MEASUREMENT_LOCATIONS.LEFT_WRIST, label: t('settings.defaultLocation.leftWrist.label') },
               { value: MEASUREMENT_LOCATIONS.RIGHT_WRIST, label: t('settings.defaultLocation.rightWrist.label') },
             ]).map((opt) => (
-              <TouchableOpacity
+              <OptionChip
                 key={opt.value}
-                style={[
-                  styles.chip,
-                  defaultLocation === opt.value
-                    ? { backgroundColor: colors.accent }
-                    : { backgroundColor: colors.surfaceSecondary },
-                ]}
+                label={opt.label}
+                selected={defaultLocation === opt.value}
                 onPress={() => handleLocationChange(opt.value)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    { color: defaultLocation === opt.value ? '#ffffff' : colors.textSecondary },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </Animated.View>
@@ -589,26 +575,12 @@ export function SettingsPage() {
               { value: MEASUREMENT_POSTURES.STANDING, label: t('settings.defaultPosture.standing.label') },
               { value: MEASUREMENT_POSTURES.LYING, label: t('settings.defaultPosture.lying.label') },
             ]).map((opt) => (
-              <TouchableOpacity
+              <OptionChip
                 key={opt.value}
-                style={[
-                  styles.chip,
-                  defaultPosture === opt.value
-                    ? { backgroundColor: colors.accent }
-                    : { backgroundColor: colors.surfaceSecondary },
-                ]}
+                label={opt.label}
+                selected={defaultPosture === opt.value}
                 onPress={() => handlePostureChange(opt.value)}
-                activeOpacity={0.7}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    { color: defaultPosture === opt.value ? '#ffffff' : colors.textSecondary },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </Animated.View>
@@ -727,6 +699,23 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 
+  // Warning banner
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    gap: 8,
+    marginTop: 12,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: FONTS.regular,
+    lineHeight: 18,
+  },
+
   // Buttons
   buttonRow: {
     flexDirection: 'row',
@@ -822,18 +811,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    minHeight: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chipText: {
-    fontSize: 14,
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
   },
 });

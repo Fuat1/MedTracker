@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { PageHeader } from '../../../widgets/page-header';
 import { BPRecordsList } from '../../../widgets/bp-records-list';
 import { useBPRecords } from '../../../features/record-bp';
 import { classifyBP } from '../../../entities/blood-pressure';
@@ -45,24 +45,14 @@ export function HistoryPage() {
     const grouped = groupRecordsByTimePeriod(filtered);
     return grouped.map(s => ({
       ...s,
-      title: t(s.titleKey),
+      title: t(s.titleKey as any) as string,
     }));
   }, [records, filter, isHighAlert, t]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
-      <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
-          {t('history.title')}
-        </Text>
-        <View style={[styles.badge, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-          <Icon name="shield-checkmark" size={20} color={colors.accent} />
-          <Text style={[styles.badgeText, { color: colors.textSecondary }]}>
-            {t('home.encryptedOffline')}
-          </Text>
-        </View>
-      </Animated.View>
+      <PageHeader variant="title" title={t('history.title')} />
 
       {/* Filter Chips */}
       <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.filterContainer}>
@@ -90,7 +80,7 @@ export function HistoryPage() {
                   { color: filter === item.key ? '#ffffff' : colors.textSecondary },
                 ]}
               >
-                {t(item.labelKey)}
+                {t(item.labelKey as any)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -112,36 +102,6 @@ export function HistoryPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontFamily: FONTS.extraBold,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 6,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
   },
   filterContainer: {
     marginBottom: 4,
