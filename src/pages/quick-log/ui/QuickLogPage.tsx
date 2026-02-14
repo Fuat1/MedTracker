@@ -15,7 +15,10 @@ import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { useBPInput, useToast } from '../../../shared/lib';
 import { isCrisisReading, useBPClassification } from '../../../entities/blood-pressure';
 import { FONTS } from '../../../shared/config/theme';
-import { useRecordBP } from '../../../features/record-bp';
+import { useRecordBP, BP_RECORDS_QUERY_KEY } from '../../../features/record-bp';
+import { useQueryClient } from '@tanstack/react-query';
+import { getBPRecords } from '../../../shared/api/bp-repository';
+import { detectMorningSurge } from '../../../shared/lib';
 
 export function QuickLogPage() {
   const { t } = useTranslation('pages');
@@ -25,6 +28,7 @@ export function QuickLogPage() {
   const navigation = useNavigation();
   const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
   const recordBP = useRecordBP();
+  const queryClient = useQueryClient();
 
   const { systolic, diastolic, pulse, activeField, setActiveField, handleNumpadChange, getCurrentValue } = useBPInput({ autoAdvance: true });
   const { toastMsg, toastType, toastVisible, showToast, hideToast } = useToast();
@@ -56,6 +60,20 @@ export function QuickLogPage() {
         location: defaultLocation,
         posture: defaultPosture,
       });
+
+      // Detect morning surge after save
+      const latestRecords = await queryClient.fetchQuery({
+        queryKey: BP_RECORDS_QUERY_KEY,
+        queryFn: () => getBPRecords(),
+      });
+      const surge = detectMorningSurge(latestRecords);
+      if (surge.hasSurge) {
+        showToast(
+          tCommon('morningSurgeAlert', { delta: surge.delta }),
+          'warning',
+        );
+      }
+
       navigation.goBack();
     } catch (error) {
       showToast(
