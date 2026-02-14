@@ -17,7 +17,7 @@ import { isCrisisReading, useBPClassification } from '../../../entities/blood-pr
 import { FONTS } from '../../../shared/config/theme';
 import { useRecordBP, BP_RECORDS_QUERY_KEY } from '../../../features/record-bp';
 import { useQueryClient } from '@tanstack/react-query';
-import { getBPRecords } from '../../../shared/api/bp-repository';
+import type { BPRecord } from '../../../shared/api/bp-repository';
 import { detectMorningSurge } from '../../../shared/lib';
 
 export function QuickLogPage() {
@@ -61,17 +61,21 @@ export function QuickLogPage() {
         posture: defaultPosture,
       });
 
-      // Detect morning surge after save
-      const latestRecords = await queryClient.fetchQuery({
-        queryKey: BP_RECORDS_QUERY_KEY,
-        queryFn: () => getBPRecords(),
-      });
-      const surge = detectMorningSurge(latestRecords);
-      if (surge.hasSurge) {
-        showToast(
-          tCommon('morningSurgeAlert', { delta: surge.delta }),
-          'warning',
-        );
+      // Detect morning surge after save (separate try-catch to avoid misleading error)
+      try {
+        const latestRecords = queryClient.getQueryData<BPRecord[]>(BP_RECORDS_QUERY_KEY) ?? [];
+        const surge = detectMorningSurge(latestRecords);
+        if (surge.hasSurge) {
+          showToast(
+            tCommon('morningSurgeAlert', { delta: surge.delta }),
+            'warning',
+          );
+          // Brief delay to allow toast entrance animation before navigation
+          await new Promise<void>(resolve => setTimeout(() => resolve(), 300));
+        }
+      } catch (surgeError) {
+        console.warn('Surge detection failed:', surgeError);
+        // Continue to navigation even if surge detection fails
       }
 
       navigation.goBack();
