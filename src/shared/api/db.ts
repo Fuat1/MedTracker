@@ -25,6 +25,24 @@ const CREATE_INDEX_SQL = `
   ON bp_records(timestamp DESC);
 `;
 
+const CREATE_BP_TAGS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS bp_tags (
+    id         TEXT PRIMARY KEY NOT NULL,
+    record_id  TEXT NOT NULL,
+    tag        TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (record_id) REFERENCES bp_records(id) ON DELETE CASCADE
+  );
+`;
+
+const CREATE_BP_TAGS_IDX_RECORD_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_bp_tags_record_id ON bp_tags(record_id);
+`;
+
+const CREATE_BP_TAGS_IDX_TAG_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_bp_tags_tag ON bp_tags(tag);
+`;
+
 export async function initDatabase(): Promise<DB> {
   if (db) {
     return db;
@@ -36,6 +54,9 @@ export async function initDatabase(): Promise<DB> {
     // Create tables
     db.execute(CREATE_TABLE_SQL);
     db.execute(CREATE_INDEX_SQL);
+    db.execute(CREATE_BP_TAGS_TABLE_SQL);
+    db.execute(CREATE_BP_TAGS_IDX_RECORD_SQL);
+    db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
 
     console.log('Database initialized successfully');
     return db;
