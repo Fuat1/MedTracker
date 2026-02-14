@@ -329,13 +329,13 @@ export function AnalyticsPage() {
                 segments={donutSegments}
                 size={140}
                 centerLabel={`${timeInRange.overall.normal}%`}
-                centerSubLabel={t('medical:categories.normal')}
+                centerSubLabel={tMedical('categories.normal')}
               />
 
               {/* Per-window breakdown bars */}
               <CircadianBreakdownBars windows={circadianWindows} />
 
-              {/* Morning surge insight */}
+              {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
               {surgeResult.hasSurge && (
                 <View style={[styles.surgeRow, { backgroundColor: '#f97316' + '15' }]}>
                   <Icon name="trending-up-outline" size={14} color="#f97316" />
