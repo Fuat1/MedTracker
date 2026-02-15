@@ -6,11 +6,12 @@
 
 - Robust manual entry interface (Numpad-based)
 - Platform integration (op-sqlite local storage)
-- Data visualization (charts, trends)
-- Clinical reporting (PDF generation)
+- Data visualization (charts, trends, circadian breakdown)
+- Clinical reporting (PDF generation, Save to Device)
 - Senior-centric design (large fonts, high contrast, auto-advance)
 - Pre-measurement guidance (breathing exercises, AHA checklist)
 - Derived metrics (PP, MAP with educational modals)
+- Circadian analysis (time windows, morning surge detection, time-in-range)
 
 ## Phase 1: Completed ✅
 
@@ -35,6 +36,8 @@
    - SVG chart embedded in PDF
    - Category breakdown table
    - Optional PP/MAP inclusion
+   - **Save to Device** (direct download to Downloads/Files app, no share sheet) ✅
+   - Full i18n of all PDF report strings ✅
 
 4. **Derived Metrics** ✅
    - Pulse Pressure (PP) calculations and interpretation
@@ -45,28 +48,30 @@
 
 ## Phase 2: Advanced Analytics (Q2 2026)
 
-### 2.1 Circadian Analysis
+### 2.1 Circadian Analysis ✅
+
 - Auto-sort readings by time window:
   - Morning (6-10am), Day (10am-6pm), Evening (6pm-10pm), Night (10pm-6am)
-- Morning surge detection (rapid AM increases = stroke risk)
+- Morning surge detection (rapid AM increases = stroke risk) + toast notification
 - Time-in-range visualization (% readings within target per guideline)
-- Circadian pattern card on Analytics page
+- Circadian breakdown bars on Analytics page
 
-**FSD Structure**:
+**Implemented FSD Structure**:
 ```
 src/entities/circadian-pattern/lib.ts          ← Time window logic, surge detection
 src/shared/lib/circadian-utils.ts              ← Pure time window calculations
 src/widgets/circadian-card/ui/CircadianCard.tsx ← Analytics page card
 ```
 
-### 2.2 Lifestyle Tagging
+### 2.2 Lifestyle Tagging (DB layer ✅, UI pending)
+
 - Optional tags per reading: Salt, Stress, Alcohol, Exercise, Medication Taken
 - Tag management UI (multi-select chips)
 - Correlation analysis: "Your readings are 8 mmHg higher on high-salt days"
 - Privacy-first: All analysis local (no cloud AI)
-- Tags stored in `bp_tags` table (see `docs/database-schema.md`)
+- Tags stored in `bp_tags` table — **migration + repository done** ✅ (see `docs/database-schema.md`)
 
-**FSD Structure**:
+**FSD Structure** (UI layers pending):
 ```
 src/entities/lifestyle-tag/                    ← Tag types, validation
 src/features/add-lifestyle-tags/               ← Tag management mutations
@@ -140,8 +145,8 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: Circadian analysis, Platform sync
-**Tier 3 (Nice-to-Have)**: Medication tracking, Lifestyle tags, Voice logging
+**Tier 2 (High Value)**: ✅ Circadian analysis complete — Platform sync remaining
+**Tier 3 (Nice-to-Have)**: Medication tracking, Lifestyle tags UI (DB done), Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-02-14
+**Last Updated**: 2026-02-16

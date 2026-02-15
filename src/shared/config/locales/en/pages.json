@@ -34,6 +34,8 @@
     "evening": "Evening",
     "exportPdf": "Export PDF report for Doctor",
     "generatingPdf": "Generating PDF...",
+    "savePdf": "Save to Device",
+    "savingPdf": "Saving...",
     "exportComingSoon": "PDF export coming soon!",
     "noData": "Not enough data",
     "noDataSubtitle": "Add more readings to see trends",
@@ -115,7 +117,11 @@
       "noDataMessage": "There are no readings in the selected period to export.",
       "exportFailedTitle": "Export Failed",
       "exportFailedMessage": "Could not generate the PDF. Please try again.",
-      "shareTitle": "Share BP Report"
+      "shareTitle": "Share BP Report",
+      "saveSuccessTitle": "PDF Saved",
+      "saveSuccessMessage": "Saved as {{fileName}}",
+      "saveFailedTitle": "Save Failed",
+      "saveFailedMessage": "Could not save the PDF. Please check storage permissions and try again."
     },
     "circadian": {
       "title": "Circadian Patterns",

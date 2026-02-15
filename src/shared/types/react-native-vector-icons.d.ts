@@ -1,3 +1,8 @@
+// React Native polyfills requestIdleCallback globally in Hermes/JSC environments.
+// InteractionManager is deprecated in the New Architecture — use requestIdleCallback instead.
+declare function requestIdleCallback(callback: () => void): number;
+declare function cancelIdleCallback(handle: number): void;
+
 declare module 'react-native-vector-icons/Ionicons' {
   import { Component } from 'react';
   import { TextProps } from 'react-native';

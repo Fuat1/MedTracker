@@ -45,7 +45,7 @@ export function AnalyticsPage() {
   const { colors, isDark } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   const { data: allRecords } = useBPRecords();
-  const { exportPdf, isExporting } = useExportPdf();
+  const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
   const guideline = useSettingsStore(state => state.guideline);
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
 
@@ -397,28 +397,68 @@ export function AnalyticsPage() {
             </Text>
           </Pressable>
 
-          <Pressable
-            style={[
-              styles.exportButton,
-              { backgroundColor: isExporting ? colors.border : colors.accent },
-            ]}
-            onPress={() =>
-              exportPdf(records, {
-                period: getPeriodLabel(),
-                doctorNote: doctorNote.trim() || undefined,
-                includePPMAP: includePPMAPInExport,
-              })
-            }
-            disabled={isExporting}
-            accessibilityRole="button"
-            accessibilityLabel={t('analytics.exportPdf')}
-            accessibilityState={{ disabled: isExporting }}
-          >
-            <Icon name="document-text-outline" size={22} color={colors.surface} />
-            <Text style={[styles.exportButtonText, { color: colors.surface }]}>
-              {isExporting ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
-            </Text>
-          </Pressable>
+          <View style={styles.exportButtonsRow}>
+            {/* Save to Device */}
+            <Pressable
+              style={[
+                styles.exportButton,
+                styles.exportButtonSecondary,
+                {
+                  backgroundColor: isExporting ? colors.border : colors.surfaceSecondary,
+                  borderColor: isExporting ? colors.border : colors.accent,
+                },
+              ]}
+              onPress={() =>
+                downloadPdf(records, {
+                  period: getPeriodLabel(),
+                  doctorNote: doctorNote.trim() || undefined,
+                  includePPMAP: includePPMAPInExport,
+                })
+              }
+              disabled={isExporting}
+              accessibilityRole="button"
+              accessibilityLabel={t('analytics.savePdf')}
+              accessibilityState={{ disabled: isExporting }}
+            >
+              <Icon
+                name="download-outline"
+                size={22}
+                color={isExporting ? colors.textTertiary : colors.accent}
+              />
+              <Text
+                style={[
+                  styles.exportButtonText,
+                  { color: isExporting ? colors.textTertiary : colors.accent },
+                ]}
+              >
+                {activeAction === 'save' ? t('analytics.savingPdf') : t('analytics.savePdf')}
+              </Text>
+            </Pressable>
+
+            {/* Share PDF */}
+            <Pressable
+              style={[
+                styles.exportButton,
+                { backgroundColor: isExporting ? colors.border : colors.accent },
+              ]}
+              onPress={() =>
+                exportPdf(records, {
+                  period: getPeriodLabel(),
+                  doctorNote: doctorNote.trim() || undefined,
+                  includePPMAP: includePPMAPInExport,
+                })
+              }
+              disabled={isExporting}
+              accessibilityRole="button"
+              accessibilityLabel={t('analytics.exportPdf')}
+              accessibilityState={{ disabled: isExporting }}
+            >
+              <Icon name="share-outline" size={22} color={colors.surface} />
+              <Text style={[styles.exportButtonText, { color: colors.surface }]}>
+                {activeAction === 'share' ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
+              </Text>
+            </Pressable>
+          </View>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -620,13 +660,21 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
+  exportButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   exportButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 18,
     borderRadius: 16,
     gap: 10,
+  },
+  exportButtonSecondary: {
+    borderWidth: 1.5,
   },
   exportButtonText: {
     fontSize: 16,
