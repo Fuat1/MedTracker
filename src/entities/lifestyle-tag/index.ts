@@ -1,11 +1,5 @@
-export type LifestyleTag =
-  | 'salt'
-  | 'stress'
-  | 'alcohol'
-  | 'exercise'
-  | 'medication'
-  | 'caffeine'
-  | 'poor_sleep';
+import type { LifestyleTag } from '../../shared/types/lifestyle-tag';
+export type { LifestyleTag } from '../../shared/types/lifestyle-tag';
 
 export interface LifestyleTagMeta {
   key: LifestyleTag;

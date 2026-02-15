@@ -2,8 +2,10 @@ import {
   BP_LIMITS,
   BP_CATEGORIES,
   BP_CATEGORY_COLORS,
+  BP_THRESHOLDS,
   type BPCategory,
 } from '../../shared/config';
+import type { RangeElevatedRule } from '../../shared/config/bp-guidelines';
 import { BP_GUIDELINES, type BPGuideline } from '../../shared/config/settings';
 import i18n from '../../shared/lib/i18n';
 
@@ -19,97 +21,56 @@ export function classifyBP(
   diastolic: number,
   guideline: BPGuideline = BP_GUIDELINES.AHA_ACC,
 ): BPCategory {
-  // AHA/ACC Guidelines (USA) - 2025 Official Guidelines
-  if (guideline === BP_GUIDELINES.AHA_ACC) {
-    if (systolic >= 180 || diastolic >= 120) {
-      return BP_CATEGORIES.CRISIS;
-    }
-    if (systolic >= 140 || diastolic >= 90) {
-      return BP_CATEGORIES.STAGE_2;
-    }
-    if (systolic >= 130 || diastolic >= 80) {
-      return BP_CATEGORIES.STAGE_1;
-    }
-    if (systolic >= 120 && diastolic < 80) {
-      return BP_CATEGORIES.ELEVATED;
-    }
-    return BP_CATEGORIES.NORMAL;
+  const t = BP_THRESHOLDS[guideline];
+
+  // Unknown guideline → fall back to AHA/ACC
+  if (!t) {
+    return classifyBP(systolic, diastolic, BP_GUIDELINES.AHA_ACC);
   }
 
-  // ESC/ESH Guidelines (Europe) - 2018 framework
-  // Note: ESC 2024 uses 3-category system with DBP 70 boundary (not yet implemented)
-  if (guideline === BP_GUIDELINES.ESC_ESH) {
-    if (systolic >= 180 || diastolic >= 110) {
-      return BP_CATEGORIES.CRISIS;
-    }
-    if (systolic >= 160 || diastolic >= 100) {
-      return BP_CATEGORIES.STAGE_2;
-    }
-    if (systolic >= 140 || diastolic >= 90) {
-      return BP_CATEGORIES.STAGE_1;
-    }
-    // High Normal (Elevated): SBP 130-139 OR DBP 85-89
-    // Uses OR logic to prevent classification gap (e.g., 125/87 would be unclassified with AND)
-    if (systolic >= 130 || (diastolic >= 85 && diastolic < 90)) {
-      return BP_CATEGORIES.ELEVATED;
-    }
-    // Normal: SBP <130 AND DBP <85
-    if (systolic < 130 && diastolic < 85) {
-      return BP_CATEGORIES.NORMAL;
-    }
-    return BP_CATEGORIES.NORMAL; // fallback
+  // Crisis
+  if (systolic >= t.crisis.systolic || diastolic >= t.crisis.diastolic) {
+    return BP_CATEGORIES.CRISIS;
+  }
+  // Stage 2
+  if (systolic >= t.stage_2.systolic || diastolic >= t.stage_2.diastolic) {
+    return BP_CATEGORIES.STAGE_2;
+  }
+  // Stage 1
+  if (systolic >= t.stage_1.systolic || diastolic >= t.stage_1.diastolic) {
+    return BP_CATEGORIES.STAGE_1;
   }
 
-  // JSH Guidelines (Japan) - 2025
-  // Key difference from ESC/ESH: DBP boundary is 80 mmHg (not 85)
-  if (guideline === BP_GUIDELINES.JSH) {
-    if (systolic >= 180 || diastolic >= 110) {
-      return BP_CATEGORIES.CRISIS;
+  // Elevated — logic varies by guideline type
+  const elev = t.elevated;
+  if ('diastolicMin' in elev) {
+    // Range-based elevated (ESC/ESH, JSH, WHO)
+    const rule = elev as RangeElevatedRule;
+    if (rule.systolicBelow !== undefined) {
+      // WHO: uses AND logic with explicit SBP range (130-139 AND/OR DBP 85-89)
+      if (
+        (systolic >= rule.systolicMin && systolic < rule.systolicBelow) ||
+        (diastolic >= rule.diastolicMin && diastolic < rule.diastolicBelow)
+      ) {
+        return BP_CATEGORIES.ELEVATED;
+      }
+    } else {
+      // ESC/ESH, JSH: SBP >= min OR DBP in range
+      if (
+        systolic >= rule.systolicMin ||
+        (diastolic >= rule.diastolicMin && diastolic < rule.diastolicBelow)
+      ) {
+        return BP_CATEGORIES.ELEVATED;
+      }
     }
-    if (systolic >= 160 || diastolic >= 100) {
-      return BP_CATEGORIES.STAGE_2;
-    }
-    if (systolic >= 140 || diastolic >= 90) {
-      return BP_CATEGORIES.STAGE_1;
-    }
-    // Elevated BP: SBP 130-139 OR DBP 80-89
-    // JSH uses DBP 80 (not 85 like ESC/ESH)
-    // Uses OR logic to prevent classification gap (e.g., 125/82 would be unclassified with AND)
-    if (systolic >= 130 || (diastolic >= 80 && diastolic < 90)) {
+  } else {
+    // AHA/ACC: SBP >= min AND DBP < threshold
+    if (systolic >= elev.systolicMin && diastolic < elev.diastolicBelow) {
       return BP_CATEGORIES.ELEVATED;
     }
-    // Normal BP: SBP <130 AND DBP <80
-    if (systolic < 130 && diastolic < 80) {
-      return BP_CATEGORIES.NORMAL;
-    }
-    return BP_CATEGORIES.NORMAL; // fallback
   }
 
-  // WHO/ISH Guidelines (World Health Organization / International Society of Hypertension) - 1999
-  // Note: WHO 2021 guideline (WHO/UCN/NCD/20.07) contains no BP classification table
-  // These thresholds are from the WHO/ISH 1999 classification system
-  // Source: Nugroho et al., Annals of Medicine, 2022
-  if (guideline === BP_GUIDELINES.WHO) {
-    // WHO uses 180/110 as crisis threshold (similar to ESC/ESH)
-    if (systolic >= 180 || diastolic >= 110) {
-      return BP_CATEGORIES.CRISIS;
-    }
-    // WHO defines hypertension as ≥140/≥90 but uses similar staging
-    if (systolic >= 160 || diastolic >= 100) {
-      return BP_CATEGORIES.STAGE_2;
-    }
-    if (systolic >= 140 || diastolic >= 90) {
-      return BP_CATEGORIES.STAGE_1;
-    }
-    // WHO considers 130-139/85-89 as high normal (elevated)
-    if ((systolic >= 130 && systolic < 140) || (diastolic >= 85 && diastolic < 90)) {
-      return BP_CATEGORIES.ELEVATED;
-    }
-    return BP_CATEGORIES.NORMAL;
-  }
-
-  // Default to AHA guidelines
-  return classifyBP(systolic, diastolic, BP_GUIDELINES.AHA_ACC);
+  return BP_CATEGORIES.NORMAL;
 }
 
 // Get color for BP category
@@ -131,7 +92,7 @@ export function getBPCategoryLabel(category: BPCategory): string {
     case BP_CATEGORIES.CRISIS:
       return i18n.t('medical:categories.crisis');
     default:
-      return 'Unknown';
+      return i18n.t('medical:categories.unknown');
   }
 }
 

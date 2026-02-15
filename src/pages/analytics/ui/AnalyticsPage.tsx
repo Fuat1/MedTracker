@@ -15,13 +15,12 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
 import { useExportPdf } from '../../../features/export-pdf';
-import { calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure';
+import { calculatePulsePressure, calculateMAP, computeTimeInRange } from '../../../entities/blood-pressure';
 import { useTheme } from '../../../shared/lib/use-theme';
 import {
   computeWeeklyAverage,
   computeAmPmComparison,
   computeCircadianBreakdown,
-  computeTimeInRange,
   detectMorningSurge,
 } from '../../../shared/lib';
 import {

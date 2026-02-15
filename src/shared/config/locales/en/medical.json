@@ -4,7 +4,8 @@
     "elevated": "Elevated",
     "stage1": "High BP Stage 1",
     "stage2": "High BP Stage 2",
-    "crisis": "Hypertensive Crisis"
+    "crisis": "Hypertensive Crisis",
+    "unknown": "Unknown"
   },
   "crisis": {
     "title": "⚠️ Hypertensive Crisis",

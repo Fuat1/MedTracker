@@ -7,6 +7,23 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+jest.mock('../i18n', () => ({
+  __esModule: true,
+  default: {
+    t: (key: string, opts?: { count?: number }) => {
+      const count = opts?.count;
+      const map: Record<string, string> = {
+        'common:time.justNow': 'Just now',
+      };
+      if (map[key]) return map[key];
+      if (key === 'common:time.minute') return count === 1 ? '1 minute ago' : `${count} minutes ago`;
+      if (key === 'common:time.hour') return count === 1 ? '1 hour ago' : `${count} hours ago`;
+      if (key === 'common:time.day') return count === 1 ? '1 day ago' : `${count} days ago`;
+      return key;
+    },
+  },
+}));
+
 import {
   generateUUID,
   getCurrentTimestamp,

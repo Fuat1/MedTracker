@@ -2,6 +2,11 @@ import { classifyBP, calculatePulsePressure, calculateMAP } from '../../../entit
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { BPGuideline } from '../../../shared/config/settings';
 import type { ReportStats } from './compute-report-stats';
+import i18n from '../../../shared/lib/i18n';
+
+const t = (key: string, opts?: Record<string, unknown>) =>
+  // Dynamic key construction — safe: keys validated by i18n JSON at build time
+  (i18n.t as Function)(`pages:analytics.report.${key}`, opts) as string;
 
 export interface ReportOptions {
   period: string;
@@ -36,13 +41,22 @@ function formatLocation(loc: string): string {
   return loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-const CATEGORY_DISPLAY: Record<string, { label: string; color: string }> = {
-  normal:   { label: 'Normal',  color: '#22c55e' },
-  elevated: { label: 'Elevated', color: '#eab308' },
-  stage_1:  { label: 'Stage 1', color: '#f97316' },
-  stage_2:  { label: 'Stage 2', color: '#ef4444' },
-  crisis:   { label: 'Crisis',  color: '#dc2626' },
-};
+import { BP_CATEGORY_COLORS, BP_CATEGORIES } from '../../../shared/config';
+
+function getCategoryDisplay(catKey: string): { label: string; color: string } {
+  const colorMap: Record<string, string> = BP_CATEGORY_COLORS;
+  const labelMap: Record<string, string> = {
+    normal:   i18n.t('medical:categories.normal'),
+    elevated: i18n.t('medical:categories.elevated'),
+    stage_1:  i18n.t('medical:categories.stage1'),
+    stage_2:  i18n.t('medical:categories.stage2'),
+    crisis:   i18n.t('medical:categories.crisis'),
+  };
+  return {
+    label: labelMap[catKey] ?? catKey,
+    color: colorMap[catKey] ?? colorMap[BP_CATEGORIES.NORMAL],
+  };
+}
 
 export function generateReportHtml(
   records: BPRecord[],
@@ -68,7 +82,7 @@ export function generateReportHtml(
   const readingRows = sorted
     .map(r => {
       const catKey = classifyBP(r.systolic, r.diastolic, (options.guideline ?? 'aha_acc') as BPGuideline);
-      const cat = CATEGORY_DISPLAY[catKey] ?? CATEGORY_DISPLAY.normal;
+      const cat = getCategoryDisplay(catKey);
       const pp = calculatePulsePressure(r.systolic, r.diastolic);
       const map = calculateMAP(r.systolic, r.diastolic);
 
@@ -92,19 +106,19 @@ export function generateReportHtml(
 
   const doctorNoteSection = doctorNote?.trim()
     ? `<div class="notes-box">
-        <h3 style="margin:0 0 8px;color:#1a1a2e;">Patient Notes</h3>
+        <h3 style="margin:0 0 8px;color:#1a1a2e;">${t('patientNotes')}</h3>
         <p style="margin:0;color:#374151;">${escapeHtml(doctorNote.trim())}</p>
       </div>`
     : '';
 
   const ppMapStatsBoxes = includePPMAP
     ? `  <div class="stat-box">
-    <div class="stat-label">Average PP</div>
+    <div class="stat-label">${t('averagePP')}</div>
     <div class="stat-value">${stats.avgPP}</div>
     <div class="stat-unit">mmHg</div>
   </div>
   <div class="stat-box">
-    <div class="stat-label">Average MAP</div>
+    <div class="stat-label">${t('averageMAP')}</div>
     <div class="stat-value">${stats.avgMAP}</div>
     <div class="stat-unit">mmHg</div>
   </div>`
@@ -115,7 +129,7 @@ export function generateReportHtml(
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Blood Pressure Report – ${escapeHtml(userName)}</title>
+<title>${t('title')} – ${escapeHtml(userName)}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #1a1a2e; background: #fff; padding: 32px; }
@@ -143,46 +157,46 @@ export function generateReportHtml(
 
 <div class="header">
   <div class="header-left">
-    <h1>MedTracker — Blood Pressure Report</h1>
+    <h1>MedTracker — ${t('title')}</h1>
     <div class="header-meta">
-      <strong>Patient:</strong> ${escapeHtml(userName)} &nbsp;|&nbsp;
-      <strong>Generated:</strong> ${escapeHtml(generatedDate)}<br/>
-      <strong>Period:</strong> ${escapeHtml(period)} &nbsp;|&nbsp;
-      <strong>Guideline:</strong> ${escapeHtml(guidelineName)}
+      <strong>${t('patient')}:</strong> ${escapeHtml(userName)} &nbsp;|&nbsp;
+      <strong>${t('generated')}:</strong> ${escapeHtml(generatedDate)}<br/>
+      <strong>${t('period')}:</strong> ${escapeHtml(period)} &nbsp;|&nbsp;
+      <strong>${t('guideline')}:</strong> ${escapeHtml(guidelineName)}
     </div>
   </div>
 </div>
 
-<h2>Summary</h2>
+<h2>${t('summary')}</h2>
 <div class="stats-grid">
   <div class="stat-box">
-    <div class="stat-label">Total Readings</div>
+    <div class="stat-label">${t('totalReadings')}</div>
     <div class="stat-value">${stats.total}</div>
-    <div class="stat-unit">readings</div>
+    <div class="stat-unit">${t('readings')}</div>
   </div>
   <div class="stat-box">
-    <div class="stat-label">Average BP</div>
+    <div class="stat-label">${t('averageBP')}</div>
     <div class="stat-value">${stats.avgSystolic}/${stats.avgDiastolic}</div>
     <div class="stat-unit">mmHg</div>
   </div>
   <div class="stat-box">
-    <div class="stat-label">Avg Pulse</div>
+    <div class="stat-label">${t('avgPulse')}</div>
     <div class="stat-value">${stats.avgPulse > 0 ? stats.avgPulse : '–'}</div>
     <div class="stat-unit">BPM</div>
   </div>
 ${ppMapStatsBoxes}
   <div class="stat-box">
-    <div class="stat-label">Min Systolic</div>
+    <div class="stat-label">${t('minSystolic')}</div>
     <div class="stat-value">${stats.minSystolic}</div>
     <div class="stat-unit">mmHg</div>
   </div>
   <div class="stat-box">
-    <div class="stat-label">Max Systolic</div>
+    <div class="stat-label">${t('maxSystolic')}</div>
     <div class="stat-value">${stats.maxSystolic}</div>
     <div class="stat-unit">mmHg</div>
   </div>
   <div class="stat-box">
-    <div class="stat-label">Range (Dia)</div>
+    <div class="stat-label">${t('rangeDia')}</div>
     <div class="stat-value">${stats.minDiastolic}–${stats.maxDiastolic}</div>
     <div class="stat-unit">mmHg</div>
   </div>
@@ -190,39 +204,39 @@ ${ppMapStatsBoxes}
 
 ${doctorNoteSection}
 
-<h2>Blood Pressure Trend</h2>
+<h2>${t('bpTrend')}</h2>
 <div class="chart-container">
   ${chartSvg}
 </div>
 
-<h2>Category Breakdown</h2>
+<h2>${t('categoryBreakdown')}</h2>
 <table>
-  <thead><tr><th>Category</th><th>Range</th><th style="text-align:center;">Count</th><th style="text-align:center;">%</th></tr></thead>
+  <thead><tr><th>${t('columns.category')}</th><th>${t('columns.range')}</th><th style="text-align:center;">${t('columns.count')}</th><th style="text-align:center;">%</th></tr></thead>
   <tbody>${categoryRows}</tbody>
 </table>
 
-<h2>All Readings (${stats.total})</h2>
+<h2>${t('allReadings')} (${stats.total})</h2>
 <table>
   <thead>
     <tr>
-      <th>Date &amp; Time</th>
-      <th style="text-align:center;">Systolic</th>
-      <th style="text-align:center;">Diastolic</th>
-      <th style="text-align:center;">Pulse</th>
-      ${includePPMAP ? '<th style="text-align:center;">PP</th><th style="text-align:center;">MAP</th>' : ''}
-      <th style="text-align:center;">Category</th>
-      <th>Location</th>
-      <th>Notes</th>
+      <th>${t('columns.dateTime')}</th>
+      <th style="text-align:center;">${t('columns.systolic')}</th>
+      <th style="text-align:center;">${t('columns.diastolic')}</th>
+      <th style="text-align:center;">${t('columns.pulse')}</th>
+      ${includePPMAP ? `<th style="text-align:center;">${t('columns.pp')}</th><th style="text-align:center;">${t('columns.map')}</th>` : ''}
+      <th style="text-align:center;">${t('columns.category')}</th>
+      <th>${t('columns.location')}</th>
+      <th>${t('columns.notes')}</th>
     </tr>
   </thead>
   <tbody>${readingRows}</tbody>
 </table>
 
 <div class="footer">
-  Generated by MedTracker — Encrypted &amp; Offline Blood Pressure Monitor<br/>
-  This report is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
-  Blood pressure classifications are based on ${escapeHtml(guidelineName)} guidelines.
-  Consult your healthcare provider to interpret these readings in the context of your overall health.
+  ${t('generatedBy')} — Encrypted &amp; Offline Blood Pressure Monitor<br/>
+  ${t('disclaimer')}
+  ${t('guidelineNote', { guideline: escapeHtml(guidelineName) })}
+  ${t('consultNote')}
 </div>
 
 </body>

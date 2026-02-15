@@ -1,4 +1,5 @@
 import type { BPRecord } from '../../../shared/api/bp-repository';
+import i18n from '../../../shared/lib/i18n';
 
 // Matches BPTrendChart.tsx fixed range
 const Y_MIN = 70;
@@ -58,7 +59,7 @@ function formatDateLabel(timestamp: number): string {
 export function generateBPChartSvg(records: BPRecord[]): string {
   if (records.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SVG_WIDTH} ${SVG_HEIGHT}" width="${SVG_WIDTH}" height="${SVG_HEIGHT}">
-  <text x="${SVG_WIDTH / 2}" y="${SVG_HEIGHT / 2}" text-anchor="middle" fill="#94a3b8" font-size="18" font-family="Arial, sans-serif">No data</text>
+  <text x="${SVG_WIDTH / 2}" y="${SVG_HEIGHT / 2}" text-anchor="middle" fill="#94a3b8" font-size="18" font-family="Arial, sans-serif">${i18n.t('pages:analytics.noData')}</text>
 </svg>`;
   }
 
@@ -115,9 +116,9 @@ export function generateBPChartSvg(records: BPRecord[]): string {
   <rect x="${PADDING_LEFT}" y="${yElevatedMax.toFixed(1)}" width="${CHART_WIDTH}" height="${elevatedH.toFixed(1)}" fill="${ZONE_COLOR_ELEVATED}" />
   <rect x="${PADDING_LEFT}" y="${yTop}" width="${CHART_WIDTH}" height="${highH.toFixed(1)}" fill="${ZONE_COLOR_HIGH}" />
   <!-- Zone labels -->
-  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yBottom - normalH / 2 + 4).toFixed(1)}" fill="#16a34a" font-size="10" font-family="Arial, sans-serif">Normal</text>
-  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yElevatedMax + elevatedH / 2 + 4).toFixed(1)}" fill="#ca8a04" font-size="10" font-family="Arial, sans-serif">Elevated</text>
-  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yTop + highH / 2 + 4).toFixed(1)}" fill="#dc2626" font-size="10" font-family="Arial, sans-serif">High</text>
+  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yBottom - normalH / 2 + 4).toFixed(1)}" fill="#16a34a" font-size="10" font-family="Arial, sans-serif">${i18n.t('pages:analytics.zones.normal')}</text>
+  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yElevatedMax + elevatedH / 2 + 4).toFixed(1)}" fill="#ca8a04" font-size="10" font-family="Arial, sans-serif">${i18n.t('pages:analytics.zones.elevated')}</text>
+  <text x="${(PADDING_LEFT + CHART_WIDTH + 4).toFixed(1)}" y="${(yTop + highH / 2 + 4).toFixed(1)}" fill="#dc2626" font-size="10" font-family="Arial, sans-serif">${i18n.t('pages:analytics.zones.high')}</text>
   <!-- Chart border -->
   <rect x="${PADDING_LEFT}" y="${PADDING_TOP}" width="${CHART_WIDTH}" height="${CHART_HEIGHT}" fill="none" stroke="#e2e8f0" stroke-width="1" />
   <!-- Y-axis labels -->
@@ -132,8 +133,8 @@ export function generateBPChartSvg(records: BPRecord[]): string {
   ${dots}
   <!-- Legend -->
   <rect x="${PADDING_LEFT}" y="${SVG_HEIGHT - 18}" width="16" height="3" fill="${COLOR_SYSTOLIC}" rx="1"/>
-  <text x="${PADDING_LEFT + 20}" y="${SVG_HEIGHT - 11}" fill="#1a1a2e" font-size="12" font-family="Arial, sans-serif">Systolic</text>
+  <text x="${PADDING_LEFT + 20}" y="${SVG_HEIGHT - 11}" fill="#1a1a2e" font-size="12" font-family="Arial, sans-serif">${i18n.t('pages:analytics.legend.systolic')}</text>
   <rect x="${PADDING_LEFT + 90}" y="${SVG_HEIGHT - 18}" width="16" height="3" fill="${COLOR_DIASTOLIC}" stroke-dasharray="4,2" rx="1"/>
-  <text x="${PADDING_LEFT + 110}" y="${SVG_HEIGHT - 11}" fill="#1a1a2e" font-size="12" font-family="Arial, sans-serif">Diastolic</text>
+  <text x="${PADDING_LEFT + 110}" y="${SVG_HEIGHT - 11}" fill="#1a1a2e" font-size="12" font-family="Arial, sans-serif">${i18n.t('pages:analytics.legend.diastolic')}</text>
 </svg>`;
 }

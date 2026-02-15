@@ -1,3 +1,23 @@
+jest.mock('../../../shared/lib/i18n', () => {
+  const pages = require('../../../shared/config/locales/en/pages.json');
+  return {
+    __esModule: true,
+    default: {
+      t: (key: string) => {
+        const [, ...rest] = key.split(':');
+        const path = rest.join(':');
+        const parts = path.split('.');
+        let current: unknown = pages;
+        for (const part of parts) {
+          if (current == null || typeof current !== 'object') return key;
+          current = (current as Record<string, unknown>)[part];
+        }
+        return typeof current === 'string' ? current : key;
+      },
+    },
+  };
+});
+
 import { generateBPChartSvg } from '../lib/generate-bp-chart-svg';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 
@@ -30,7 +50,7 @@ describe('generateBPChartSvg', () => {
   it('returns empty-state SVG for no records', () => {
     const svg = generateBPChartSvg([]);
     expect(svg).toContain('<svg');
-    expect(svg).toContain('No data');
+    expect(svg).toContain('Not enough data');
   });
 
   it('includes both systolic and diastolic data-series markers', () => {

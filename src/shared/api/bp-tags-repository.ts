@@ -1,6 +1,6 @@
 import { getDatabase } from './db';
 import { generateUUID, getCurrentTimestamp } from '../lib';
-import type { LifestyleTag } from '../../entities/lifestyle-tag';
+import type { LifestyleTag } from '../types/lifestyle-tag';
 
 interface BPTagRow {
   id: string;

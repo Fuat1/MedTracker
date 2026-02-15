@@ -90,29 +90,29 @@ export function CrisisModal({
           { opacity: cardOpacity, transform: [{ scale: cardScale }] },
         ]}
       >
-        <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
 
           {/* Top stripe */}
-          <View style={styles.stripe} />
+          <View style={[styles.stripe, { backgroundColor: colors.crisisRed }]} />
 
           {/* Icon */}
-          <View style={styles.iconCircle}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.crisisRed, shadowColor: colors.crisisRed }]}>
             <Icon name="warning" size={32} color="#ffffff" />
           </View>
 
           {/* Title */}
-          <Text style={styles.title}>
+          <Text style={[styles.title, { color: colors.crisisRed }]}>
             {tMedical('crisis.title')}
           </Text>
 
           {/* BP values */}
-          <View style={styles.valuesRow}>
-            <Text style={styles.valuesText}>
+          <View style={[styles.valuesRow, { backgroundColor: colors.errorBackground, borderColor: colors.crisisBorder }]}>
+            <Text style={[styles.valuesText, { color: colors.crisisRed }]}>
               {systolic}
-              <Text style={styles.valuesDivider}>/</Text>
+              <Text style={[styles.valuesDivider, { color: colors.crisisBorder }]}>/</Text>
               {diastolic}
             </Text>
-            <Text style={styles.valuesUnit}>mmHg</Text>
+            <Text style={[styles.valuesUnit, { color: colors.error }]}>mmHg</Text>
           </View>
 
           {/* Message */}
@@ -133,7 +133,7 @@ export function CrisisModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.confirmButton}
+              style={[styles.confirmButton, { backgroundColor: colors.crisisRed }]}
               onPress={onConfirm}
               activeOpacity={0.85}
             >
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: 'rgba(0,0,0,0.55)', // Intentional: semi-transparent overlay unaffected by theme
   },
   cardWrapper: {
     width: '82%',
@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.22,
     shadowRadius: 20,
@@ -178,18 +177,15 @@ const styles = StyleSheet.create({
   stripe: {
     width: '100%',
     height: 6,
-    backgroundColor: '#dc2626',
   },
   iconCircle: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#dc2626',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 24,
     marginBottom: 14,
-    shadowColor: '#dc2626',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -201,7 +197,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginBottom: 16,
     letterSpacing: -0.3,
-    color: '#dc2626',
   },
   valuesRow: {
     flexDirection: 'row',
@@ -213,25 +208,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginHorizontal: 20,
     marginBottom: 16,
-    backgroundColor: '#fef2f2',
-    borderColor: '#fca5a5',
   },
   valuesText: {
     fontSize: 36,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
-    color: '#dc2626',
     letterSpacing: -1,
   },
   valuesDivider: {
     fontSize: 28,
-    color: '#fca5a5',
   },
   valuesUnit: {
     fontSize: 14,
     fontFamily: FONTS.medium,
     fontWeight: '500',
-    color: '#ef4444',
   },
   message: {
     fontSize: 13,
@@ -265,7 +255,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#dc2626',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,

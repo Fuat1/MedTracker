@@ -161,10 +161,10 @@ export function SettingsPage() {
   const guidelineName = guidelineNameMap[guideline] || 'AHA/ACC';
 
   const warningBannerStyle = {
-    backgroundColor: isDark ? '#422006' : '#fef3c7',
-    borderColor: isDark ? '#92400e' : '#f59e0b',
+    backgroundColor: colors.warningBg,
+    borderColor: colors.warningBorder,
   };
-  const warningTextStyle = { color: isDark ? '#fde68a' : '#92400e' };
+  const warningTextStyle = { color: colors.warningText };
   const cardTitleWithMarginStyle = { color: colors.textPrimary, marginBottom: 16 };
 
   return (
@@ -245,7 +245,7 @@ export function SettingsPage() {
           </View>
 
           <View style={[styles.warningBanner, warningBannerStyle]}>
-            <Icon name="warning-outline" size={18} color={isDark ? '#fbbf24' : '#d97706'} />
+            <Icon name="warning-outline" size={18} color={colors.warningText} />
             <Text style={[styles.warningText, warningTextStyle]}>
               {t('settings.cloudSync.privacyWarning')}
             </Text>

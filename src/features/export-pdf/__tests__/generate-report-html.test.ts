@@ -1,3 +1,37 @@
+jest.mock('../../../shared/lib/i18n', () => {
+  // Load actual English JSON to keep tests assertions unchanged
+  const medical = require('../../../shared/config/locales/en/medical.json');
+  const pages = require('../../../shared/config/locales/en/pages.json');
+
+  function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
+    const parts = path.split('.');
+    let current: unknown = obj;
+    for (const part of parts) {
+      if (current == null || typeof current !== 'object') return undefined;
+      current = (current as Record<string, unknown>)[part];
+    }
+    return typeof current === 'string' ? current : undefined;
+  }
+
+  return {
+    __esModule: true,
+    default: {
+      t: (key: string, opts?: Record<string, unknown>) => {
+        const [ns, ...rest] = key.split(':');
+        const path = rest.join(':');
+        const sources: Record<string, Record<string, unknown>> = { medical, pages };
+        let val = getNestedValue(sources[ns] ?? {}, path) ?? key;
+        if (opts) {
+          Object.entries(opts).forEach(([k, v]) => {
+            val = val.replace(`{{${k}}}`, String(v));
+          });
+        }
+        return val;
+      },
+    },
+  };
+});
+
 import { generateReportHtml } from '../lib/generate-report-html';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { ReportStats } from '../lib/compute-report-stats';

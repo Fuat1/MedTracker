@@ -1,12 +1,10 @@
-// BP validation limits per medical standards and consumer device precedent
-// SBP min 60: Values <60 mmHg incompatible with consciousness in consumer context
-//             (Huawei Watch BP ISO 81060-2:2018 uses 60-230 mmHg)
-// DBP min 40: Values <40 mmHg near-impossible for self-measuring consumer
-//             (AHA hypotension definition: <90/60)
+// BP validation limits aligned with CLAUDE.md safety rules and DB CHECK constraints
+// SBP 40-300: Matches DB CHECK (systolic BETWEEN 40 AND 300)
+// DBP 30-200: Matches DB CHECK (diastolic BETWEEN 30 AND 200)
 // Upper bounds accommodate extreme values (e.g., resistance exercise can exceed 300 SBP)
 export const BP_LIMITS = {
-  systolic: { min: 60, max: 300 },
-  diastolic: { min: 40, max: 200 },
+  systolic: { min: 40, max: 300 },
+  diastolic: { min: 30, max: 200 },
   pulse: { min: 30, max: 250 }, // Athletes can have resting HR in low 30s
 } as const;
 
@@ -55,6 +53,9 @@ export type MeasurementPosture =
 export const DB_CONFIG = {
   name: 'medtracker.db',
 } as const;
+
+// BP classification thresholds
+export * from './bp-guidelines';
 
 // Settings
 export * from './settings';

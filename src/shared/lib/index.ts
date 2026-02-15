@@ -1,3 +1,5 @@
+import i18n from './i18n';
+
 // UUID generation (UUID v4 compatible)
 export function generateUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -49,19 +51,19 @@ export function getRelativeTime(timestamp: number): string {
   const diff = now - timestamp;
 
   if (diff < 60) {
-    return 'Just now';
+    return i18n.t('common:time.justNow');
   }
   if (diff < 3600) {
     const minutes = Math.floor(diff / 60);
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    return i18n.t('common:time.minute', { count: minutes });
   }
   if (diff < 86400) {
     const hours = Math.floor(diff / 3600);
-    return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    return i18n.t('common:time.hour', { count: hours });
   }
   if (diff < 604800) {
     const days = Math.floor(diff / 86400);
-    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    return i18n.t('common:time.day', { count: days });
   }
   return formatDate(timestamp);
 }
@@ -109,7 +111,6 @@ export {
   getTimeWindow,
   computeCircadianBreakdown,
   detectMorningSurge,
-  computeTimeInRange,
   type TimeWindow,
   type CircadianAvg,
   type CircadianBreakdown,

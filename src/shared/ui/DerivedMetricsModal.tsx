@@ -72,7 +72,7 @@ export function DerivedMetricsModal({
   if (!visible) return null;
 
   const iconName = type === 'pp' ? 'pulse' : 'analytics';
-  const iconColor = type === 'pp' ? '#0D9488' : '#6366f1';
+  const iconColor = type === 'pp' ? colors.ppColor : colors.mapColor;
   const formulaTextStyle = { color: colors.textPrimary, fontFamily: FONTS.semiBold, fontWeight: '600' as const };
 
   return (
@@ -97,7 +97,7 @@ export function DerivedMetricsModal({
           { opacity: cardOpacity, transform: [{ scale: cardScale }] },
         ]}
       >
-        <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
           {/* Top stripe */}
           <View style={[styles.stripe, { backgroundColor: iconColor }]} />
 
@@ -178,66 +178,66 @@ export function DerivedMetricsModal({
               <View style={styles.rangesContainer}>
                 {type === 'pp' ? (
                   <>
-                    <View style={[styles.rangeItem, styles.rangeLow]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.errorBackground, borderLeftColor: colors.error }]}>
                       <Icon
                         name="alert-circle"
                         size={16}
-                        color="#ef4444"
+                        color={colors.error}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.pp.ranges.low')}
                       </Text>
                     </View>
-                    <View style={[styles.rangeItem, styles.rangeNormal]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.successBg, borderLeftColor: colors.successText }]}>
                       <Icon
                         name="checkmark-circle"
                         size={16}
-                        color="#22c55e"
+                        color={colors.successText}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.pp.ranges.normal')}
                       </Text>
                     </View>
-                    <View style={[styles.rangeItem, styles.rangeHigh]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.errorBackground, borderLeftColor: colors.error }]}>
                       <Icon
                         name="warning"
                         size={16}
-                        color="#ef4444"
+                        color={colors.error}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.pp.ranges.high')}
                       </Text>
                     </View>
                   </>
                 ) : (
                   <>
-                    <View style={[styles.rangeItem, styles.rangeLow]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.infoBg, borderLeftColor: colors.infoColor }]}>
                       <Icon
                         name="arrow-down-circle"
                         size={16}
-                        color="#3b82f6"
+                        color={colors.infoColor}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.map.ranges.low')}
                       </Text>
                     </View>
-                    <View style={[styles.rangeItem, styles.rangeNormal]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.successBg, borderLeftColor: colors.successText }]}>
                       <Icon
                         name="checkmark-circle"
                         size={16}
-                        color="#22c55e"
+                        color={colors.successText}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.map.ranges.normal')}
                       </Text>
                     </View>
-                    <View style={[styles.rangeItem, styles.rangeHigh]}>
+                    <View style={[styles.rangeItem, { backgroundColor: colors.errorBackground, borderLeftColor: colors.error }]}>
                       <Icon
                         name="warning"
                         size={16}
-                        color="#ef4444"
+                        color={colors.error}
                       />
-                      <Text style={styles.rangeText}>
+                      <Text style={[styles.rangeText, { color: colors.textPrimary }]}>
                         {tMedical('derivedMetrics.map.ranges.high')}
                       </Text>
                     </View>
@@ -316,7 +316,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.22,
     shadowRadius: 20,
@@ -335,7 +334,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
     marginBottom: 12,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -420,23 +418,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderLeftWidth: 3,
   },
-  rangeNormal: {
-    backgroundColor: '#f0fdf4',
-    borderLeftColor: '#22c55e',
-  },
-  rangeHigh: {
-    backgroundColor: '#fef2f2',
-    borderLeftColor: '#ef4444',
-  },
-  rangeLow: {
-    backgroundColor: '#fef2f2',
-    borderLeftColor: '#ef4444',
-  },
   rangeText: {
     fontSize: 13,
     fontFamily: FONTS.medium,
     fontWeight: '500',
-    color: '#1f2937',
   },
   referenceSection: {
     flexDirection: 'row',

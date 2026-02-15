@@ -229,8 +229,8 @@ describe('validateBPValues', () => {
     expect(result.errors).toHaveLength(1);
   });
 
-  it('rejects systolic below BP_LIMITS.systolic.min (60)', () => {
-    const result = validateBPValues(50, 40);
+  it('rejects systolic below BP_LIMITS.systolic.min (40)', () => {
+    const result = validateBPValues(39, 35);
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBeGreaterThanOrEqual(1);
   });
@@ -240,8 +240,8 @@ describe('validateBPValues', () => {
     expect(result.isValid).toBe(false);
   });
 
-  it('rejects diastolic below BP_LIMITS.diastolic.min (40)', () => {
-    const result = validateBPValues(120, 30);
+  it('rejects diastolic below BP_LIMITS.diastolic.min (30)', () => {
+    const result = validateBPValues(120, 29);
     expect(result.isValid).toBe(false);
   });
 

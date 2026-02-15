@@ -66,6 +66,28 @@ export interface ThemeColors {
 
   // Semantic status
   successText: string;
+  successBg: string;
+
+  // Info
+  infoBg: string;
+  infoColor: string;
+
+  // Warning
+  warningBg: string;
+  warningText: string;
+  warningBorder: string;
+
+  // Crisis
+  crisisRed: string;
+  crisisBorder: string;
+
+  // Derived metrics
+  ppColor: string;
+  mapColor: string;
+
+  // Morning surge
+  surgeColor: string;
+  surgeBg: string;
 
   // Overlay
   overlay: string;
@@ -116,6 +138,23 @@ export const lightColors: ThemeColors = {
   toggleTrackInactive: '#d1d5db',
   iconCircleBg: 'rgba(13,148,136,0.12)',
   successText: '#16a34a',
+  successBg: '#f0fdf4',
+
+  infoBg: '#eff6ff',
+  infoColor: '#3b82f6',
+
+  warningBg: '#fef3c7',
+  warningText: '#92400e',
+  warningBorder: '#fde68a',
+
+  crisisRed: '#dc2626',
+  crisisBorder: '#fca5a5',
+
+  ppColor: '#0D9488',
+  mapColor: '#6366f1',
+
+  surgeColor: '#f97316',
+  surgeBg: '#fff7ed',
 
   overlay: 'rgba(0,0,0,0.3)',
 
@@ -164,6 +203,23 @@ export const darkColors: ThemeColors = {
   toggleTrackInactive: '#4b5563',
   iconCircleBg: 'rgba(20,184,166,0.15)',
   successText: '#4ade80',
+  successBg: '#14532d',
+
+  infoBg: '#1e3a5f',
+  infoColor: '#60a5fa',
+
+  warningBg: '#422006',
+  warningText: '#fbbf24',
+  warningBorder: '#d97706',
+
+  crisisRed: '#f87171',
+  crisisBorder: '#f87171',
+
+  ppColor: '#14B8A6',
+  mapColor: '#818cf8',
+
+  surgeColor: '#fb923c',
+  surgeBg: '#431407',
 
   overlay: 'rgba(0,0,0,0.6)',
 
@@ -222,6 +278,23 @@ export const highContrastColors: ThemeColors = {
   toggleTrackInactive: '#CCCCCC',
   iconCircleBg: '#E6E6E6',
   successText: '#006600',
+  successBg: '#E8F5E9',
+
+  infoBg: '#E3F2FD',
+  infoColor: '#1565C0',
+
+  warningBg: '#FFF9C4',
+  warningText: '#5D4037',
+  warningBorder: '#FFD54F',
+
+  crisisRed: '#CC0000',
+  crisisBorder: '#CC0000',
+
+  ppColor: '#0D9488',
+  mapColor: '#4338CA',
+
+  surgeColor: '#E65100',
+  surgeBg: '#FFF3E0',
 
   overlay: 'rgba(0,0,0,0.5)',
 

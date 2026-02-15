@@ -2,9 +2,7 @@ import {
   getTimeWindow,
   computeCircadianBreakdown,
   detectMorningSurge,
-  computeTimeInRange,
 } from '../circadian-utils';
-import { BP_GUIDELINES } from '../../config/settings';
 import type { BPRecord } from '../../api/bp-repository';
 
 // Helper — timestamp at specific hour today
@@ -130,22 +128,3 @@ describe('detectMorningSurge', () => {
   });
 });
 
-describe('computeTimeInRange', () => {
-  it('returns all zeros for empty records', () => {
-    const result = computeTimeInRange([], BP_GUIDELINES.AHA_ACC);
-    expect(result.overall.normal).toBe(0);
-  });
-
-  it('correctly classifies and computes percentages (AHA/ACC)', () => {
-    const records = [
-      makeRecord(115, 75, atHour(7)),  // normal
-      makeRecord(115, 75, atHour(8)),  // normal
-      makeRecord(125, 79, atHour(9)),  // elevated
-      makeRecord(145, 92, atHour(10)), // stage2
-    ];
-    const result = computeTimeInRange(records, BP_GUIDELINES.AHA_ACC);
-    expect(result.overall.normal).toBe(50);
-    expect(result.overall.elevated).toBe(25);
-    expect(result.overall.stage2).toBe(25);
-  });
-});
