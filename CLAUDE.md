@@ -96,30 +96,6 @@ npx react-native run-ios            # Build iOS
 
 ## Known Violations (Tech Debt)
 
-Identified 2026-02-15. Updated 2026-02-15.
-
-### Resolved (2026-02-15)
-- ~~Hardcoded BP thresholds in charts~~ → Fixed: BPTrendChart/generate-bp-chart-svg now import from bp-guidelines.ts
-- ~~Widget-to-widget import~~ → Fixed: BPRecordsList uses render prop for BPRecordCard
-- ~~CrisisModal missing a11y~~ → Fixed: Added accessibilityRole="alert" + accessibilityLiveRegion
-- ~~TouchableOpacity → Pressable~~ → Fixed: Replaced across all files
-- ~~Missing useCallback on renderItem~~ → Fixed: BPRecordsList callbacks wrapped
-- ~~Hardcoded colors~~ → Fixed: BPEntryForm, SettingsPage, AnalyticsPage, Toast, providers, HomePage now use useTheme()
-- ~~Hardcoded strings~~ → Fixed: "Show PP", "Show MAP", "Initializing...", DerivedMetricsModal disclaimer
-- ~~BreathingGuide memory leak~~ → Fixed: setTimeout cleanup in useEffect
-- ~~fontWeight without fontFamily~~ → Fixed: BPEntryForm now uses both
-- ~~No Error Boundaries~~ → Fixed: ErrorBoundary component wrapping Navigation
-- ~~No console stripping~~ → Fixed: babel-plugin-transform-remove-console added for production builds
-- ~~No BackHandler~~ → Fixed: CrisisModal and DerivedMetricsModal handle Android back button
-- ~~No InteractionManager usage~~ → Fixed: PDF export deferred with runAfterInteractions
-- ~~Hardcoded colors in generate-bp-chart-svg.ts~~ → Fixed: Uses lightColors from theme config
-- ~~ProGuard/R8 disabled~~ → Fixed: Enabled with shrinkResources, proguard-android-optimize, and React Native keep rules
-- ~~No ABI splits~~ → Fixed: Per-architecture APKs (arm64-v8a, armeabi-v7a, x86, x86_64) + universal
-- ~~Hardcoded AM/PM strings~~ → Fixed: record-utils.ts uses i18n.t('common:timePeriod.am/pm')
-- ~~Accessibility attributes missing~~ → Fixed: OptionChip, SettingsPage, AnalyticsPage, HomePage, CustomTabBar, DateTimePicker all have accessibilityRole + accessibilityLabel
-- ~~TouchableOpacity in CustomTabBar~~ → Fixed: Replaced with Pressable + proper tab/button roles
-- ~~TouchableOpacity in DateTimePicker~~ → Fixed: Replaced with Pressable + a11y labels on all buttons
-
 ## Context Compaction Rules
 
 **When Claude Code compacts context, MUST preserve:**
