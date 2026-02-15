@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
@@ -15,15 +15,17 @@ interface SaveButtonProps {
 export function SaveButton({ label, isValid, isLoading, onPress, fontScale = 1 }: SaveButtonProps) {
   const { colors } = useTheme();
   return (
-    <TouchableOpacity
+    <Pressable
       style={[styles.button, { backgroundColor: isValid ? colors.accent : colors.border }]}
       onPress={onPress}
       disabled={!isValid || isLoading}
-      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: !isValid || isLoading }}
     >
-      <Icon name="checkmark-circle" size={20} color="#ffffff" />
-      <Text style={[styles.buttonText, { fontSize: 16 * fontScale }]}>{label}</Text>
-    </TouchableOpacity>
+      <Icon name="checkmark-circle" size={20} color={colors.surface} />
+      <Text style={[styles.buttonText, { fontSize: 16 * fontScale, color: colors.surface }]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -37,7 +39,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   buttonText: {
-    color: '#ffffff',
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },

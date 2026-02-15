@@ -22,6 +22,10 @@
     "analytics": "Analytics",
     "settings": "Settings"
   },
+  "initialization": {
+    "error": "Initialization Error",
+    "loading": "Initializing..."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -65,6 +69,10 @@
   "a11y": {
     "backspace": "Backspace",
     "clear": "Clear"
+  },
+  "timePeriod": {
+    "am": "AM",
+    "pm": "PM"
   },
   "dateTime": {
     "selectTime": "Select Date & Time",

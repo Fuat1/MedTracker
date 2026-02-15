@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 
@@ -12,17 +12,19 @@ interface OptionChipProps {
 export function OptionChip({ label, selected, onPress }: OptionChipProps) {
   const { colors } = useTheme();
   const chipBgStyle = { backgroundColor: selected ? colors.accent : colors.surfaceSecondary };
-  const chipTextStyle = { color: selected ? '#ffffff' : colors.textSecondary };
+  const chipTextStyle = { color: selected ? colors.surface : colors.textSecondary };
   return (
-    <TouchableOpacity
+    <Pressable
       style={[styles.chip, chipBgStyle]}
       onPress={onPress}
-      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected }}
     >
       <Text style={[styles.chipText, chipTextStyle]}>
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -31,7 +33,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 20,
-    minHeight: 36,
+    minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },

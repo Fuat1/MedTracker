@@ -6,6 +6,7 @@ import { HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage } fr
 import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
+import { ErrorBoundary } from '../providers/ErrorBoundary';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export type RootTabParamList = {
@@ -48,6 +49,7 @@ function TabNavigator() {
 
 export function Navigation() {
   return (
+    <ErrorBoundary>
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
@@ -81,5 +83,6 @@ export function Navigation() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </ErrorBoundary>
   );
 }

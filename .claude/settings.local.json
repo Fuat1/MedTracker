@@ -56,7 +56,10 @@
       "Bash(wc:*)",
       "Bash(python -c:*)",
       "Bash(npm test:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(pod install)",
+      "Bash(git -C /c/Users/fuats/Desktop/Workdir/MedTracker log --oneline -20)",
+      "Bash(python3:*)"
     ]
   },
   "model": "sonnet",

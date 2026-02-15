@@ -2,10 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Animated,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
@@ -69,6 +70,16 @@ export function DerivedMetricsModal({
     }
   }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (!visible) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose();
+      return true;
+    });
+    return () => handler.remove();
+  }, [visible, onClose]);
+
   if (!visible) return null;
 
   const iconName = type === 'pp' ? 'pulse' : 'analytics';
@@ -82,9 +93,8 @@ export function DerivedMetricsModal({
         style={[styles.backdrop, { opacity: backdropOpacity }]}
         pointerEvents="auto"
       >
-        <TouchableOpacity
+        <Pressable
           style={StyleSheet.absoluteFillObject}
-          activeOpacity={1}
           onPress={onClose}
         />
       </Animated.View>
@@ -103,7 +113,7 @@ export function DerivedMetricsModal({
 
           {/* Icon */}
           <View style={[styles.iconCircle, { backgroundColor: iconColor }]}>
-            <Icon name={iconName} size={32} color="#ffffff" />
+            <Icon name={iconName} size={32} color={colors.surface} />
           </View>
 
           {/* Title */}
@@ -141,7 +151,7 @@ export function DerivedMetricsModal({
             {/* Definition */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                What is it?
+                {tMedical('derivedMetrics.sections.whatIsIt')}
               </Text>
               <Text style={[styles.bodyText, { color: colors.textSecondary }]}>
                 {tMedical(`derivedMetrics.${type}.definition`)}
@@ -151,7 +161,7 @@ export function DerivedMetricsModal({
             {/* Formula */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                Formula
+                {tMedical('derivedMetrics.sections.formula')}
               </Text>
               <View
                 style={[
@@ -173,7 +183,7 @@ export function DerivedMetricsModal({
             {/* Normal Ranges */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                Normal Ranges
+                {tMedical('derivedMetrics.sections.normalRanges')}
               </Text>
               <View style={styles.rangesContainer}>
                 {type === 'pp' ? (
@@ -249,7 +259,7 @@ export function DerivedMetricsModal({
             {/* Clinical Significance */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                Clinical Significance
+                {tMedical('derivedMetrics.sections.clinicalSignificance')}
               </Text>
               <Text style={[styles.bodyText, { color: colors.textSecondary }]}>
                 {tMedical(`derivedMetrics.${type}.significance`)}
@@ -276,21 +286,18 @@ export function DerivedMetricsModal({
               ]}
             >
               <Text style={[styles.disclaimerText, { color: colors.textSecondary }]}>
-                This information is for educational purposes only. Always consult
-                your healthcare provider for medical interpretation of your blood
-                pressure readings.
+                {tMedical('derivedMetrics.disclaimer')}
               </Text>
             </View>
           </ScrollView>
 
           {/* Close Button */}
-          <TouchableOpacity
+          <Pressable
             style={[styles.closeButton, { backgroundColor: colors.accent }]}
             onPress={onClose}
-            activeOpacity={0.85}
           >
-            <Text style={styles.closeText}>{tCommon('buttons.done')}</Text>
-          </TouchableOpacity>
+            <Text style={[styles.closeText, { color: colors.surface }]}>{tCommon('buttons.done')}</Text>
+          </Pressable>
         </View>
       </Animated.View>
     </View>
@@ -458,6 +465,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: FONTS.bold,
     fontWeight: '700',
-    color: '#ffffff',
   },
 });

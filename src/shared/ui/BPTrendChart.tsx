@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Circle, Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
+import { BP_THRESHOLDS } from '../config/bp-guidelines';
 
 interface DataPoint {
   systolic: number;
@@ -29,6 +30,7 @@ interface BPTrendChartProps {
     pp?: string;
     map?: string;
   };
+  guidelineId?: string;
 }
 
 export function BPTrendChart({
@@ -40,6 +42,7 @@ export function BPTrendChart({
   showMAP = false,
   zoneLabels = { normal: 'Normal', elevated: 'Elevated', high: 'High' },
   legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic', pp: 'PP', map: 'MAP' },
+  guidelineId = 'aha_acc',
 }: BPTrendChartProps) {
   const { colors } = useTheme();
 
@@ -63,9 +66,10 @@ export function BPTrendChart({
   const Y_MAX = 180;
   const Y_RANGE = Y_MAX - Y_MIN;
 
-  // BP zone thresholds (AHA/ACC)
-  const ZONE_NORMAL_MAX = 120;
-  const ZONE_ELEVATED_MAX = 140;
+  // BP zone thresholds (from selected guideline)
+  const guideline = BP_THRESHOLDS[guidelineId] || BP_THRESHOLDS.aha_acc;
+  const ZONE_NORMAL_MAX = guideline.normalBelow.systolic;
+  const ZONE_ELEVATED_MAX = guideline.stage_2.systolic;
 
   // Calculate point positions
   const stepX = data.length > 1 ? chartWidth / (data.length - 1) : 0;
@@ -205,12 +209,12 @@ export function BPTrendChart({
           />
         )}
 
-        {/* MAP line (dotted, orange) */}
+        {/* MAP line (dotted) */}
         {showMAP && data.length > 1 && (
           <Path
             d={mapPath}
             fill="none"
-            stroke="#f97316"
+            stroke={colors.mapColor}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -218,12 +222,12 @@ export function BPTrendChart({
           />
         )}
 
-        {/* PP line (dash-dot, purple) */}
+        {/* PP line (dash-dot) */}
         {showPP && data.length > 1 && (
           <Path
             d={ppPath}
             fill="none"
-            stroke="#a855f7"
+            stroke={colors.ppColor}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -264,7 +268,7 @@ export function BPTrendChart({
             cy={getY(d.map || 0)}
             r={3}
             fill={colors.chartDot}
-            stroke="#f97316"
+            stroke={colors.mapColor}
             strokeWidth={2}
           />
         ))}
@@ -277,7 +281,7 @@ export function BPTrendChart({
             cy={getY(d.pp || 0)}
             r={3}
             fill={colors.chartDot}
-            stroke="#a855f7"
+            stroke={colors.ppColor}
             strokeWidth={2}
           />
         ))}
@@ -323,7 +327,7 @@ export function BPTrendChart({
         {/* PP legend */}
         {showPP && (
           <>
-            <Circle cx={PADDING_LEFT + 182} cy={legendY} r={5} fill="#a855f7" />
+            <Circle cx={PADDING_LEFT + 182} cy={legendY} r={5} fill={colors.ppColor} />
             <SvgText
               x={PADDING_LEFT + 192}
               y={legendY + 4}
@@ -339,7 +343,7 @@ export function BPTrendChart({
         {/* MAP legend */}
         {showMAP && (
           <>
-            <Circle cx={PADDING_LEFT + (showPP ? 232 : 182)} cy={legendY} r={5} fill="#f97316" />
+            <Circle cx={PADDING_LEFT + (showPP ? 232 : 182)} cy={legendY} r={5} fill={colors.mapColor} />
             <SvgText
               x={PADDING_LEFT + (showPP ? 242 : 192)}
               y={legendY + 4}

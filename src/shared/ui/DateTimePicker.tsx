@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   Modal,
   StyleSheet,
 } from 'react-native';
@@ -78,7 +78,7 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
 
   return (
     <>
-      <TouchableOpacity
+      <Pressable
         style={[
           styles.trigger,
           {
@@ -88,14 +88,15 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
         ]}
         onPress={() => !disabled && setModalVisible(true)}
         disabled={disabled}
-        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t('dateTime.selectTime')}
       >
         <Icon name="calendar-outline" size={20} color={colors.textSecondary} />
         <Text style={[styles.triggerText, { color: colors.textPrimary }]}>
           {formatDateTime(value)}
         </Text>
         <Icon name="chevron-down" size={20} color={colors.textSecondary} />
-      </TouchableOpacity>
+      </Pressable>
 
       <Modal
         visible={modalVisible}
@@ -127,22 +128,26 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
                 {t('dateTime.day')}
               </Text>
               <View style={styles.adjusterButtons}>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('day', -1)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.day') + ' -1'}
                 >
                   <Icon name="remove" size={24} color={colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
                 <Text style={[styles.adjusterValue, { color: colors.textPrimary }]}>
                   {tempDate.getDate()}
                 </Text>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('day', 1)}
                   disabled={tempDate >= new Date()}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.day') + ' +1'}
                 >
                   <Icon name="add" size={24} color={tempDate >= new Date() ? colors.textTertiary : colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
 
@@ -152,22 +157,26 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
                 {t('dateTime.hour')}
               </Text>
               <View style={styles.adjusterButtons}>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('hour', -1)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.hour') + ' -1'}
                 >
                   <Icon name="remove" size={24} color={colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
                 <Text style={[styles.adjusterValue, { color: colors.textPrimary }]}>
                   {tempDate.getHours().toString().padStart(2, '0')}
                 </Text>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('hour', 1)}
                   disabled={tempDate >= new Date()}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.hour') + ' +1'}
                 >
                   <Icon name="add" size={24} color={tempDate >= new Date() ? colors.textTertiary : colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
 
@@ -177,54 +186,64 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
                 {t('dateTime.minute')}
               </Text>
               <View style={styles.adjusterButtons}>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('minute', -5)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.minute') + ' -5'}
                 >
                   <Icon name="remove" size={24} color={colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
                 <Text style={[styles.adjusterValue, { color: colors.textPrimary }]}>
                   {tempDate.getMinutes().toString().padStart(2, '0')}
                 </Text>
-                <TouchableOpacity
+                <Pressable
                   style={[styles.adjusterButton, { backgroundColor: colors.surfaceSecondary }]}
                   onPress={() => adjustTime('minute', 5)}
                   disabled={tempDate >= new Date()}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dateTime.minute') + ' +5'}
                 >
                   <Icon name="add" size={24} color={tempDate >= new Date() ? colors.textTertiary : colors.textPrimary} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
 
             {/* Quick Action: Now */}
-            <TouchableOpacity
+            <Pressable
               style={[styles.nowButton, { backgroundColor: colors.accent + '20', borderColor: colors.accent }]}
               onPress={setToNow}
+              accessibilityRole="button"
+              accessibilityLabel={t('dateTime.setToNow')}
             >
               <Icon name="time" size={20} color={colors.accent} />
               <Text style={[styles.nowButtonText, { color: colors.accent }]}>
                 {t('dateTime.setToNow')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Actions */}
             <View style={styles.actions}>
-              <TouchableOpacity
+              <Pressable
                 style={[styles.actionButton, { backgroundColor: colors.surfaceSecondary }]}
                 onPress={handleCancel}
+                accessibilityRole="button"
+                accessibilityLabel={t('buttons.cancel')}
               >
                 <Text style={[styles.actionButtonText, { color: colors.textSecondary }]}>
                   {t('buttons.cancel')}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 style={[styles.actionButton, styles.actionButtonPrimary, { backgroundColor: colors.accent }]}
                 onPress={handleSave}
+                accessibilityRole="button"
+                accessibilityLabel={t('buttons.done')}
               >
                 <Text style={[styles.actionButtonText, styles.actionButtonPrimaryText]}>
                   {t('buttons.done')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>

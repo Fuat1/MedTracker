@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { initDatabase, closeDatabase } from '../../shared/api';
 import '../../shared/lib/i18n'; // Initialize i18n
 import '../../shared/lib/i18n-types'; // Import type definitions
 import { useSettingsStore } from '../../shared/lib/settings-store';
+import { useTheme } from '../../shared/lib/use-theme';
+import { FONTS } from '../../shared/config/theme';
 import i18n from '../../shared/lib/i18n';
 
 const queryClient = new QueryClient({
@@ -24,6 +27,8 @@ export function Providers({ children }: ProvidersProps) {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const language = useSettingsStore((state) => state.language);
+  const { colors } = useTheme();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     async function init() {
@@ -47,20 +52,22 @@ export function Providers({ children }: ProvidersProps) {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>
-          Initialization Error
+      <View style={[styles.errorContainer, { backgroundColor: colors.errorBackground }]}>
+        <Text style={[styles.errorTitle, { color: colors.error }]}>
+          {t('initialization.error')}
         </Text>
-        <Text style={styles.errorMessage}>{error}</Text>
+        <Text style={[styles.errorMessage, { color: colors.error }]}>{error}</Text>
       </View>
     );
   }
 
   if (!isReady) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Initializing...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          {t('initialization.loading')}
+        </Text>
       </View>
     );
   }
@@ -75,27 +82,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fef2f2',
     padding: 16,
   },
   errorTitle: {
-    color: '#dc2626',
     fontSize: 18,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
   },
   errorMessage: {
-    color: '#ef4444',
+    fontFamily: FONTS.regular,
     textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
   },
   loadingText: {
-    color: '#6b7280',
+    fontFamily: FONTS.regular,
     marginTop: 16,
   },
 });

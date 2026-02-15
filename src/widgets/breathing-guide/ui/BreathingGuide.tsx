@@ -33,6 +33,8 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
   const opacity = useSharedValue(0.4);
 
   useEffect(() => {
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
     // Start animation cycle
     const runCycle = () => {
       // Inhale
@@ -47,13 +49,13 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
         easing: Easing.inOut(Easing.ease),
       });
 
-      setTimeout(() => {
+      timeouts.push(setTimeout(() => {
         // Hold
         setCurrentPhase('hold');
         setSecondsRemaining(BREATHING_TECHNIQUE.hold);
-      }, INHALE_DURATION);
+      }, INHALE_DURATION));
 
-      setTimeout(() => {
+      timeouts.push(setTimeout(() => {
         // Exhale
         setCurrentPhase('exhale');
         setSecondsRemaining(BREATHING_TECHNIQUE.exhale);
@@ -65,18 +67,22 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
           duration: EXHALE_DURATION,
           easing: Easing.inOut(Easing.ease),
         });
-      }, INHALE_DURATION + HOLD_DURATION);
+      }, INHALE_DURATION + HOLD_DURATION));
 
-      setTimeout(() => {
+      timeouts.push(setTimeout(() => {
         const newCyclesCompleted = cyclesCompleted + 1;
         setCyclesCompleted(newCyclesCompleted);
         onCycleComplete?.(newCyclesCompleted);
-      }, INHALE_DURATION + HOLD_DURATION + EXHALE_DURATION);
+      }, INHALE_DURATION + HOLD_DURATION + EXHALE_DURATION));
     };
 
     if (cyclesCompleted < totalCycles) {
       runCycle();
     }
+
+    return () => {
+      timeouts.forEach(id => clearTimeout(id));
+    };
   }, [cyclesCompleted, totalCycles, onCycleComplete, scale, opacity]);
 
   // Countdown timer effect

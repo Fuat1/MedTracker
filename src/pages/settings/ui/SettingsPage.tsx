@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Switch, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Pressable, Switch, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
@@ -217,7 +217,9 @@ export function SettingsPage() {
               value={biometricEnabled}
               onValueChange={handleBiometricToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor="#ffffff"
+              thumbColor={colors.surface}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.dataPrivacy.biometricLock')}
             />
           </View>
         </Animated.View>
@@ -239,9 +241,14 @@ export function SettingsPage() {
                 {t('settings.cloudSync.lastBackup', { time: t('settings.cloudSync.neverSynced') })}
               </Text>
             </View>
-            <TouchableOpacity onPress={handleCloudAction} style={styles.syncIconBtn}>
+            <Pressable
+              onPress={handleCloudAction}
+              style={styles.syncIconBtn}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.cloudSync.syncNow')}
+            >
               <Icon name="sync-outline" size={22} color={colors.accent} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={[styles.warningBanner, warningBannerStyle]}>
@@ -252,24 +259,26 @@ export function SettingsPage() {
           </View>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity
+            <Pressable
               style={[styles.outlineButton, { borderColor: colors.border }]}
               onPress={handleCloudAction}
-              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.cloudSync.googleDrive')}
             >
               <Text style={[styles.outlineButtonText, { color: colors.textSecondary }]}>
                 {t('settings.cloudSync.googleDrive')}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               style={[styles.filledButton, { backgroundColor: colors.accent }]}
               onPress={handleCloudAction}
-              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.cloudSync.syncNow')}
             >
-              <Text style={styles.filledButtonText}>
+              <Text style={[styles.filledButtonText, { color: colors.surface }]}>
                 {t('settings.cloudSync.syncNow')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </Animated.View>
 
@@ -330,17 +339,24 @@ export function SettingsPage() {
               value={isDarkToggled}
               onValueChange={handleThemeToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor="#ffffff"
+              thumbColor={colors.surface}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.darkMode')}
             />
           </View>
 
           {theme !== 'system' && (
-            <TouchableOpacity onPress={handleSystemTheme} style={styles.systemThemeLink}>
+            <Pressable
+              onPress={handleSystemTheme}
+              style={styles.systemThemeLink}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.useSystemDefault')}
+            >
               <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
               <Text style={[styles.systemThemeText, { color: colors.accent }]}>
                 {t('settings.useSystemDefault')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {theme === 'system' && (
             <View style={styles.systemThemeLink}>
@@ -370,7 +386,9 @@ export function SettingsPage() {
               value={seniorMode}
               onValueChange={handleSeniorModeToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor="#ffffff"
+              thumbColor={colors.surface}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.seniorMode.label')}
             />
           </View>
         </Animated.View>
@@ -398,7 +416,9 @@ export function SettingsPage() {
               value={highContrast}
               onValueChange={handleHighContrastToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor="#ffffff"
+              thumbColor={colors.surface}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.highContrast.label')}
             />
           </View>
         </Animated.View>
@@ -480,16 +500,17 @@ export function SettingsPage() {
               {t('settings.guideline.title')}
             </Text>
           </View>
-          <TouchableOpacity
+          <Pressable
             style={[styles.detectRegionButton, { borderColor: colors.accent }]}
             onPress={handleDetectRegion}
-            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.detectRegion.button')}
           >
             <Icon name="earth-outline" size={18} color={colors.accent} />
             <Text style={[styles.detectRegionText, { color: colors.accent }]}>
               {t('settings.detectRegion.button')}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
           <View style={styles.chipRow}>
             {([
               { value: BP_GUIDELINES.AHA_ACC, label: tMedical('guidelines.ahaAcc.name') },
@@ -753,7 +774,6 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   filledButtonText: {
-    color: '#ffffff',
     fontSize: 14,
     fontFamily: FONTS.bold,
     fontWeight: '700',

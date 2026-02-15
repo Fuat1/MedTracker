@@ -64,9 +64,9 @@ export function Toast({
   if (!visible) return null;
 
   const isError = type === 'error';
-  const bgColor = isError ? colors.errorBackground : '#FFF8E1';
-  const textColor = isError ? colors.error : '#B45309';
-  const borderColor = isError ? colors.error + '50' : '#D9770650';
+  const bgColor = isError ? colors.errorBackground : colors.warningBg;
+  const textColor = isError ? colors.error : colors.warningText;
+  const borderColor = isError ? colors.error + '50' : colors.warningBorder;
   const iconName = isError ? 'alert-circle' : 'warning';
 
   return (
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: 10,
     borderWidth: 1,
-    shadowColor: '#000',
+    shadowColor: '#000', // Intentional: shadow color is always black regardless of theme
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.14,
     shadowRadius: 8,

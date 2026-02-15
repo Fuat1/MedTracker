@@ -37,6 +37,13 @@
     "exportComingSoon": "PDF export coming soon!",
     "noData": "Not enough data",
     "noDataSubtitle": "Add more readings to see trends",
+    "toggles": {
+      "showPP": "Show PP",
+      "showMAP": "Show MAP"
+    },
+    "export": {
+      "includePPMAP": "Include PP/MAP in PDF export"
+    },
     "legend": {
       "systolic": "Systolic",
       "diastolic": "Diastolic"
@@ -107,7 +114,8 @@
       "noDataTitle": "No Data",
       "noDataMessage": "There are no readings in the selected period to export.",
       "exportFailedTitle": "Export Failed",
-      "exportFailedMessage": "Could not generate the PDF. Please try again."
+      "exportFailedMessage": "Could not generate the PDF. Please try again.",
+      "shareTitle": "Share BP Report"
     },
     "circadian": {
       "title": "Circadian Patterns",

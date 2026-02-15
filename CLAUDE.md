@@ -64,6 +64,12 @@ npx react-native run-ios            # Build iOS
 - **Use BOTH `fontFamily` and `fontWeight`** together (Android compatibility)
 - **Parameterized queries ONLY** for database (op-sqlite)
 - **ALWAYS use `t()` for user-facing strings** — never hardcode text
+- **Android file sharing**: Use `Platform.OS` to conditionally format file URIs (see `docs/android-file-sharing.md`)
+- **PREFER FlashList over FlatList** for lists with 100+ items — provide `estimatedItemSize`
+- **ALWAYS wrap Gesture objects** in `useMemo` with proper deps
+- **ALWAYS return cleanup functions** from `useEffect` with subscriptions/timers/listeners
+- **Use `useSafeAreaInsets` hook** from `react-native-safe-area-context` — not built-in SafeAreaView
+- **Minimum 44×44pt touch targets** on all interactive elements
 
 ## i18n Rules (MUST)
 
@@ -73,14 +79,46 @@ npx react-native run-ios            # Build iOS
 
 ## Reference Documentation
 
+
 - **BP Classification Guidelines**: `docs/bp-classification-guidelines.md` (4 international systems)
 - **Database Schema**: `docs/database-schema.md` (SQL + validation rules)
+- **Android File Sharing**: `docs/android-file-sharing.md` (FileProvider setup, Platform-specific patterns)
 - **Medical Safety**: See `.claude/rules/safety-rules.md` (always loaded)
 - **Architecture Details**: See `.claude/rules/architecture-rules.md` (always loaded)
 - **Feature Patterns**: See `src/features/CLAUDE.md` (loaded when working in features/)
 - **Entity Patterns**: See `src/entities/CLAUDE.md` (loaded when working in entities/)
 - **Shared Utilities**: See `src/shared/CLAUDE.md` (loaded when working in shared/)
 - **Project Roadmap**: `docs/roadmap.md` (planning reference, not coding guidance)
+- **Platform & Performance**: `docs/docs-react-native-best-practices.md` (comprehensive guide)
+- **Platform Rules**: See `.claude/rules/platform-rules.md` (always loaded)
+- **Design Plans**: `docs/plans/` (feature design & implementation plans)
+- **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
+
+## Known Violations (Tech Debt)
+
+Identified 2026-02-15. Updated 2026-02-15.
+
+### Resolved (2026-02-15)
+- ~~Hardcoded BP thresholds in charts~~ → Fixed: BPTrendChart/generate-bp-chart-svg now import from bp-guidelines.ts
+- ~~Widget-to-widget import~~ → Fixed: BPRecordsList uses render prop for BPRecordCard
+- ~~CrisisModal missing a11y~~ → Fixed: Added accessibilityRole="alert" + accessibilityLiveRegion
+- ~~TouchableOpacity → Pressable~~ → Fixed: Replaced across all files
+- ~~Missing useCallback on renderItem~~ → Fixed: BPRecordsList callbacks wrapped
+- ~~Hardcoded colors~~ → Fixed: BPEntryForm, SettingsPage, AnalyticsPage, Toast, providers, HomePage now use useTheme()
+- ~~Hardcoded strings~~ → Fixed: "Show PP", "Show MAP", "Initializing...", DerivedMetricsModal disclaimer
+- ~~BreathingGuide memory leak~~ → Fixed: setTimeout cleanup in useEffect
+- ~~fontWeight without fontFamily~~ → Fixed: BPEntryForm now uses both
+- ~~No Error Boundaries~~ → Fixed: ErrorBoundary component wrapping Navigation
+- ~~No console stripping~~ → Fixed: babel-plugin-transform-remove-console added for production builds
+- ~~No BackHandler~~ → Fixed: CrisisModal and DerivedMetricsModal handle Android back button
+- ~~No InteractionManager usage~~ → Fixed: PDF export deferred with runAfterInteractions
+- ~~Hardcoded colors in generate-bp-chart-svg.ts~~ → Fixed: Uses lightColors from theme config
+- ~~ProGuard/R8 disabled~~ → Fixed: Enabled with shrinkResources, proguard-android-optimize, and React Native keep rules
+- ~~No ABI splits~~ → Fixed: Per-architecture APKs (arm64-v8a, armeabi-v7a, x86, x86_64) + universal
+- ~~Hardcoded AM/PM strings~~ → Fixed: record-utils.ts uses i18n.t('common:timePeriod.am/pm')
+- ~~Accessibility attributes missing~~ → Fixed: OptionChip, SettingsPage, AnalyticsPage, HomePage, CustomTabBar, DateTimePicker all have accessibilityRole + accessibilityLabel
+- ~~TouchableOpacity in CustomTabBar~~ → Fixed: Replaced with Pressable + proper tab/button roles
+- ~~TouchableOpacity in DateTimePicker~~ → Fixed: Replaced with Pressable + a11y labels on all buttons
 
 ## Context Compaction Rules
 
@@ -101,4 +139,4 @@ npx react-native run-ios            # Build iOS
 
 If you violate a rule or make an error, update the relevant CLAUDE.md file (root or subdirectory) with a specific instruction to prevent recurrence. Keep instructions concise and actionable.
 
-**Last Updated**: 2026-02-14
+**Last Updated**: 2026-02-15

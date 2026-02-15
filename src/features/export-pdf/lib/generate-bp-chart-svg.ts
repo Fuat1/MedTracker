@@ -1,13 +1,12 @@
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import i18n from '../../../shared/lib/i18n';
+import { BP_THRESHOLDS } from '../../../shared/config/bp-guidelines';
+import { lightColors } from '../../../shared/config/theme';
 
 // Matches BPTrendChart.tsx fixed range
 const Y_MIN = 70;
 const Y_MAX = 180;
 const Y_RANGE = Y_MAX - Y_MIN;
-
-const ZONE_NORMAL_MAX = 120;
-const ZONE_ELEVATED_MAX = 140;
 
 const PADDING_TOP = 16;
 const PADDING_BOTTOM = 36;
@@ -20,12 +19,12 @@ const SVG_HEIGHT = 240;
 const CHART_WIDTH = SVG_WIDTH - PADDING_LEFT - PADDING_RIGHT;
 const CHART_HEIGHT = SVG_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
 
-// AHA color palette (always light mode for medical PDF)
-const ZONE_COLOR_NORMAL = '#dcfce7';
-const ZONE_COLOR_ELEVATED = '#fef9c3';
-const ZONE_COLOR_HIGH = '#fecaca';
-const COLOR_SYSTOLIC = '#0D9488';
-const COLOR_DIASTOLIC = '#5EEAD4';
+// Chart colors from theme (always light mode for medical PDF)
+const ZONE_COLOR_NORMAL = lightColors.chartZoneNormal;
+const ZONE_COLOR_ELEVATED = lightColors.chartZoneElevated;
+const ZONE_COLOR_HIGH = lightColors.chartZoneHigh;
+const COLOR_SYSTOLIC = lightColors.chartLine;
+const COLOR_DIASTOLIC = lightColors.chartLineDiastolic;
 
 function getY(value: number): number {
   const clamped = Math.max(Y_MIN, Math.min(Y_MAX, value));
@@ -56,7 +55,7 @@ function formatDateLabel(timestamp: number): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-export function generateBPChartSvg(records: BPRecord[]): string {
+export function generateBPChartSvg(records: BPRecord[], guidelineId: string = 'aha_acc'): string {
   if (records.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SVG_WIDTH} ${SVG_HEIGHT}" width="${SVG_WIDTH}" height="${SVG_HEIGHT}">
   <text x="${SVG_WIDTH / 2}" y="${SVG_HEIGHT / 2}" text-anchor="middle" fill="#94a3b8" font-size="18" font-family="Arial, sans-serif">${i18n.t('pages:analytics.noData')}</text>
@@ -66,9 +65,10 @@ export function generateBPChartSvg(records: BPRecord[]): string {
   // Sort records oldest → newest for chart
   const sorted = [...records].sort((a, b) => a.timestamp - b.timestamp);
 
-  // Zone boundary Y positions
-  const yNormalMax = getY(ZONE_NORMAL_MAX);
-  const yElevatedMax = getY(ZONE_ELEVATED_MAX);
+  // Zone boundary Y positions (from guideline thresholds)
+  const thresholds = BP_THRESHOLDS[guidelineId] || BP_THRESHOLDS.aha_acc;
+  const yNormalMax = getY(thresholds.normalBelow.systolic);
+  const yElevatedMax = getY(thresholds.stage_2.systolic);
   const yTop = PADDING_TOP;
   const yBottom = PADDING_TOP + CHART_HEIGHT;
 

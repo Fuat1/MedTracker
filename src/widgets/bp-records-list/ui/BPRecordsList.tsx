@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, SectionList, RefreshControl, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { BPRecordCard } from '../../bp-record-card';
 import type { BPRecord } from '../../../shared/api';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { FONTS } from '../../../shared/config/theme';
@@ -12,9 +11,10 @@ interface BPRecordsListProps {
   isError: boolean;
   isRefetching: boolean;
   onRefresh: () => void;
+  renderCard: (record: BPRecord) => React.ReactElement;
 }
 
-export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRefresh }: BPRecordsListProps) {
+export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRefresh, renderCard }: BPRecordsListProps) {
   const { t } = useTranslation('widgets');
   const { colors } = useTheme();
 
@@ -42,19 +42,19 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
     );
   }
 
-  const renderItem = ({ item }: { item: BPRecord }) => (
-    <BPRecordCard record={item} variant="compact" />
-  );
+  const renderItem = useCallback(({ item }: { item: BPRecord }) => (
+    renderCard(item)
+  ), [renderCard]);
 
-  const renderSectionHeader = ({ section }: { section: { title: string } }) => (
+  const renderSectionHeader = useCallback(({ section }: { section: { title: string } }) => (
     <View style={styles.sectionHeader}>
       <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
         {section.title}
       </Text>
     </View>
-  );
+  ), [colors.textSecondary]);
 
-  const renderEmpty = () => (
+  const renderEmpty = useCallback(() => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyIcon}>💓</Text>
       <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
@@ -64,7 +64,7 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
         {t('bpRecordsList.empty.subtitle')}
       </Text>
     </View>
-  );
+  ), [colors.textPrimary, colors.textTertiary, t]);
 
   return (
     <SectionList

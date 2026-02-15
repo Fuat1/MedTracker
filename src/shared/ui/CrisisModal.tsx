@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Animated,
+  BackHandler,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
@@ -70,16 +71,26 @@ export function CrisisModal({
     }
   }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (!visible) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      onCancel();
+      return true;
+    });
+    return () => handler.remove();
+  }, [visible, onCancel]);
+
   if (!visible) return null;
 
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
+    <View style={styles.overlay} pointerEvents="box-none" accessibilityRole="alert" accessibilityLiveRegion="assertive">
       {/* Backdrop */}
       <Animated.View
         style={[styles.backdrop, { opacity: backdropOpacity }]}
         pointerEvents="auto"
       >
-        <TouchableOpacity style={StyleSheet.absoluteFillObject} activeOpacity={1} onPress={onCancel} />
+        <Pressable style={StyleSheet.absoluteFillObject} onPress={onCancel} />
       </Animated.View>
 
       {/* Card */}
@@ -97,7 +108,7 @@ export function CrisisModal({
 
           {/* Icon */}
           <View style={[styles.iconCircle, { backgroundColor: colors.crisisRed, shadowColor: colors.crisisRed }]}>
-            <Icon name="warning" size={32} color="#ffffff" />
+            <Icon name="warning" size={32} color={colors.surface} />
           </View>
 
           {/* Title */}
@@ -122,26 +133,28 @@ export function CrisisModal({
 
           {/* Buttons */}
           <View style={styles.buttons}>
-            <TouchableOpacity
+            <Pressable
               style={[styles.cancelButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
               onPress={onCancel}
-              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('buttons.cancel')}
             >
               <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
                 {tCommon('buttons.cancel')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={[styles.confirmButton, { backgroundColor: colors.crisisRed }]}
               onPress={onConfirm}
-              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('buttons.saveAnyway')}
             >
-              <Icon name="save-outline" size={16} color="#ffffff" />
-              <Text style={styles.confirmText}>
+              <Icon name="save-outline" size={16} color={colors.surface} />
+              <Text style={[styles.confirmText, { color: colors.surface }]}>
                 {tCommon('buttons.saveAnyway')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </Animated.View>
@@ -263,6 +276,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: FONTS.bold,
     fontWeight: '700',
-    color: '#ffffff',
   },
 });

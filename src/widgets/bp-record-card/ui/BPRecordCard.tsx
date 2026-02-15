@@ -193,9 +193,9 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
             </Text>
           </View>
           {isMorningSurge && (
-            <View style={styles.surgeChip}>
-              <Icon name="trending-up-outline" size={11} color="#f97316" />
-              <Text style={styles.surgeChipText}>
+            <View style={[styles.surgeChip, { backgroundColor: colors.surgeBg }]}>
+              <Icon name="trending-up-outline" size={11} color={colors.surgeColor} />
+              <Text style={[styles.surgeChipText, { color: colors.surgeColor }]}>
                 {t('morningSurge')}
               </Text>
             </View>
@@ -410,13 +410,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
-    backgroundColor: '#f9731620',
   },
   surgeChipText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
-    color: '#f97316',
   },
   notesContainer: {
     marginTop: 10,

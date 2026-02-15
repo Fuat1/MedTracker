@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../../widgets/page-header';
 import { BPRecordsList } from '../../../widgets/bp-records-list';
+import { BPRecordCard } from '../../../widgets/bp-record-card';
 import { useBPRecords } from '../../../features/record-bp';
 import { classifyBP } from '../../../entities/blood-pressure';
 import {
@@ -64,18 +65,19 @@ export function HistoryPage() {
           {filterOptions.map(item => {
             const isActive = filter === item.key;
             const tabStyle = { backgroundColor: isActive ? colors.accent : 'transparent', borderColor: isActive ? colors.accent : colors.border };
-            const textStyle = { color: isActive ? '#ffffff' : colors.textSecondary };
+            const textStyle = { color: isActive ? colors.surface : colors.textSecondary };
             return (
-              <TouchableOpacity
+              <Pressable
                 key={item.key}
                 style={[styles.filterTab, tabStyle]}
                 onPress={() => setFilter(item.key)}
-                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={t(item.labelKey as any)}
               >
                 <Text style={[styles.filterTabText, textStyle]}>
                   {t(item.labelKey as any)}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </ScrollView>
@@ -88,6 +90,7 @@ export function HistoryPage() {
         isError={isError}
         isRefetching={isRefetching}
         onRefresh={refetch}
+        renderCard={(record) => <BPRecordCard record={record} variant="compact" />}
       />
     </SafeAreaView>
   );

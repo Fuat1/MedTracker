@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   TextInput,
   useWindowDimensions,
   Switch,
@@ -204,24 +204,28 @@ export function AnalyticsPage() {
           <View style={styles.togglesRow}>
             <View style={styles.toggleItem}>
               <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
-                Show PP
+                {t('analytics.toggles.showPP')}
               </Text>
               <Switch
                 value={showPP}
                 onValueChange={setShowPP}
-                trackColor={{ false: colors.border, true: '#a855f7' }}
-                thumbColor="#ffffff"
+                trackColor={{ false: colors.toggleTrackInactive, true: colors.ppColor }}
+                thumbColor={colors.surface}
+                accessibilityRole="switch"
+                accessibilityLabel={t('analytics.toggles.showPP')}
               />
             </View>
             <View style={styles.toggleItem}>
               <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
-                Show MAP
+                {t('analytics.toggles.showMAP')}
               </Text>
               <Switch
                 value={showMAP}
                 onValueChange={setShowMAP}
-                trackColor={{ false: colors.border, true: '#f97316' }}
-                thumbColor="#ffffff"
+                trackColor={{ false: colors.toggleTrackInactive, true: colors.mapColor }}
+                thumbColor={colors.surface}
+                accessibilityRole="switch"
+                accessibilityLabel={t('analytics.toggles.showMAP')}
               />
             </View>
           </View>
@@ -336,9 +340,9 @@ export function AnalyticsPage() {
 
               {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
               {surgeResult.hasSurge && (
-                <View style={styles.surgeRow}>
-                  <Icon name="trending-up-outline" size={14} color="#f97316" />
-                  <Text style={styles.surgeText}>
+                <View style={[styles.surgeRow, { backgroundColor: colors.surgeBg }]}>
+                  <Icon name="trending-up-outline" size={14} color={colors.surgeColor} />
+                  <Text style={[styles.surgeText, { color: colors.surgeColor }]}>
                     {t('analytics.circadian.morningSurge', { count: 1 })}
                   </Text>
                 </View>
@@ -376,10 +380,12 @@ export function AnalyticsPage() {
         {/* Export PDF Button */}
         <Animated.View entering={FadeInUp.delay(350).duration(500)} style={styles.exportContainer}>
           {/* Include PP/MAP Checkbox */}
-          <TouchableOpacity
+          <Pressable
             style={styles.checkboxRow}
             onPress={() => setIncludePPMAPInExport(!includePPMAPInExport)}
-            activeOpacity={0.7}
+            accessibilityRole="checkbox"
+            accessibilityLabel={t('analytics.export.includePPMAP')}
+            accessibilityState={{ checked: includePPMAPInExport }}
           >
             <View style={[styles.checkbox, { borderColor: colors.border }]}>
               {includePPMAPInExport && (
@@ -387,11 +393,11 @@ export function AnalyticsPage() {
               )}
             </View>
             <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>
-              Include PP/MAP in PDF export
+              {t('analytics.export.includePPMAP')}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={[
               styles.exportButton,
               { backgroundColor: isExporting ? colors.border : colors.accent },
@@ -404,13 +410,15 @@ export function AnalyticsPage() {
               })
             }
             disabled={isExporting}
-            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={t('analytics.exportPdf')}
+            accessibilityState={{ disabled: isExporting }}
           >
-            <Icon name="document-text-outline" size={22} color="#ffffff" />
-            <Text style={styles.exportButtonText}>
+            <Icon name="document-text-outline" size={22} color={colors.surface} />
+            <Text style={[styles.exportButtonText, { color: colors.surface }]}>
               {isExporting ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -564,13 +572,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
-    backgroundColor: '#f9731615',
   },
   surgeText: {
     fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    color: '#f97316',
   },
 
   // Toggles
@@ -623,7 +629,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   exportButtonText: {
-    color: '#ffffff',
     fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',

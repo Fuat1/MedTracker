@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,7 +16,7 @@ import { useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { LineChart } from '../../../shared/ui/LineChart';
 import { DerivedMetricsModal } from '../../../shared/ui';
-import { FONTS } from '../../../shared/config/theme';
+import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
 
 function getBPCardGradient(
@@ -26,22 +26,11 @@ function getBPCardGradient(
   fallbackEnd: string,
 ): [string, string] {
   if (!category) return [fallbackStart, fallbackEnd];
-  const gradients: Record<string, [string, string]> = isDark
-    ? {
-        normal:   ['#4ade80', '#22c55e'],
-        elevated: ['#fbbf24', '#d97706'],
-        stage_1:  ['#fb923c', '#ea580c'],
-        stage_2:  ['#f87171', '#ef4444'],
-        crisis:   ['#ef4444', '#dc2626'],
-      }
-    : {
-        normal:   ['#22c55e', '#16a34a'],
-        elevated: ['#eab308', '#ca8a04'],
-        stage_1:  ['#f97316', '#ea580c'],
-        stage_2:  ['#ef4444', '#dc2626'],
-        crisis:   ['#dc2626', '#991b1b'],
-      };
-  return gradients[category] ?? [fallbackStart, fallbackEnd];
+  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
+  const color = bpColors[category as keyof typeof bpColors];
+  if (!color) return [fallbackStart, fallbackEnd];
+  // Use the category color as base, darken slightly for gradient end
+  return [color, color];
 }
 
 export function HomePage() {
@@ -144,13 +133,15 @@ export function HomePage() {
                   <Text style={[styles.metricValue, { fontSize: 18 * fontScale }]}>
                     {ppValue}
                   </Text>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={handlePPInfo}
                     style={styles.infoButton}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={tCommon('common.moreInfo') + ' PP'}
                   >
                     <Icon name="information-circle-outline" size={16} color="rgba(255,255,255,0.7)" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
                 {/* Divider */}
@@ -164,13 +155,15 @@ export function HomePage() {
                   <Text style={[styles.metricValue, { fontSize: 18 * fontScale }]}>
                     {mapValue}
                   </Text>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={handleMAPInfo}
                     style={styles.infoButton}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={tCommon('common.moreInfo') + ' MAP'}
                   >
                     <Icon name="information-circle-outline" size={16} color="rgba(255,255,255,0.7)" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </View>
             )}

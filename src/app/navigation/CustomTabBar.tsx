@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View,
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   Platform,
@@ -124,13 +124,13 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     };
 
     return (
-      <TouchableOpacity
+      <Pressable
         key={route.key}
         style={styles.tabButton}
         onPress={onPress}
-        activeOpacity={0.7}
-        accessibilityRole="button"
-        accessibilityState={isFocused ? { selected: true } : {}}
+        accessibilityRole="tab"
+        accessibilityLabel={t(labelKey)}
+        accessibilityState={{ selected: isFocused }}
       >
         <Icon
           name={isFocused ? icons.active : icons.inactive}
@@ -145,7 +145,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         >
           {t(labelKey)}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -166,7 +166,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         {rightTabs.map((route, i) => renderTab(route, i))}
       </View>
 
-      <TouchableOpacity
+      <Pressable
         style={[
           styles.fabButton,
           {
@@ -182,10 +182,11 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         onPress={handleFabPress}
         onLongPress={handleFabLongPress}
         delayLongPress={800}
-        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={t('common.newReading')}
       >
-        <Icon name="add" size={32} color="#ffffff" />
-      </TouchableOpacity>
+        <Icon name="add" size={32} color={colors.surface} />
+      </Pressable>
     </View>
   );
 }

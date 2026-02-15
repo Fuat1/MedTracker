@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Vibration, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Vibration, Platform } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -27,7 +27,7 @@ interface KeyButtonProps {
   onPress: (key: string) => void;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const KEYS = [
   ['1', '2', '3'],
@@ -71,7 +71,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
   const isAction = isClear || isBackspace;
 
   return (
-    <AnimatedTouchable
+    <AnimatedPressable
       style={[
         styles.key,
         {
@@ -91,7 +91,6 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
       ]}
       onPress={handlePress}
       disabled={disabled}
-      activeOpacity={0.95}
       accessibilityRole="button"
       accessibilityLabel={
         keyValue === '⌫' ? t('a11y.backspace') : keyValue === 'C' ? t('a11y.clear') : keyValue
@@ -112,7 +111,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
       >
         {keyValue}
       </Text>
-    </AnimatedTouchable>
+    </AnimatedPressable>
   );
 }
 

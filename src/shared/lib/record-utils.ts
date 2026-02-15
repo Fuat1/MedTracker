@@ -1,4 +1,5 @@
 import type { BPRecord } from '../api';
+import i18n from './i18n';
 
 export type HistoryFilterType = 'all' | 'morning' | 'evening' | 'highAlert';
 
@@ -86,7 +87,7 @@ export function formatTimeSplit(timestamp: number): { time: string; period: stri
   const date = new Date(timestamp * 1000);
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  const period = hours >= 12 ? 'PM' : 'AM';
+  const period = hours >= 12 ? i18n.t('common:timePeriod.pm') : i18n.t('common:timePeriod.am');
   const displayHours = hours % 12 || 12;
   const paddedMinutes = minutes.toString().padStart(2, '0');
 

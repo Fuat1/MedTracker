@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   Modal,
   Alert,
   StyleSheet,
@@ -24,6 +24,8 @@ import {
 } from '../../../entities/blood-pressure';
 import { useRecordBP } from '../../../features/record-bp';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
+import { useTheme } from '../../../shared/lib/use-theme';
+import { FONTS } from '../../../shared/config/theme';
 
 type ActiveField = 'systolic' | 'diastolic' | 'pulse' | null;
 
@@ -32,6 +34,7 @@ export function BPEntryForm() {
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
   const { t: tValidation } = useTranslation('validation');
+  const { colors } = useTheme();
   const { defaultLocation, defaultPosture, setDefaultLocation, setDefaultPosture } = useSettingsStore();
 
   const [systolic, setSystolic] = useState('');
@@ -59,7 +62,7 @@ export function BPEntryForm() {
   const category =
     systolicNum && diastolicNum ? classifyBP(systolicNum, diastolicNum) : null;
 
-  const categoryColor = category ? getBPCategoryColor(category) : '#9ca3af';
+  const categoryColor = category ? getBPCategoryColor(category) : colors.textTertiary;
   const categoryLabel = category ? getBPCategoryLabel(category) : '';
 
   const handleFieldPress = useCallback((field: ActiveField) => {
@@ -176,6 +179,8 @@ export function BPEntryForm() {
     lying: tCommon('posture.lying'),
   };
 
+  const isFormValid = validation.isValid && !!systolic && !!diastolic;
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -184,60 +189,60 @@ export function BPEntryForm() {
           style={[styles.valuesContainer, { backgroundColor: categoryColor + '20' }]}
         >
           <View style={styles.bpRow}>
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 styles.valueBoxLeft,
-                activeField === 'systolic' && styles.valueBoxActive,
+                activeField === 'systolic' && { backgroundColor: colors.surface },
               ]}
               onPress={() => handleFieldPress('systolic')}
               accessibilityRole="button"
-              accessibilityLabel="Systolic input"
+              accessibilityLabel={t('bpEntry.systolic')}
             >
-              <Text style={styles.valueLabel}>{t('bpEntry.systolic')}</Text>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>{t('bpEntry.systolic')}</Text>
               <Text
                 style={[styles.valueText, { color: categoryColor }]}
               >
                 {systolic || '---'}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <Text style={styles.separator}>/</Text>
+            <Text style={[styles.separator, { color: colors.textTertiary }]}>/</Text>
 
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 styles.valueBoxRight,
-                activeField === 'diastolic' && styles.valueBoxActive,
+                activeField === 'diastolic' && { backgroundColor: colors.surface },
               ]}
               onPress={() => handleFieldPress('diastolic')}
               accessibilityRole="button"
-              accessibilityLabel="Diastolic input"
+              accessibilityLabel={t('bpEntry.diastolic')}
             >
-              <Text style={styles.valueLabel}>{t('bpEntry.diastolic')}</Text>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>{t('bpEntry.diastolic')}</Text>
               <Text
                 style={[styles.valueText, { color: categoryColor }]}
               >
                 {diastolic || '---'}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Pulse */}
-          <TouchableOpacity
+          <Pressable
             style={[
               styles.pulseBox,
-              activeField === 'pulse' && styles.pulseBoxActive,
+              activeField === 'pulse' && { backgroundColor: colors.surface },
             ]}
             onPress={() => handleFieldPress('pulse')}
             accessibilityRole="button"
-            accessibilityLabel="Pulse input"
+            accessibilityLabel={t('bpEntry.pulse')}
           >
-            <Text style={styles.pulseLabel}>{t('bpEntry.pulse')}</Text>
-            <Text style={styles.pulseText}>
+            <Text style={[styles.pulseLabel, { color: colors.textSecondary }]}>{t('bpEntry.pulse')}</Text>
+            <Text style={[styles.pulseText, { color: colors.textPrimary }]}>
               {pulse ? `${pulse} ${tCommon('units.bpm')}` : `--- ${tCommon('units.bpm')}`}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Category Label */}
           {category && (
@@ -245,72 +250,82 @@ export function BPEntryForm() {
               <View
                 style={[styles.categoryBadge, { backgroundColor: categoryColor }]}
               >
-                <Text style={styles.categoryText}>{categoryLabel}</Text>
+                <Text style={[styles.categoryText, { color: colors.surface }]}>{categoryLabel}</Text>
               </View>
             </View>
           )}
         </View>
 
         {/* More Info Collapsible Section */}
-        <View style={styles.moreInfoSection}>
-          <TouchableOpacity
+        <View style={[styles.moreInfoSection, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+          <Pressable
             style={styles.moreInfoHeader}
             onPress={() => setShowMoreInfo(!showMoreInfo)}
             accessibilityRole="button"
-            accessibilityLabel={showMoreInfo ? 'Hide more options' : 'Show more options'}
+            accessibilityLabel={showMoreInfo ? t('bpEntry.hideOptions') : t('bpEntry.showOptions')}
           >
-            <Text style={styles.moreInfoTitle}>{tCommon('common.moreInfo')}</Text>
-            <Text style={styles.moreInfoArrow}>{showMoreInfo ? '▲' : '▼'}</Text>
-          </TouchableOpacity>
+            <Text style={[styles.moreInfoTitle, { color: colors.textPrimary }]}>{tCommon('common.moreInfo')}</Text>
+            <Text style={[styles.moreInfoArrow, { color: colors.textSecondary }]}>{showMoreInfo ? '▲' : '▼'}</Text>
+          </Pressable>
 
           {showMoreInfo && (
             <View style={styles.moreInfoContent}>
               {/* Location Selector */}
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
                   {t('bpEntry.location')}
                 </Text>
                 <View style={styles.optionsRow}>
                   {Object.entries(MEASUREMENT_LOCATIONS).map(([key, value]) => (
-                    <TouchableOpacity
+                    <Pressable
                       key={key}
                       style={[
                         styles.optionButton,
                         styles.optionButtonMargin,
-                        location === value ? styles.optionButtonActive : styles.optionButtonInactive,
+                        { backgroundColor: location === value ? colors.accent : colors.surfaceSecondary },
                       ]}
                       onPress={() => handleLocationChange(value)}
+                      accessibilityRole="button"
+                      accessibilityLabel={locationLabels[value]}
                     >
                       <Text
-                        style={location === value ? styles.optionTextActive : styles.optionTextInactive}
+                        style={[
+                          styles.optionText,
+                          { color: location === value ? colors.surface : colors.textPrimary },
+                        ]}
                       >
                         {locationLabels[value]}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   ))}
                 </View>
               </View>
 
               {/* Posture Selector */}
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t('bpEntry.posture')}</Text>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('bpEntry.posture')}</Text>
                 <View style={styles.optionsRow}>
                   {Object.entries(MEASUREMENT_POSTURES).map(([key, value]) => (
-                    <TouchableOpacity
+                    <Pressable
                       key={key}
                       style={[
                         styles.optionButton,
                         styles.optionButtonMarginRight,
-                        posture === value ? styles.optionButtonActive : styles.optionButtonInactive,
+                        { backgroundColor: posture === value ? colors.accent : colors.surfaceSecondary },
                       ]}
                       onPress={() => handlePostureChange(value)}
+                      accessibilityRole="button"
+                      accessibilityLabel={postureLabels[value]}
                     >
                       <Text
-                        style={posture === value ? styles.optionTextActive : styles.optionTextInactive}
+                        style={[
+                          styles.optionText,
+                          { color: posture === value ? colors.surface : colors.textPrimary },
+                        ]}
                       >
                         {postureLabels[value]}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   ))}
                 </View>
               </View>
@@ -319,26 +334,27 @@ export function BPEntryForm() {
         </View>
 
         {/* Submit Button */}
-        <TouchableOpacity
+        <Pressable
           style={[
             styles.submitButton,
-            validation.isValid && systolic && diastolic
-              ? styles.submitButtonActive
-              : styles.submitButtonInactive,
+            { backgroundColor: isFormValid ? colors.accent : colors.border },
           ]}
           onPress={handleSubmit}
-          disabled={!validation.isValid || !systolic || !diastolic || recordBP.isPending}
+          disabled={!isFormValid || recordBP.isPending}
+          accessibilityRole="button"
+          accessibilityLabel={t('bpEntry.saveReading')}
+          accessibilityState={{ disabled: !isFormValid || recordBP.isPending }}
         >
-          <Text style={styles.submitButtonText}>
+          <Text style={[styles.submitButtonText, { color: colors.surface }]}>
             {recordBP.isPending ? t('bpEntry.saving') : t('bpEntry.saveReading')}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Validation Errors */}
         {!validation.isValid && systolic && diastolic && (
-          <View style={styles.errorContainer}>
+          <View style={[styles.errorContainer, { backgroundColor: colors.errorBackground }]}>
             {validation.errors.map((error, index) => (
-              <Text key={index} style={styles.errorText}>
+              <Text key={index} style={[styles.errorText, { color: colors.error }]}>
                 • {error}
               </Text>
             ))}
@@ -353,24 +369,23 @@ export function BPEntryForm() {
         transparent
         onRequestClose={() => setActiveField(null)}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
+        <Pressable
+          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           onPress={() => setActiveField(null)}
         >
           <View style={styles.modalSpacer} />
-          <View style={styles.modalContent}>
+          <Pressable style={[styles.modalContent, { backgroundColor: colors.surface }]} onPress={(e) => e.stopPropagation()}>
             <View style={styles.modalHandle}>
-              <View style={styles.modalHandleBar} />
+              <View style={[styles.modalHandleBar, { backgroundColor: colors.border }]} />
             </View>
-            <Text style={styles.modalTitle}>
+            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
               {activeField === 'systolic'
                 ? t('bpEntry.modals.enterSystolic')
                 : activeField === 'diastolic'
                   ? t('bpEntry.modals.enterDiastolic')
                   : t('bpEntry.modals.enterPulse')}
             </Text>
-            <Text style={styles.modalValue}>
+            <Text style={[styles.modalValue, { color: colors.textPrimary }]}>
               {getCurrentValue() || '0'}
             </Text>
             <Numpad
@@ -378,14 +393,16 @@ export function BPEntryForm() {
               onValueChange={handleNumpadChange}
               maxLength={3}
             />
-            <TouchableOpacity
-              style={styles.modalDoneButton}
+            <Pressable
+              style={[styles.modalDoneButton, { backgroundColor: colors.accent }]}
               onPress={() => setActiveField(null)}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('buttons.done')}
             >
-              <Text style={styles.modalDoneText}>{tCommon('buttons.done')}</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
+              <Text style={[styles.modalDoneText, { color: colors.surface }]}>{tCommon('buttons.done')}</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -421,39 +438,34 @@ const styles = StyleSheet.create({
   valueBoxRight: {
     marginLeft: 8,
   },
-  valueBoxActive: {
-    backgroundColor: '#ffffff',
-  },
   valueLabel: {
-    color: '#6b7280',
+    fontFamily: FONTS.regular,
     fontSize: 14,
     marginBottom: 4,
   },
   valueText: {
     fontSize: 36,
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
   },
   separator: {
     fontSize: 24,
-    color: '#9ca3af',
+    fontFamily: FONTS.regular,
   },
   pulseBox: {
     alignItems: 'center',
     padding: 12,
     borderRadius: 12,
   },
-  pulseBoxActive: {
-    backgroundColor: '#ffffff',
-  },
   pulseLabel: {
-    color: '#6b7280',
+    fontFamily: FONTS.regular,
     fontSize: 14,
     marginBottom: 4,
   },
   pulseText: {
     fontSize: 24,
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    color: '#374151',
   },
   categoryContainer: {
     marginTop: 16,
@@ -465,15 +477,13 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   categoryText: {
-    color: '#ffffff',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   moreInfoSection: {
     marginBottom: 16,
     borderRadius: 12,
-    backgroundColor: '#f9fafb',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
   },
   moreInfoHeader: {
     flexDirection: 'row',
@@ -482,12 +492,11 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   moreInfoTitle: {
-    color: '#374151',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
     fontSize: 16,
   },
   moreInfoArrow: {
-    color: '#6b7280',
     fontSize: 14,
   },
   moreInfoContent: {
@@ -498,7 +507,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: '#4b5563',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -518,53 +527,36 @@ const styles = StyleSheet.create({
   optionButtonMarginRight: {
     marginRight: 8,
   },
-  optionButtonActive: {
-    backgroundColor: '#3b82f6',
-  },
-  optionButtonInactive: {
-    backgroundColor: '#f3f4f6',
-  },
-  optionTextActive: {
-    color: '#ffffff',
-  },
-  optionTextInactive: {
-    color: '#374151',
+  optionText: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
   submitButton: {
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
-  submitButtonActive: {
-    backgroundColor: '#3b82f6',
-  },
-  submitButtonInactive: {
-    backgroundColor: '#d1d5db',
-  },
   submitButtonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
     fontSize: 18,
   },
   errorContainer: {
     marginTop: 16,
     padding: 12,
-    backgroundColor: '#fef2f2',
     borderRadius: 12,
   },
   errorText: {
-    color: '#dc2626',
+    fontFamily: FONTS.regular,
     fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   modalSpacer: {
     flex: 1,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 16,
@@ -577,32 +569,31 @@ const styles = StyleSheet.create({
   modalHandleBar: {
     width: 48,
     height: 4,
-    backgroundColor: '#d1d5db',
     borderRadius: 9999,
   },
   modalTitle: {
     textAlign: 'center',
     fontSize: 18,
+    fontFamily: FONTS.medium,
     fontWeight: '500',
-    color: '#374151',
     marginBottom: 8,
   },
   modalValue: {
     textAlign: 'center',
     fontSize: 30,
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
     marginBottom: 16,
   },
   modalDoneButton: {
-    backgroundColor: '#3b82f6',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 16,
   },
   modalDoneText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
     fontSize: 18,
   },
 });

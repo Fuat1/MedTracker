@@ -38,6 +38,13 @@
     "posture": "Posture"
   },
   "derivedMetrics": {
+    "sections": {
+      "whatIsIt": "What is it?",
+      "formula": "Formula",
+      "normalRanges": "Normal Ranges",
+      "clinicalSignificance": "Clinical Significance"
+    },
+    "disclaimer": "This information is for educational purposes only. Always consult your healthcare provider for medical interpretation of your blood pressure readings.",
     "pp": {
       "title": "Pulse Pressure (PP)",
       "abbr": "PP",
