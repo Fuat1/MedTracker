@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -61,29 +61,23 @@ export function HistoryPage() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.filterScroll}
         >
-          {filterOptions.map(item => (
-            <TouchableOpacity
-              key={item.key}
-              style={[
-                styles.filterTab,
-                {
-                  backgroundColor: filter === item.key ? colors.accent : 'transparent',
-                  borderColor: filter === item.key ? colors.accent : colors.border,
-                },
-              ]}
-              onPress={() => setFilter(item.key)}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.filterTabText,
-                  { color: filter === item.key ? '#ffffff' : colors.textSecondary },
-                ]}
+          {filterOptions.map(item => {
+            const isActive = filter === item.key;
+            const tabStyle = { backgroundColor: isActive ? colors.accent : 'transparent', borderColor: isActive ? colors.accent : colors.border };
+            const textStyle = { color: isActive ? '#ffffff' : colors.textSecondary };
+            return (
+              <TouchableOpacity
+                key={item.key}
+                style={[styles.filterTab, tabStyle]}
+                onPress={() => setFilter(item.key)}
+                activeOpacity={0.7}
               >
-                {t(item.labelKey as any)}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text style={[styles.filterTabText, textStyle]}>
+                  {t(item.labelKey as any)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </Animated.View>
 

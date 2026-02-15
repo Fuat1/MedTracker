@@ -89,7 +89,7 @@ export function AnalyticsPage() {
       return `${customStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} \u2013 ${customEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
     }
     const keyMap: Record<string, string> = { '7d': 'days7', '14d': 'days14', '30d': 'days30', '90d': 'days90' };
-    return t(`analytics.period.${keyMap[period]}`);
+    return t(`analytics.period.${keyMap[period]}` as any);
   };
 
   const chartData = useMemo(() => {
@@ -337,9 +337,9 @@ export function AnalyticsPage() {
 
               {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
               {surgeResult.hasSurge && (
-                <View style={[styles.surgeRow, { backgroundColor: '#f97316' + '15' }]}>
+                <View style={styles.surgeRow}>
                   <Icon name="trending-up-outline" size={14} color="#f97316" />
-                  <Text style={[styles.surgeText, { color: '#f97316' }]}>
+                  <Text style={styles.surgeText}>
                     {t('analytics.circadian.morningSurge', { count: 1 })}
                   </Text>
                 </View>
@@ -565,11 +565,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
+    backgroundColor: '#f9731615',
   },
   surgeText: {
     fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
+    color: '#f97316',
   },
 
   // Toggles

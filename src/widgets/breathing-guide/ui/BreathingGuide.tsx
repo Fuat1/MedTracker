@@ -4,14 +4,16 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withRepeat,
-  withSequence,
   Easing,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { FONTS } from '../../../shared/config/theme';
 import { BREATHING_TECHNIQUE } from '../../../entities/measurement-protocol';
+
+const INHALE_DURATION = BREATHING_TECHNIQUE.inhale * 1000;
+const HOLD_DURATION = BREATHING_TECHNIQUE.hold * 1000;
+const EXHALE_DURATION = BREATHING_TECHNIQUE.exhale * 1000;
 
 interface BreathingGuideProps {
   onCycleComplete?: (cyclesCompleted: number) => void;
@@ -29,11 +31,6 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
 
   const scale = useSharedValue(0.6);
   const opacity = useSharedValue(0.4);
-
-  // Animation timing constants
-  const INHALE_DURATION = BREATHING_TECHNIQUE.inhale * 1000;
-  const HOLD_DURATION = BREATHING_TECHNIQUE.hold * 1000;
-  const EXHALE_DURATION = BREATHING_TECHNIQUE.exhale * 1000;
 
   useEffect(() => {
     // Start animation cycle
@@ -80,7 +77,7 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
     if (cyclesCompleted < totalCycles) {
       runCycle();
     }
-  }, [cyclesCompleted, totalCycles]);
+  }, [cyclesCompleted, totalCycles, onCycleComplete, scale, opacity]);
 
   // Countdown timer effect
   useEffect(() => {

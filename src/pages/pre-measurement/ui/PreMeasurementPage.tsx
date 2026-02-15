@@ -105,36 +105,25 @@ export function PreMeasurementPage() {
       </Text>
 
       <View style={styles.checklistContainer}>
-        {MEASUREMENT_CHECKLIST.map((step) => (
-          <View
-            key={step.id}
-            style={[
-              styles.checklistItem,
-              {
-                backgroundColor: colors.surface,
-                borderColor: step.important ? colors.accent + '30' : colors.border,
-              },
-            ]}
-          >
-            <Icon
-              name={step.iconName as any}
-              size={28}
-              color={step.important ? colors.accent : colors.textSecondary}
-            />
-            <Text
-              style={[
-                styles.checklistText,
-                {
-                  color: colors.textPrimary,
-                  fontFamily: step.important ? FONTS.semiBold : FONTS.regular,
-                  fontWeight: step.important ? '600' : '400',
-                },
-              ]}
+        {MEASUREMENT_CHECKLIST.map((step) => {
+          const itemStyle = { backgroundColor: colors.surface, borderColor: step.important ? colors.accent + '30' : colors.border };
+          const textStyle = { color: colors.textPrimary, fontFamily: step.important ? FONTS.semiBold : FONTS.regular, fontWeight: step.important ? '600' as const : '400' as const };
+          return (
+            <View
+              key={step.id}
+              style={[styles.checklistItem, itemStyle]}
             >
-              {t(step.translationKey)}
-            </Text>
-          </View>
-        ))}
+              <Icon
+                name={step.iconName as any}
+                size={28}
+                color={step.important ? colors.accent : colors.textSecondary}
+              />
+              <Text style={[styles.checklistText, textStyle]}>
+                {t(step.translationKey as any)}
+              </Text>
+            </View>
+          );
+        })}
       </View>
     </View>
   );

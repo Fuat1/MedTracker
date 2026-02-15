@@ -67,12 +67,13 @@ export function DerivedMetricsModal({
         }),
       ]).start();
     }
-  }, [visible]);
+  }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
   if (!visible) return null;
 
   const iconName = type === 'pp' ? 'pulse' : 'analytics';
   const iconColor = type === 'pp' ? '#0D9488' : '#6366f1';
+  const formulaTextStyle = { color: colors.textPrimary, fontFamily: FONTS.semiBold, fontWeight: '600' as const };
 
   return (
     <View style={styles.overlay} pointerEvents="box-none">
@@ -161,7 +162,7 @@ export function DerivedMetricsModal({
                 <Text
                   style={[
                     styles.formulaText,
-                    { color: colors.textPrimary, fontFamily: FONTS.semiBold, fontWeight: '600' },
+                    formulaTextStyle,
                   ]}
                 >
                   {tMedical(`derivedMetrics.${type}.formula`)}
@@ -177,6 +178,16 @@ export function DerivedMetricsModal({
               <View style={styles.rangesContainer}>
                 {type === 'pp' ? (
                   <>
+                    <View style={[styles.rangeItem, styles.rangeLow]}>
+                      <Icon
+                        name="alert-circle"
+                        size={16}
+                        color="#ef4444"
+                      />
+                      <Text style={styles.rangeText}>
+                        {tMedical('derivedMetrics.pp.ranges.low')}
+                      </Text>
+                    </View>
                     <View style={[styles.rangeItem, styles.rangeNormal]}>
                       <Icon
                         name="checkmark-circle"
@@ -185,16 +196,6 @@ export function DerivedMetricsModal({
                       />
                       <Text style={styles.rangeText}>
                         {tMedical('derivedMetrics.pp.ranges.normal')}
-                      </Text>
-                    </View>
-                    <View style={[styles.rangeItem, styles.rangeBorderline]}>
-                      <Icon
-                        name="alert-circle"
-                        size={16}
-                        color="#eab308"
-                      />
-                      <Text style={styles.rangeText}>
-                        {tMedical('derivedMetrics.pp.ranges.borderline')}
                       </Text>
                     </View>
                     <View style={[styles.rangeItem, styles.rangeHigh]}>
@@ -423,17 +424,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0fdf4',
     borderLeftColor: '#22c55e',
   },
-  rangeBorderline: {
-    backgroundColor: '#fefce8',
-    borderLeftColor: '#eab308',
-  },
   rangeHigh: {
     backgroundColor: '#fef2f2',
     borderLeftColor: '#ef4444',
   },
   rangeLow: {
-    backgroundColor: '#eff6ff',
-    borderLeftColor: '#3b82f6',
+    backgroundColor: '#fef2f2',
+    borderLeftColor: '#ef4444',
   },
   rangeText: {
     fontSize: 13,

@@ -19,6 +19,14 @@ interface NumpadProps {
   compact?: boolean;
 }
 
+interface KeyButtonProps {
+  keyValue: string;
+  keySize: { width: number; height: number };
+  disabled: boolean;
+  compact: boolean;
+  onPress: (key: string) => void;
+}
+
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const KEYS = [
@@ -28,37 +36,16 @@ const KEYS = [
   ['C', '0', '⌫'],
 ];
 
-export function Numpad({
-  value,
-  onValueChange,
-  maxLength = 3,
-  disabled = false,
-  compact = false,
-}: NumpadProps) {
+function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonProps) {
   const { t } = useTranslation('common');
   const { colors, fontScale } = useTheme();
-  const { seniorMode } = useSettingsStore();
-  const pressedKeys = React.useRef<Record<string, Animated.SharedValue<number>>>({});
+  const scale = useSharedValue(1);
 
-  // Dynamic button sizing: compact when category badge is showing
-  const keySize = compact
-    ? { width: 68, height: 44 }
-    : seniorMode
-      ? { width: 86, height: 68 }
-      : { width: 96, height: 56 };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
-  const getKeyScale = (key: string) => {
-    if (!pressedKeys.current[key]) {
-      pressedKeys.current[key] = useSharedValue(1);
-    }
-    return pressedKeys.current[key];
-  };
-
-  const handleKeyPress = (key: string) => {
-    if (disabled) {
-      return;
-    }
-
+  const handlePress = () => {
     // Haptic feedback - wrapped in try-catch for permission issues
     try {
       if (Platform.OS === 'ios') {
@@ -71,12 +58,84 @@ export function Numpad({
       console.debug('Vibration not available:', error);
     }
 
-    // Trigger animation
-    const scale = getKeyScale(key);
     scale.value = withSequence(
       withSpring(0.9, { damping: 10, stiffness: 400 }),
       withSpring(1, { damping: 10, stiffness: 400 })
     );
+
+    onPress(keyValue);
+  };
+
+  const isClear = keyValue === 'C';
+  const isBackspace = keyValue === '⌫';
+  const isAction = isClear || isBackspace;
+
+  return (
+    <AnimatedTouchable
+      style={[
+        styles.key,
+        {
+          width: keySize.width,
+          height: keySize.height,
+          backgroundColor: isClear
+            ? colors.numpadClearBg
+            : isBackspace
+              ? colors.numpadBackspaceBg
+              : colors.numpadKey,
+          borderColor: colors.numpadKeyBorder,
+          shadowColor: colors.shadow,
+          shadowOpacity: colors.shadowOpacity,
+        },
+        animatedStyle,
+        disabled && styles.disabledKey,
+      ]}
+      onPress={handlePress}
+      disabled={disabled}
+      activeOpacity={0.95}
+      accessibilityRole="button"
+      accessibilityLabel={
+        keyValue === '⌫' ? t('a11y.backspace') : keyValue === 'C' ? t('a11y.clear') : keyValue
+      }
+    >
+      <Text
+        style={[
+          styles.keyText,
+          {
+            color: colors.numpadKeyText,
+            fontSize: compact
+              ? (isAction ? 14 * fontScale : 18 * fontScale)
+              : (isAction ? 22 * fontScale : 28 * fontScale),
+          },
+          isClear && { color: colors.error },
+          disabled && { color: colors.textTertiary },
+        ]}
+      >
+        {keyValue}
+      </Text>
+    </AnimatedTouchable>
+  );
+}
+
+export function Numpad({
+  value,
+  onValueChange,
+  maxLength = 3,
+  disabled = false,
+  compact = false,
+}: NumpadProps) {
+  const { seniorMode } = useSettingsStore();
+
+  // Dynamic button sizing: compact when category badge is showing
+  const keySize = compact
+    ? { width: 68, height: 44 }
+    : seniorMode
+      ? { width: 86, height: 68 }
+      : { width: 96, height: 56 };
+
+  const handleKeyPress = (key: string) => {
+    if (disabled) {
+      return;
+    }
 
     if (key === 'C') {
       // Clear
@@ -100,69 +159,19 @@ export function Numpad({
     }
   };
 
-  const KeyButton = ({ keyValue }: { keyValue: string }) => {
-    const scale = getKeyScale(keyValue);
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scale.value }],
-    }));
-
-    const isClear = keyValue === 'C';
-    const isBackspace = keyValue === '⌫';
-    const isAction = isClear || isBackspace;
-
-    return (
-      <AnimatedTouchable
-        key={keyValue}
-        style={[
-          styles.key,
-          {
-            width: keySize.width,
-            height: keySize.height,
-            backgroundColor: isClear
-              ? colors.numpadClearBg
-              : isBackspace
-                ? colors.numpadBackspaceBg
-                : colors.numpadKey,
-            borderColor: colors.numpadKeyBorder,
-            shadowColor: colors.shadow,
-            shadowOpacity: colors.shadowOpacity,
-          },
-          animatedStyle,
-          disabled && styles.disabledKey,
-        ]}
-        onPress={() => handleKeyPress(keyValue)}
-        disabled={disabled}
-        activeOpacity={0.95}
-        accessibilityRole="button"
-        accessibilityLabel={
-          keyValue === '⌫' ? t('a11y.backspace') : keyValue === 'C' ? t('a11y.clear') : keyValue
-        }
-      >
-        <Text
-          style={[
-            styles.keyText,
-            {
-              color: colors.numpadKeyText,
-              fontSize: compact
-                ? (isAction ? 14 * fontScale : 18 * fontScale)
-                : (isAction ? 22 * fontScale : 28 * fontScale),
-            },
-            isClear && { color: colors.error },
-            disabled && { color: colors.textTertiary },
-          ]}
-        >
-          {keyValue}
-        </Text>
-      </AnimatedTouchable>
-    );
-  };
-
   return (
     <View style={[styles.container, compact && styles.containerCompact]}>
       {KEYS.map((row, rowIndex) => (
         <View key={rowIndex} style={[styles.row, compact && styles.rowCompact]}>
           {row.map((key) => (
-            <KeyButton key={key} keyValue={key} />
+            <KeyButton
+              key={key}
+              keyValue={key}
+              keySize={keySize}
+              disabled={disabled}
+              compact={compact}
+              onPress={handleKeyPress}
+            />
           ))}
         </View>
       ))}

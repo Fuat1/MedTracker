@@ -6,6 +6,7 @@ import { HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage } fr
 import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export type RootTabParamList = {
   Home: undefined;
@@ -24,11 +25,15 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+function renderTabBar(props: BottomTabBarProps) {
+  return <CustomTabBar {...props} />;
+}
+
 function TabNavigator() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      tabBar={props => <CustomTabBar {...props} />}
+      tabBar={renderTabBar}
       screenOptions={{
         headerShown: false,
       }}

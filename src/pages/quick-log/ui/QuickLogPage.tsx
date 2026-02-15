@@ -43,7 +43,7 @@ export function QuickLogPage() {
       showToast(validation.errors[0] ?? tValidation('errors.validationError'));
       return;
     }
-    if (isCrisisReading(systolicNum, diastolicNum)) {
+    if (isCrisisReading(systolicNum, diastolicNum, guideline)) {
       setCrisisVisible(true);
       return;
     }
@@ -280,7 +280,7 @@ export function QuickLogPage() {
             disabled={recordBP.isPending}
             compact={hasCategory}
           />
-          <View style={[styles.saveRow, { paddingBottom: 8 }]}>
+          <View style={styles.saveRow}>
             <SaveButton
               label={recordBP.isPending ? t('quickLog.saving') : t('quickLog.saveReading')}
               isValid={isValid}
@@ -434,5 +434,5 @@ const styles = StyleSheet.create({
   },
 
   // ── Save row ──
-  saveRow: { paddingHorizontal: 16, paddingTop: 10 },
+  saveRow: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 8 },
 });

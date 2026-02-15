@@ -15,7 +15,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../shared/lib/use-theme';
 import { useSettingsStore } from '../../shared/lib/settings-store';
-import type { EntryMode } from '../../shared/lib/settings-store';
 import { FONTS } from '../../shared/config/theme';
 import type { RootStackParamList } from './index';
 
@@ -33,7 +32,7 @@ const TAB_LABEL_KEYS = {
   Settings: 'navigation.settings',
 } as const;
 
-export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -107,7 +106,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     showEntryModeDialog();
   };
 
-  const renderTab = (route: typeof state.routes[0], index: number) => {
+  const renderTab = (route: typeof state.routes[0], _index: number) => {
     const realIndex = state.routes.indexOf(route);
     const isFocused = state.index === realIndex;
     const icons = TAB_ICONS[route.name] || { active: 'help', inactive: 'help-outline' };

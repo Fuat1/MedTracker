@@ -68,7 +68,7 @@ export function CrisisModal({
         }),
       ]).start();
     }
-  }, [visible]);
+  }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
   if (!visible) return null;
 
@@ -101,12 +101,12 @@ export function CrisisModal({
           </View>
 
           {/* Title */}
-          <Text style={[styles.title, { color: '#dc2626' }]}>
+          <Text style={styles.title}>
             {tMedical('crisis.title')}
           </Text>
 
           {/* BP values */}
-          <View style={[styles.valuesRow, { backgroundColor: '#fef2f2', borderColor: '#fca5a5' }]}>
+          <View style={styles.valuesRow}>
             <Text style={styles.valuesText}>
               {systolic}
               <Text style={styles.valuesDivider}>/</Text>
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginBottom: 16,
     letterSpacing: -0.3,
+    color: '#dc2626',
   },
   valuesRow: {
     flexDirection: 'row',
@@ -212,6 +213,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginHorizontal: 20,
     marginBottom: 16,
+    backgroundColor: '#fef2f2',
+    borderColor: '#fca5a5',
   },
   valuesText: {
     fontSize: 36,

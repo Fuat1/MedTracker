@@ -28,6 +28,7 @@ export function CircadianBreakdownBars({ windows }: CircadianBreakdownBarsProps)
   const { colors, isDark } = useTheme();
   const { t } = useTranslation('common');
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
+  const emptyBarStyle = { flex: 1, backgroundColor: colors.surfaceSecondary };
 
   return (
     <View style={styles.container}>
@@ -52,7 +53,7 @@ export function CircadianBreakdownBars({ windows }: CircadianBreakdownBarsProps)
                 <View style={[styles.barSegment, { flex: w.timeInRange.crisis,   backgroundColor: bpColors.crisis }]} />
               </>
             ) : (
-              <View style={[styles.barSegment, { flex: 1, backgroundColor: colors.surfaceSecondary }]} />
+              <View style={[styles.barSegment, emptyBarStyle]} />
             )}
           </View>
 

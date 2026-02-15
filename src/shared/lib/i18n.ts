@@ -32,7 +32,7 @@ import widgetsTR from '../config/locales/tr/widgets.json';
 i18n
   .use(initReactI18next) // Passes i18n down to react-i18next
   .init({
-    compatibilityJSON: 'v3', // Use v3 format for better compatibility
+    compatibilityJSON: 'v4',
     resources: {
       en: {
         common: commonEN,

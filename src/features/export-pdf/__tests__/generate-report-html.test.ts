@@ -7,6 +7,8 @@ const stubStats: ReportStats = {
   avgSystolic: 128,
   avgDiastolic: 82,
   avgPulse: 72,
+  avgPP: 46,
+  avgMAP: 97,
   minSystolic: 115,
   maxSystolic: 145,
   minDiastolic: 70,
@@ -76,5 +78,48 @@ describe('generateReportHtml', () => {
   it('does NOT include Patient Notes section when doctorNote is empty', () => {
     const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
     expect(html).not.toContain('Patient Notes');
+  });
+
+  it('includes medical disclaimer in footer', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).toContain('informational purposes only');
+    expect(html).toContain('not a substitute for professional medical advice');
+    expect(html).toContain('Consult your healthcare provider');
+  });
+
+  it('escapes HTML in user-provided userName to prevent XSS', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', {
+      ...stubOptions,
+      userName: '<script>alert("xss")</script>',
+    });
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('escapes HTML in doctorNote to prevent XSS', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', {
+      ...stubOptions,
+      doctorNote: '<img onerror="alert(1)" src=x>',
+    });
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img');
+  });
+
+  it('escapes HTML in record notes to prevent XSS', () => {
+    const xssRecords = [{
+      ...stubRecords[0],
+      notes: '"><script>alert(1)</script>',
+    }];
+    const html = generateReportHtml(xssRecords, stubStats, '<svg></svg>', stubOptions);
+    expect(html).not.toContain('<script>alert(1)</script>');
+  });
+
+  it('includes PP/MAP columns when includePPMAP is true', () => {
+    const html = generateReportHtml(stubRecords, stubStats, '<svg></svg>', {
+      ...stubOptions,
+      includePPMAP: true,
+    });
+    expect(html).toContain('PP');
+    expect(html).toContain('MAP');
   });
 });

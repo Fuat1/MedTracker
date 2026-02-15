@@ -1,4 +1,8 @@
 {
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "60",
+    "MAX_THINKING_TOKENS": "10000"
+  },
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
@@ -42,21 +46,83 @@
       "Skill(claude-md-management:revise-claude-md)",
       "Skill(claude-md-management:revise-claude-md:*)",
       "Bash(git commit:*)",
-      "Bash(New-Item -ItemType File -Path \"c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\\\\src\\\\shared\\\\lib\\\\greeting-utils.ts\" -Force)",
-      "Bash(Out-Null)",
-      "Bash(Set-Content -Path \"c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\\\\src\\\\shared\\\\lib\\\\greeting-utils.ts\" -Value @\"\nexport function getGreetingKey\\(\\): ''home.greeting.morning'' | ''home.greeting.afternoon'' | ''home.greeting.evening'' {\n  const hour = new Date\\(\\).getHours\\(\\);\n  if \\(hour < 12\\) return ''home.greeting.morning'';\n  if \\(hour < 18\\) return ''home.greeting.afternoon'';\n  return ''home.greeting.evening'';\n}\n\"@ -NoNewline)",
-      "Bash(powershell.exe -Command \"New-Item -ItemType File -Path ''c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\\\\src\\\\shared\\\\lib\\\\greeting-utils.ts'' -Force | Out-Null; Set-Content -Path ''c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\\\\src\\\\shared\\\\lib\\\\greeting-utils.ts'' -Encoding UTF8 -Value \"\"export function getGreetingKey\\(\\): ''home.greeting.morning'' | ''home.greeting.afternoon'' | ''home.greeting.evening'' {\\\\`n  const hour = new Date\\(\\).getHours\\(\\);\\\\`n  if \\(hour < 12\\) return ''home.greeting.morning'';\\\\`n  if \\(hour < 18\\) return ''home.greeting.afternoon'';\\\\`n  return ''home.greeting.evening'';\\\\`n}\"\"\")",
       "Bash(powershell -Command:*)",
-      "Bash(New-Item -ItemType Directory -Force -Path \"c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\\\\src\\\\widgets\\\\page-header\\\\ui\")",
-      "Bash(powershell.exe -File -:*)",
-      "Bash(\"c:/Users/fuats/Desktop/Workdir/MedTracker/src/widgets/page-header/ui/PageHeader.tsx\" << 'EOF'\nimport React from 'react';\nimport { View, Text, StyleSheet } from 'react-native';\nimport Icon from 'react-native-vector-icons/Ionicons';\nimport Animated, { FadeInDown } from 'react-native-reanimated';\nimport { useTranslation } from 'react-i18next';\nimport { useTheme } from '../../../shared/lib/use-theme';\nimport { getGreetingKey } from '../../../shared/lib/greeting-utils';\nimport { FONTS } from '../../../shared/config/theme';\n\ninterface PageHeaderProps {\n  variant: 'greeting' | 'title';\n  title?: string;\n}\n\nexport function PageHeader\\({ variant, title }: PageHeaderProps\\) {\n  const { t } = useTranslation\\('pages'\\);\n  const { colors } = useTheme\\(\\);\n\n  return \\(\n    <Animated.View entering={FadeInDown.duration\\(400\\)} style={styles.header}>\n      {variant === 'greeting' ? \\(\n        <View style={styles.greetingSection}>\n          <Text style={[styles.greetingText, { color: colors.textSecondary }]}>\n            {t\\(getGreetingKey\\(\\)\\)},\n          </Text>\n          <Text style={[styles.userName, { color: colors.textPrimary }]}>\n            {t\\('home.userName'\\)}\n          </Text>\n        </View>\n      \\) : \\(\n        <Text style={[styles.title, { color: colors.textPrimary }]}>\n          {title}\n        </Text>\n      \\)}\n      <View\n        style={[\n          styles.badge,\n          { backgroundColor: colors.surface, shadowColor: colors.shadow },\n        ]}\n      >\n        <Icon name=\"shield-checkmark\" size={20} color={colors.accent} />\n        <Text style={[styles.badgeText, { color: colors.textSecondary }]}>\n          {t\\('home.encryptedOffline'\\)}\n        </Text>\n      </View>\n    </Animated.View>\n  \\);\n}\n\nconst styles = StyleSheet.create\\({\n  header: {\n    flexDirection: 'row',\n    justifyContent: 'space-between',\n    alignItems: 'flex-start',\n    paddingHorizontal: 20,\n    paddingTop: 20,\n    paddingBottom: 16,\n  },\n  greetingSection: {\n    flex: 1,\n  },\n  greetingText: {\n    fontSize: 22,\n    fontFamily: FONTS.regular,\n    fontWeight: '400',\n  },\n  userName: {\n    fontSize: 28,\n    fontFamily: FONTS.extraBold,\n    fontWeight: '800',\n    letterSpacing: -0.5,\n  },\n  title: {\n    fontSize: 28,\n    fontFamily: FONTS.extraBold,\n    fontWeight: '800',\n    letterSpacing: -0.5,\n    flex: 1,\n  },\n  badge: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    paddingHorizontal: 12,\n    paddingVertical: 8,\n    borderRadius: 20,\n    gap: 6,\n    shadowOffset: { width: 0, height: 2 },\n    shadowOpacity: 0.06,\n    shadowRadius: 4,\n    elevation: 2,\n  },\n  badgeText: {\n    fontSize: 11,\n    fontFamily: FONTS.medium,\n    fontWeight: '500',\n    textAlign: 'right',\n  },\n}\\);\nEOF)",
       "Bash(powershell.exe -Command:*)",
-      "Bash(echo:*)",
-      "Bash(\"c:/Users/fuats/Desktop/Workdir/MedTracker/src/widgets/page-header/index.ts\" << 'EOF'\nexport { PageHeader } from './ui/PageHeader';\nEOF)",
       "Bash(powershell.exe -ExecutionPolicy Bypass -File /tmp/write_files.ps1)",
+      "Bash(echo:*)",
       "Bash(printf:*)",
       "Bash(npx jest:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(wc:*)",
+      "Bash(python -c:*)",
+      "Bash(npm test:*)",
+      "Bash(npx eslint:*)"
+    ]
+  },
+  "model": "sonnet",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"if ($env:CLAUDE_FILE_PATHS -match '\\.tsx?$') { npx tsc --noEmit --skipLibCheck 2>&1 | Select-Object -First 20 }\"",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"if ($env:CLAUDE_FILE_PATHS -match 'bp-guidelines|classification|BPCategory') { Write-Host '⚠️ MEDICAL SAFETY: Classification file modified — verify thresholds against docs/bp-classification-guidelines.md' }\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"if ($env:CLAUDE_FILE_PATHS -match 'shared/config/bp-guidelines\\.ts|shared/config/medical') { Write-Error '{\\\"decision\\\": \\\"block\\\", \\\"reason\\\": \\\"🚨 Protected medical constants file. Request explicit permission to proceed.\\\"}'; exit 2 }\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"npx tsc --noEmit --skipLibCheck 2>&1 | Select-Object -Last 5\"",
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'bp-guidelines'; then echo '{\"decision\": \"block\", \"reason\": \"🚨 Cannot modify medical constants via Bash\"}' >&2; exit 2; fi",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs attention', 'MedTracker')\"",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

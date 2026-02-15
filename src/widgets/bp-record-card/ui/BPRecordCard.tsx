@@ -189,13 +189,13 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
           <View style={[styles.windowChip, { backgroundColor: colors.surfaceSecondary }]}>
             <Icon name={windowIcon} size={11} color={colors.textSecondary} />
             <Text style={[styles.windowChipText, { color: colors.textSecondary }]}>
-              {t('timeWindow.' + timeWindow)}
+              {t(('timeWindow.' + timeWindow) as any)}
             </Text>
           </View>
           {isMorningSurge && (
-            <View style={[styles.surgeChip, { backgroundColor: '#f97316' + '20' }]}>
+            <View style={styles.surgeChip}>
               <Icon name="trending-up-outline" size={11} color="#f97316" />
-              <Text style={[styles.surgeChipText, { color: '#f97316' }]}>
+              <Text style={styles.surgeChipText}>
                 {t('morningSurge')}
               </Text>
             </View>
@@ -410,11 +410,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
+    backgroundColor: '#f9731620',
   },
   surgeChipText: {
     fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
+    color: '#f97316',
   },
   notesContainer: {
     marginTop: 10,

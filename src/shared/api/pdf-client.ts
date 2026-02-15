@@ -1,4 +1,4 @@
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import { generatePDF } from 'react-native-html-to-pdf';
 
 export interface PdfOptions {
   html: string;
@@ -11,7 +11,7 @@ export interface PdfResult {
 }
 
 export async function convertHtmlToPdf(options: PdfOptions): Promise<PdfResult> {
-  const result = await RNHTMLtoPDF.convert({
+  const result = await generatePDF({
     html: options.html,
     fileName: options.fileName,
     directory: options.directory ?? 'Documents',

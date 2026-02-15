@@ -123,7 +123,7 @@ export async function getBPRecords(limit?: number): Promise<BPRecord[]> {
     ? await db.execute(query, [limit])
     : await db.execute(query);
 
-  const rows = (result.rows ?? []) as BPRecordRow[];
+  const rows = (result.rows ?? []) as unknown as BPRecordRow[];
   return rows.map(rowToRecord);
 }
 
@@ -136,7 +136,7 @@ export async function getBPRecordById(id: string): Promise<BPRecord | null> {
     [id],
   );
 
-  const rows = (result.rows ?? []) as BPRecordRow[];
+  const rows = (result.rows ?? []) as unknown as BPRecordRow[];
   return rows.length > 0 ? rowToRecord(rows[0]) : null;
 }
 

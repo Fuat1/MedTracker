@@ -51,7 +51,7 @@ export async function getTagsForRecords(
     recordIds,
   );
 
-  const rows = (result.rows ?? []) as BPTagRow[];
+  const rows = (result.rows ?? []) as unknown as BPTagRow[];
   const map: Record<string, LifestyleTag[]> = {};
   for (const row of rows) {
     if (!map[row.record_id]) map[row.record_id] = [];

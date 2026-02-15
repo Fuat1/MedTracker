@@ -36,7 +36,8 @@ export function classifyBP(
     return BP_CATEGORIES.NORMAL;
   }
 
-  // ESC/ESH Guidelines (Europe)
+  // ESC/ESH Guidelines (Europe) - 2018 framework
+  // Note: ESC 2024 uses 3-category system with DBP 70 boundary (not yet implemented)
   if (guideline === BP_GUIDELINES.ESC_ESH) {
     if (systolic >= 180 || diastolic >= 110) {
       return BP_CATEGORIES.CRISIS;
@@ -47,13 +48,20 @@ export function classifyBP(
     if (systolic >= 140 || diastolic >= 90) {
       return BP_CATEGORIES.STAGE_1;
     }
-    if (systolic >= 130 && diastolic < 85) {
+    // High Normal (Elevated): SBP 130-139 OR DBP 85-89
+    // Uses OR logic to prevent classification gap (e.g., 125/87 would be unclassified with AND)
+    if (systolic >= 130 || (diastolic >= 85 && diastolic < 90)) {
       return BP_CATEGORIES.ELEVATED;
     }
-    return BP_CATEGORIES.NORMAL;
+    // Normal: SBP <130 AND DBP <85
+    if (systolic < 130 && diastolic < 85) {
+      return BP_CATEGORIES.NORMAL;
+    }
+    return BP_CATEGORIES.NORMAL; // fallback
   }
 
-  // JSH Guidelines (Japan)
+  // JSH Guidelines (Japan) - 2025
+  // Key difference from ESC/ESH: DBP boundary is 80 mmHg (not 85)
   if (guideline === BP_GUIDELINES.JSH) {
     if (systolic >= 180 || diastolic >= 110) {
       return BP_CATEGORIES.CRISIS;
@@ -64,13 +72,23 @@ export function classifyBP(
     if (systolic >= 140 || diastolic >= 90) {
       return BP_CATEGORIES.STAGE_1;
     }
-    if (systolic >= 130 && diastolic < 85) {
+    // Elevated BP: SBP 130-139 OR DBP 80-89
+    // JSH uses DBP 80 (not 85 like ESC/ESH)
+    // Uses OR logic to prevent classification gap (e.g., 125/82 would be unclassified with AND)
+    if (systolic >= 130 || (diastolic >= 80 && diastolic < 90)) {
       return BP_CATEGORIES.ELEVATED;
     }
-    return BP_CATEGORIES.NORMAL;
+    // Normal BP: SBP <130 AND DBP <80
+    if (systolic < 130 && diastolic < 80) {
+      return BP_CATEGORIES.NORMAL;
+    }
+    return BP_CATEGORIES.NORMAL; // fallback
   }
 
-  // WHO Guidelines (World Health Organization) - 2021
+  // WHO/ISH Guidelines (World Health Organization / International Society of Hypertension) - 1999
+  // Note: WHO 2021 guideline (WHO/UCN/NCD/20.07) contains no BP classification table
+  // These thresholds are from the WHO/ISH 1999 classification system
+  // Source: Nugroho et al., Annals of Medicine, 2022
   if (guideline === BP_GUIDELINES.WHO) {
     // WHO uses 180/110 as crisis threshold (similar to ESC/ESH)
     if (systolic >= 180 || diastolic >= 110) {
@@ -184,9 +202,13 @@ export function validateBPValues(
   };
 }
 
-// Check if reading indicates crisis
-export function isCrisisReading(systolic: number, diastolic: number): boolean {
-  return classifyBP(systolic, diastolic) === BP_CATEGORIES.CRISIS;
+// Check if reading indicates crisis (guideline-aware: AHA uses ≥180/120, others use ≥180/110)
+export function isCrisisReading(
+  systolic: number,
+  diastolic: number,
+  guideline: BPGuideline = BP_GUIDELINES.AHA_ACC,
+): boolean {
+  return classifyBP(systolic, diastolic, guideline) === BP_CATEGORIES.CRISIS;
 }
 
 /**
@@ -215,11 +237,16 @@ export function calculateMAP(
 
 /**
  * Interpret Pulse Pressure value
- * Returns clinical category: 'normal' | 'borderline' | 'high'
+ * Low (Narrow) PP: <40 mmHg — May indicate heart failure, blood loss, aortic stenosis
+ * Normal PP: 40-60 mmHg — Healthy cardiovascular function
+ * High (Wide) PP: >60 mmHg — May indicate arterial stiffness, increased CV risk
+ *
+ * Source: StatPearls, Cleveland Clinic — Normal PP ≈ 40 mmHg
+ * Returns clinical category: 'low' | 'normal' | 'high'
  */
-export function interpretPulsePressure(pp: number): 'normal' | 'borderline' | 'high' {
-  if (pp < 40) return 'normal';
-  if (pp <= 60) return 'borderline';
+export function interpretPulsePressure(pp: number): 'low' | 'normal' | 'high' {
+  if (pp < 40) return 'low';
+  if (pp <= 60) return 'normal';
   return 'high';
 }
 

@@ -11,8 +11,6 @@ import {
   getBPCategoryLabel,
   calculatePulsePressure,
   calculateMAP,
-  interpretPulsePressure,
-  interpretMAP,
 } from '../../../entities/blood-pressure';
 import { useSettingsStore } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
@@ -81,8 +79,6 @@ export function HomePage() {
     ? calculateMAP(latestRecord.systolic, latestRecord.diastolic)
     : null;
 
-  const ppCategory = ppValue ? interpretPulsePressure(ppValue) : null;
-  const mapCategory = mapValue ? interpretMAP(mapValue) : null;
 
   const handlePPInfo = () => {
     setModalType('pp');

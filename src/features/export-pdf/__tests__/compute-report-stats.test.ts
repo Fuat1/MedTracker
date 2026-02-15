@@ -68,4 +68,50 @@ describe('computeReportStats', () => {
     expect(normal?.count).toBe(1);
     expect(normal?.percent).toBe(25);
   });
+
+  it('computes avgPP and avgMAP correctly', () => {
+    const records = [
+      makeRecord(120, 80, 70, NOW - 100),
+      makeRecord(140, 90, 80, NOW - 200),
+    ];
+    const stats = computeReportStats(records, BP_GUIDELINES.AHA_ACC);
+    // PP: (120-80)=40, (140-90)=50, avg=45
+    expect(stats.avgPP).toBe(45);
+    // MAP: (120+160)/3=93, (140+180)/3=107, avg=100
+    expect(stats.avgMAP).toBe(100);
+  });
+
+  it('classifies records with ESC/ESH guideline', () => {
+    const records = [
+      makeRecord(135, 85, null, NOW),
+      makeRecord(145, 92, null, NOW),
+    ];
+    const stats = computeReportStats(records, BP_GUIDELINES.ESC_ESH);
+    // 135/85: ESC Elevated (High Normal)
+    const elevated = stats.categoryBreakdown.find(c => c.key === 'elevated');
+    expect(elevated?.count).toBe(1);
+    // 145/92: ESC Stage 1
+    const stage1 = stats.categoryBreakdown.find(c => c.key === 'stage_1');
+    expect(stage1?.count).toBe(1);
+  });
+
+  it('includes crisis category for extreme readings', () => {
+    const records = [
+      makeRecord(185, 125, null, NOW),
+    ];
+    const stats = computeReportStats(records, BP_GUIDELINES.AHA_ACC);
+    const crisis = stats.categoryBreakdown.find(c => c.key === 'crisis');
+    expect(crisis?.count).toBe(1);
+    expect(crisis?.percent).toBe(100);
+  });
+
+  it('computes minDiastolic and maxDiastolic', () => {
+    const records = [
+      makeRecord(120, 70, null, NOW - 100),
+      makeRecord(140, 95, null, NOW - 200),
+    ];
+    const stats = computeReportStats(records, BP_GUIDELINES.AHA_ACC);
+    expect(stats.minDiastolic).toBe(70);
+    expect(stats.maxDiastolic).toBe(95);
+  });
 });

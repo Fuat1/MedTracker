@@ -11,18 +11,15 @@ interface OptionChipProps {
 
 export function OptionChip({ label, selected, onPress }: OptionChipProps) {
   const { colors } = useTheme();
+  const chipBgStyle = { backgroundColor: selected ? colors.accent : colors.surfaceSecondary };
+  const chipTextStyle = { color: selected ? '#ffffff' : colors.textSecondary };
   return (
     <TouchableOpacity
-      style={[
-        styles.chip,
-        { backgroundColor: selected ? colors.accent : colors.surfaceSecondary },
-      ]}
+      style={[styles.chip, chipBgStyle]}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Text
-        style={[styles.chipText, { color: selected ? '#ffffff' : colors.textSecondary }]}
-      >
+      <Text style={[styles.chipText, chipTextStyle]}>
         {label}
       </Text>
     </TouchableOpacity>

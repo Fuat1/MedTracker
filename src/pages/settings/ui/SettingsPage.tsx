@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useSettingsStore, type Language, type ThemeMode, type EntryMode } from '../../../shared/lib/settings-store';
+import { useSettingsStore, type Language, type EntryMode } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { OptionChip } from '../../../shared/ui';
 import { BP_UNITS, BP_GUIDELINES } from '../../../shared/config/settings';
@@ -58,7 +58,7 @@ export function SettingsPage() {
     });
   };
 
-  const handleBiometricToggle = (value: boolean) => {
+  const handleBiometricToggle = (_value: boolean) => {
     Alert.alert(
       t('settings.dataPrivacy.comingSoon'),
       t('settings.dataPrivacy.comingSoonMessage'),
@@ -156,8 +156,16 @@ export function SettingsPage() {
     [BP_GUIDELINES.AHA_ACC]: tMedical('guidelines.ahaAcc.name'),
     [BP_GUIDELINES.ESC_ESH]: tMedical('guidelines.escEsh.name'),
     [BP_GUIDELINES.JSH]: tMedical('guidelines.jsh.name'),
+    [BP_GUIDELINES.WHO]: tMedical('guidelines.who.name'),
   };
   const guidelineName = guidelineNameMap[guideline] || 'AHA/ACC';
+
+  const warningBannerStyle = {
+    backgroundColor: isDark ? '#422006' : '#fef3c7',
+    borderColor: isDark ? '#92400e' : '#f59e0b',
+  };
+  const warningTextStyle = { color: isDark ? '#fde68a' : '#92400e' };
+  const cardTitleWithMarginStyle = { color: colors.textPrimary, marginBottom: 16 };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -236,9 +244,9 @@ export function SettingsPage() {
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.warningBanner, { backgroundColor: isDark ? '#422006' : '#fef3c7', borderColor: isDark ? '#92400e' : '#f59e0b' }]}>
+          <View style={[styles.warningBanner, warningBannerStyle]}>
             <Icon name="warning-outline" size={18} color={isDark ? '#fbbf24' : '#d97706'} />
-            <Text style={[styles.warningText, { color: isDark ? '#fde68a' : '#92400e' }]}>
+            <Text style={[styles.warningText, warningTextStyle]}>
               {t('settings.cloudSync.privacyWarning')}
             </Text>
           </View>
@@ -270,7 +278,7 @@ export function SettingsPage() {
           entering={FadeInUp.delay(300).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, marginBottom: 16 }]}>
+          <Text style={[styles.cardTitle, cardTitleWithMarginStyle]}>
             {t('settings.bpLegend.title', { guideline: guidelineName })}
           </Text>
 
@@ -307,7 +315,7 @@ export function SettingsPage() {
           entering={FadeInUp.delay(400).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, marginBottom: 16 }]}>
+          <Text style={[styles.cardTitle, cardTitleWithMarginStyle]}>
             {t('settings.theme.title')}
           </Text>
 
