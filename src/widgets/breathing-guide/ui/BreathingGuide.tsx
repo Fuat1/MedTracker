@@ -24,7 +24,7 @@ type Phase = 'inhale' | 'hold' | 'exhale';
 
 export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNIQUE.cycles }: BreathingGuideProps) {
   const { t } = useTranslation('pages');
-  const { colors } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
   const [currentPhase, setCurrentPhase] = useState<Phase>('inhale');
   const [cyclesCompleted, setCyclesCompleted] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(BREATHING_TECHNIQUE.inhale);
@@ -143,19 +143,19 @@ export function BreathingGuide({ onCycleComplete, totalCycles = BREATHING_TECHNI
           ]}
         />
         <View style={styles.centerContent}>
-          <Text style={[styles.secondsText, { color: colors.accent }]}>
+          <Text style={[styles.secondsText, { color: colors.accent, fontSize: Math.round(64 * fontScale) }]}>
             {secondsRemaining}
           </Text>
         </View>
       </View>
 
       {/* Phase Label */}
-      <Text style={[styles.phaseText, { color: colors.textPrimary }]}>
+      <Text style={[styles.phaseText, { color: colors.textPrimary, fontSize: Math.round(24 * fontScale) }]}>
         {getPhaseText()}
       </Text>
 
       {/* Cycle Counter */}
-      <Text style={[styles.cycleText, { color: colors.textSecondary }]}>
+      <Text style={[styles.cycleText, { color: colors.textSecondary, fontSize: typography.md }]}>
         {t('preMeasurement.breathing.cycle', { current: cyclesCompleted + 1, total: totalCycles })}
       </Text>
     </View>
@@ -186,19 +186,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   secondsText: {
-    fontSize: 64,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
   },
   phaseText: {
-    fontSize: 24,
     fontFamily: FONTS.bold,
     fontWeight: '700',
     marginBottom: 12,
     textTransform: 'capitalize',
   },
   cycleText: {
-    fontSize: 15,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
