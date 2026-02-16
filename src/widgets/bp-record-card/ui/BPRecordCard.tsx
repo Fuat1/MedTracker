@@ -28,7 +28,7 @@ interface BPRecordCardProps {
 
 export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRecordCardProps) {
   const { t } = useTranslation('common');
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, fontScale, typography } = useTheme();
   const { guideline } = useSettingsStore();
   const category = classifyBP(record.systolic, record.diastolic, guideline);
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
@@ -55,10 +55,10 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
         >
           {/* Time Column */}
           <View style={compactStyles.timeColumn}>
-            <Text style={[compactStyles.time, { color: colors.textPrimary }]}>
+            <Text style={[compactStyles.time, { color: colors.textPrimary, fontSize: typography.md }]}>
               {timeSplit.time}
             </Text>
-            <Text style={[compactStyles.period, { color: colors.textTertiary }]}>
+            <Text style={[compactStyles.period, { color: colors.textTertiary, fontSize: typography.xs }]}>
               {timeSplit.period}
             </Text>
           </View>
@@ -68,10 +68,10 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
 
           {/* BP Value */}
           <View style={compactStyles.valueColumn}>
-            <Text style={[compactStyles.bpValue, { color: colors.textPrimary }]}>
+            <Text style={[compactStyles.bpValue, { color: colors.textPrimary, fontSize: typography.xl }]}>
               {record.systolic}/{record.diastolic}
             </Text>
-            <Text style={[compactStyles.unit, { color: colors.textTertiary }]}>
+            <Text style={[compactStyles.unit, { color: colors.textTertiary, fontSize: typography.xs }]}>
               {t('units.mmhg')}
             </Text>
           </View>
@@ -83,7 +83,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
 
           {/* Category Badge */}
           <View style={[compactStyles.badge, { backgroundColor: categoryColor + '20' }]}>
-            <Text style={[compactStyles.badgeText, { color: categoryColor }]}>
+            <Text style={[compactStyles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>
               {categoryLabel}
             </Text>
           </View>
@@ -128,16 +128,16 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
             </View>
             <View style={styles.valuesColumn}>
               <View style={styles.bpValuesRow}>
-                <Text style={[styles.valueTextLarge, { color: categoryColor }]}>
+                <Text style={[styles.valueTextLarge, { color: categoryColor, fontSize: Math.round(26 * fontScale) }]}>
                   {record.systolic}
                 </Text>
-                <Text style={[styles.separator, { color: colors.textTertiary }]}>/</Text>
-                <Text style={[styles.valueTextLarge, { color: categoryColor }]}>
+                <Text style={[styles.separator, { color: colors.textTertiary, fontSize: typography.lg }]}>/</Text>
+                <Text style={[styles.valueTextLarge, { color: categoryColor, fontSize: Math.round(26 * fontScale) }]}>
                   {record.diastolic}
                 </Text>
-                <Text style={[styles.unit, { color: colors.textSecondary }]}>{t('units.mmhg')}</Text>
+                <Text style={[styles.unit, { color: colors.textSecondary, fontSize: typography.xs }]}>{t('units.mmhg')}</Text>
               </View>
-              <Text style={[styles.timeText, { color: colors.textTertiary }]}>
+              <Text style={[styles.timeText, { color: colors.textTertiary, fontSize: typography.xs }]}>
                 {getRelativeTime(record.timestamp)}
               </Text>
             </View>
@@ -148,7 +148,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
             style={[styles.badge, { backgroundColor: categoryColor + '15' }]}
           >
             <View style={[styles.badgeDot, { backgroundColor: categoryColor }]} />
-            <Text style={[styles.badgeText, { color: categoryColor }]}>{categoryLabel}</Text>
+            <Text style={[styles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>{categoryLabel}</Text>
           </View>
         </View>
 
@@ -157,20 +157,20 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
           {record.pulse && (
             <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
               <Icon name="pulse" size={14} color={colors.textSecondary} />
-              <Text style={[styles.detailChipText, { color: colors.textSecondary }]}>
+              <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
                 {record.pulse} {t('units.bpm')}
               </Text>
             </View>
           )}
           <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
             <Icon name="body-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.detailChipText, { color: colors.textSecondary }]}>
+            <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {locationLabels[record.location] || record.location}
             </Text>
           </View>
           <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
             <Icon name="walk-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.detailChipText, { color: colors.textSecondary }]}>
+            <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {postureLabels[record.posture] || record.posture}
             </Text>
           </View>
@@ -179,7 +179,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
         {/* Timestamp */}
         <View style={styles.timestampRow}>
           <Icon name="time-outline" size={12} color={colors.textTertiary} />
-          <Text style={[styles.timestamp, { color: colors.textTertiary }]}>
+          <Text style={[styles.timestamp, { color: colors.textTertiary, fontSize: typography.xs }]}>
             {formatDateTime(record.timestamp)}
           </Text>
         </View>
@@ -188,14 +188,14 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
         <View style={styles.windowRow}>
           <View style={[styles.windowChip, { backgroundColor: colors.surfaceSecondary }]}>
             <Icon name={windowIcon} size={11} color={colors.textSecondary} />
-            <Text style={[styles.windowChipText, { color: colors.textSecondary }]}>
+            <Text style={[styles.windowChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {t(('timeWindow.' + timeWindow) as any)}
             </Text>
           </View>
           {isMorningSurge && (
             <View style={[styles.surgeChip, { backgroundColor: colors.surgeBg }]}>
               <Icon name="trending-up-outline" size={11} color={colors.surgeColor} />
-              <Text style={[styles.surgeChipText, { color: colors.surgeColor }]}>
+              <Text style={[styles.surgeChipText, { color: colors.surgeColor, fontSize: typography.xs }]}>
                 {t('morningSurge')}
               </Text>
             </View>
@@ -206,7 +206,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
         {record.notes && (
           <View style={[styles.notesContainer, { borderTopColor: colors.borderLight }]}>
             <Icon name="document-text-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.notesText, { color: colors.textSecondary }]}>{record.notes}</Text>
+            <Text style={[styles.notesText, { color: colors.textSecondary, fontSize: typography.sm }]}>{record.notes}</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -231,12 +231,10 @@ const compactStyles = StyleSheet.create({
     alignItems: 'center',
   },
   time: {
-    fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   period: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 2,
@@ -250,13 +248,11 @@ const compactStyles = StyleSheet.create({
     flex: 1,
   },
   bpValue: {
-    fontSize: 22,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   unit: {
-    fontSize: 11,
     fontFamily: FONTS.regular,
     marginTop: 1,
   },
@@ -267,7 +263,6 @@ const compactStyles = StyleSheet.create({
     marginLeft: 8,
   },
   badgeText: {
-    fontSize: 11,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -318,23 +313,19 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   valueTextLarge: {
-    fontSize: 26,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   separator: {
-    fontSize: 18,
     fontFamily: FONTS.regular,
     marginHorizontal: 3,
   },
   unit: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
     marginLeft: 4,
   },
   timeText: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
     marginTop: 2,
   },
@@ -352,7 +343,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   badgeText: {
-    fontSize: 12,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -372,7 +362,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   detailChipText: {
-    fontSize: 12,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -382,7 +371,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   timestamp: {
-    fontSize: 11,
     fontFamily: FONTS.regular,
   },
   windowRow: {
@@ -399,7 +387,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   windowChipText: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -412,7 +399,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   surgeChipText: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -426,7 +412,6 @@ const styles = StyleSheet.create({
   },
   notesText: {
     flex: 1,
-    fontSize: 13,
     fontFamily: FONTS.regular,
     lineHeight: 18,
   },
