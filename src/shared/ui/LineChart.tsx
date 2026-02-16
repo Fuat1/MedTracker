@@ -22,12 +22,12 @@ export function LineChart({
   height = 160,
   emptyText = 'No data yet',
 }: LineChartProps) {
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
 
   if (!data || data.length === 0) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
-        <Text style={[styles.emptyText, { color: colors.textTertiary }]}>{emptyText}</Text>
+        <Text style={[styles.emptyText, { color: colors.textTertiary, fontSize: typography.sm }]}>{emptyText}</Text>
       </View>
     );
   }
@@ -98,7 +98,7 @@ export function LineChart({
               <SvgText
                 x={x}
                 y={y - 12}
-                fontSize={11}
+                fontSize={typography.xs}
                 fontFamily={FONTS.medium}
                 fontWeight="500"
                 fill={colors.chartLabel}
@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 14,
     fontFamily: FONTS.regular,
   },
 });
