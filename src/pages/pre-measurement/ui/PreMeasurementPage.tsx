@@ -25,7 +25,7 @@ type WorkflowStep = 'checklist' | 'breathing' | 'timer' | 'ready';
 export function PreMeasurementPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { colors } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
   const navigation = useNavigation();
 
   const [currentStep, setCurrentStep] = useState<WorkflowStep>('checklist');
@@ -97,10 +97,10 @@ export function PreMeasurementPage() {
   const renderChecklist = () => (
     <View style={styles.contentContainer}>
       <Icon name="clipboard-outline" size={64} color={colors.accent} style={styles.headerIcon} />
-      <Text style={[styles.title, { color: colors.textPrimary }]}>
+      <Text style={[styles.title, { color: colors.textPrimary, fontSize: Math.round(26 * fontScale) }]}>
         {t('preMeasurement.checklist.title')}
       </Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+      <Text style={[styles.subtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
         {t('preMeasurement.checklist.subtitle')}
       </Text>
 
@@ -118,7 +118,7 @@ export function PreMeasurementPage() {
                 size={28}
                 color={step.important ? colors.accent : colors.textSecondary}
               />
-              <Text style={[styles.checklistText, textStyle]}>
+              <Text style={[styles.checklistText, textStyle, { fontSize: typography.md }]}>
                 {t(step.translationKey as any)}
               </Text>
             </View>
@@ -131,10 +131,10 @@ export function PreMeasurementPage() {
   const renderBreathing = () => (
     <View style={styles.contentContainer}>
       <Icon name="fitness-outline" size={64} color={colors.accent} style={styles.headerIcon} />
-      <Text style={[styles.title, { color: colors.textPrimary }]}>
+      <Text style={[styles.title, { color: colors.textPrimary, fontSize: Math.round(26 * fontScale) }]}>
         {t('preMeasurement.breathing.title')}
       </Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+      <Text style={[styles.subtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
         {t('preMeasurement.breathing.subtitle')}
       </Text>
 
@@ -146,7 +146,7 @@ export function PreMeasurementPage() {
       {breathingCyclesCompleted >= BREATHING_TECHNIQUE.cycles && (
         <View style={[styles.completeBadge, { backgroundColor: colors.accent + '20' }]}>
           <Icon name="checkmark-circle" size={20} color={colors.accent} />
-          <Text style={[styles.completeText, { color: colors.accent }]}>
+          <Text style={[styles.completeText, { color: colors.accent, fontSize: typography.md }]}>
             {t('preMeasurement.breathing.complete')}
           </Text>
         </View>
@@ -157,10 +157,10 @@ export function PreMeasurementPage() {
   const renderTimer = () => (
     <View style={styles.contentContainer}>
       <Icon name="time-outline" size={64} color={colors.accent} style={styles.headerIcon} />
-      <Text style={[styles.title, { color: colors.textPrimary }]}>
+      <Text style={[styles.title, { color: colors.textPrimary, fontSize: Math.round(26 * fontScale) }]}>
         {t('preMeasurement.timer.title')}
       </Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+      <Text style={[styles.subtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
         {t('preMeasurement.timer.subtitle')}
       </Text>
 
@@ -174,13 +174,13 @@ export function PreMeasurementPage() {
             },
           ]}
         >
-          <Text style={[styles.timerText, { color: colors.accent }]}>
+          <Text style={[styles.timerText, { color: colors.accent, fontSize: typography.hero }]}>
             {formatTime(timeRemaining)}
           </Text>
         </View>
       </View>
 
-      <Text style={[styles.timerHint, { color: colors.textTertiary }]}>
+      <Text style={[styles.timerHint, { color: colors.textTertiary, fontSize: typography.xs }]}>
         {t('preMeasurement.timer.hint')}
       </Text>
     </View>
@@ -189,10 +189,10 @@ export function PreMeasurementPage() {
   const renderReady = () => (
     <View style={styles.contentContainer}>
       <Icon name="checkmark-circle" size={80} color={colors.accent} style={styles.headerIcon} />
-      <Text style={[styles.title, { color: colors.textPrimary }]}>
+      <Text style={[styles.title, { color: colors.textPrimary, fontSize: Math.round(26 * fontScale) }]}>
         {t('preMeasurement.ready.title')}
       </Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+      <Text style={[styles.subtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
         {t('preMeasurement.ready.subtitle')}
       </Text>
     </View>
@@ -217,7 +217,7 @@ export function PreMeasurementPage() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.xl }]}>
           {t('preMeasurement.title')}
         </Text>
         <TouchableOpacity
@@ -276,7 +276,7 @@ export function PreMeasurementPage() {
           onPress={handleSkipToMeasurement}
           activeOpacity={0.7}
         >
-          <Text style={[styles.skipButtonText, { color: colors.textSecondary }]}>
+          <Text style={[styles.skipButtonText, { color: colors.textSecondary, fontSize: typography.md }]}>
             {t('preMeasurement.skip')}
           </Text>
         </TouchableOpacity>
@@ -292,7 +292,7 @@ export function PreMeasurementPage() {
           disabled={!canContinue()}
           activeOpacity={0.85}
         >
-          <Text style={styles.continueButtonText}>
+          <Text style={[styles.continueButtonText, { fontSize: typography.md }]}>
             {currentStep === 'ready' ? t('preMeasurement.startMeasurement') : tCommon('buttons.continue')}
           </Text>
           <Icon name="arrow-forward" size={20} color="#ffffff" />
@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: 22,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
@@ -360,14 +359,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 26,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     textAlign: 'center',
     marginBottom: 12,
   },
   subtitle: {
-    fontSize: 15,
     fontFamily: FONTS.regular,
     textAlign: 'center',
     lineHeight: 22,
@@ -387,7 +384,6 @@ const styles = StyleSheet.create({
   },
   checklistText: {
     flex: 1,
-    fontSize: 15,
     lineHeight: 20,
   },
   completeBadge: {
@@ -400,7 +396,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   completeText: {
-    fontSize: 15,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -416,12 +411,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   timerText: {
-    fontSize: 56,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
   },
   timerHint: {
-    fontSize: 13,
     fontFamily: FONTS.regular,
     textAlign: 'center',
   },
@@ -440,7 +433,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   skipButtonText: {
-    fontSize: 15,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -455,7 +447,6 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },

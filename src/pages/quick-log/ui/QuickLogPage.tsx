@@ -24,7 +24,7 @@ export function QuickLogPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { t: tValidation } = useTranslation('validation');
-  const { colors, fontScale } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
   const navigation = useNavigation();
   const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
   const recordBP = useRecordBP();
@@ -95,10 +95,10 @@ export function QuickLogPage() {
       {/* ── Header ── */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.xl }]}>
             {t('quickLog.title')}
           </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
             {t('quickLog.subtitle')}
           </Text>
         </View>
@@ -151,7 +151,7 @@ export function QuickLogPage() {
               onPress={() => setActiveField('systolic')}
               activeOpacity={0.85}
             >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.systolic')}
               </Text>
               <Text
@@ -170,12 +170,12 @@ export function QuickLogPage() {
               >
                 {systolic || '---'}
               </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary }]}>mmHg</Text>
+              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
             </TouchableOpacity>
 
             {/* "/" divider */}
             <View style={styles.divider}>
-              <Text style={[styles.dividerText, { color: colors.textTertiary }]}>/</Text>
+              <Text style={[styles.dividerText, { color: colors.textTertiary, fontSize: typography.xl }]}>/</Text>
             </View>
 
             {/* Diastolic */}
@@ -193,7 +193,7 @@ export function QuickLogPage() {
               onPress={() => setActiveField('diastolic')}
               activeOpacity={0.85}
             >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.diastolic')}
               </Text>
               <Text
@@ -212,7 +212,7 @@ export function QuickLogPage() {
               >
                 {diastolic || '---'}
               </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary }]}>mmHg</Text>
+              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
             </TouchableOpacity>
 
             {/* Pulse */}
@@ -230,7 +230,7 @@ export function QuickLogPage() {
               onPress={() => setActiveField('pulse')}
               activeOpacity={0.85}
             >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.pulse')}
               </Text>
               <Text
@@ -244,7 +244,7 @@ export function QuickLogPage() {
               >
                 {pulse || '--'}
               </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary }]}>
+              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>
                 {tCommon('units.bpm')}
               </Text>
             </TouchableOpacity>
@@ -317,13 +317,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: 22,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   headerSubtitle: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
     marginTop: 1,
   },
@@ -378,12 +376,10 @@ const styles = StyleSheet.create({
     width: 14,
   },
   dividerText: {
-    fontSize: 22,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
   },
   valueLabel: {
-    fontSize: 10,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -396,7 +392,6 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   valueUnit: {
-    fontSize: 9,
     fontFamily: FONTS.regular,
     marginTop: 2,
   },
