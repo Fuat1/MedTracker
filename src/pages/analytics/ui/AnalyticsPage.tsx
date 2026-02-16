@@ -42,7 +42,7 @@ export function AnalyticsPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, typography } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   const { data: allRecords } = useBPRecords();
   const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
@@ -157,7 +157,7 @@ export function AnalyticsPage() {
           entering={FadeInUp.delay(50).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('analytics.period.title')}
           </Text>
           <View style={styles.chipsRow}>
@@ -179,11 +179,11 @@ export function AnalyticsPage() {
           </View>
           {period === 'custom' && (
             <View style={styles.customRangeRow}>
-              <Text style={[styles.rangeLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('analytics.customRange.from')}
               </Text>
               <DateTimePicker value={customStart} onChange={setCustomStart} />
-              <Text style={[styles.rangeLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('analytics.customRange.to')}
               </Text>
               <DateTimePicker value={customEnd} onChange={setCustomEnd} />
@@ -196,14 +196,14 @@ export function AnalyticsPage() {
           entering={FadeInUp.delay(100).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('analytics.bpTrends')}
           </Text>
 
           {/* PP/MAP Toggles */}
           <View style={styles.togglesRow}>
             <View style={styles.toggleItem}>
-              <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('analytics.toggles.showPP')}
               </Text>
               <Switch
@@ -216,7 +216,7 @@ export function AnalyticsPage() {
               />
             </View>
             <View style={styles.toggleItem}>
-              <Text style={[styles.toggleLabel, { color: colors.textSecondary }]}>
+              <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('analytics.toggles.showMAP')}
               </Text>
               <Switch
@@ -258,20 +258,20 @@ export function AnalyticsPage() {
             <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
               <Icon name="trending-up" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
               {t('analytics.weeklyAverage')}
             </Text>
             {weeklyAvg.hasData ? (
               <>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                <Text style={[styles.statValue, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
                   {weeklyAvg.systolic}/{weeklyAvg.diastolic}
                 </Text>
-                <Text style={[styles.statUnit, { color: colors.textTertiary }]}>
+                <Text style={[styles.statUnit, { color: colors.textTertiary, fontSize: typography.xs }]}>
                   {tCommon('units.mmhg')}
                 </Text>
               </>
             ) : (
-              <Text style={[styles.statNoData, { color: colors.textTertiary }]}>
+              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
                 {t('analytics.noData')}
               </Text>
             )}
@@ -282,27 +282,27 @@ export function AnalyticsPage() {
             <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
               <Icon name="sunny" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
               {t('analytics.morningVsEvening')}
             </Text>
             {amPm.hasAmData || amPm.hasPmData ? (
               <View style={styles.amPmContainer}>
                 <View style={styles.amPmRow}>
-                  <Text style={[styles.amPmLabel, { color: colors.textTertiary }]}>AM</Text>
-                  <Text style={[styles.amPmValue, { color: colors.textPrimary }]}>
+                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>AM</Text>
+                  <Text style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}>
                     {amPm.hasAmData ? `${amPm.am.systolic}/${amPm.am.diastolic}` : '---'}
                   </Text>
                 </View>
                 <View style={[styles.amPmDivider, { backgroundColor: colors.border }]} />
                 <View style={styles.amPmRow}>
-                  <Text style={[styles.amPmLabel, { color: colors.textTertiary }]}>PM</Text>
-                  <Text style={[styles.amPmValue, { color: colors.textPrimary }]}>
+                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>PM</Text>
+                  <Text style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}>
                     {amPm.hasPmData ? `${amPm.pm.systolic}/${amPm.pm.diastolic}` : '---'}
                   </Text>
                 </View>
               </View>
             ) : (
-              <Text style={[styles.statNoData, { color: colors.textTertiary }]}>
+              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
                 {t('analytics.noData')}
               </Text>
             )}
@@ -314,18 +314,18 @@ export function AnalyticsPage() {
           entering={FadeInUp.delay(250).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('analytics.circadian.title')}
           </Text>
 
           {records.length < 4 ? (
-            <Text style={[styles.noDataText, { color: colors.textSecondary }]}>
+            <Text style={[styles.noDataText, { color: colors.textSecondary, fontSize: typography.sm }]}>
               {t('analytics.circadian.noData')}
             </Text>
           ) : (
             <>
               {/* Donut Chart — time in range */}
-              <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
                 {t('analytics.circadian.timeInRange')}
               </Text>
               <DonutChart
@@ -342,7 +342,7 @@ export function AnalyticsPage() {
               {surgeResult.hasSurge && (
                 <View style={[styles.surgeRow, { backgroundColor: colors.surgeBg }]}>
                   <Icon name="trending-up-outline" size={14} color={colors.surgeColor} />
-                  <Text style={[styles.surgeText, { color: colors.surgeColor }]}>
+                  <Text style={[styles.surgeText, { color: colors.surgeColor, fontSize: typography.sm }]}>
                     {t('analytics.circadian.morningSurge', { count: 1 })}
                   </Text>
                 </View>
@@ -356,7 +356,7 @@ export function AnalyticsPage() {
           entering={FadeInUp.delay(280).duration(500)}
           style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('analytics.doctorNote.label')}
           </Text>
           <TextInput
@@ -372,6 +372,7 @@ export function AnalyticsPage() {
                 color: colors.textPrimary,
                 backgroundColor: colors.surfaceSecondary,
                 borderColor: colors.border,
+                fontSize: typography.sm,
               },
             ]}
           />
@@ -392,7 +393,7 @@ export function AnalyticsPage() {
                 <Icon name="checkmark" size={18} color={colors.accent} />
               )}
             </View>
-            <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>
+            <Text style={[styles.checkboxLabel, { color: colors.textPrimary, fontSize: typography.md }]}>
               {t('analytics.export.includePPMAP')}
             </Text>
           </Pressable>
@@ -428,7 +429,7 @@ export function AnalyticsPage() {
               <Text
                 style={[
                   styles.exportButtonText,
-                  { color: isExporting ? colors.textTertiary : colors.accent },
+                  { color: isExporting ? colors.textTertiary : colors.accent, fontSize: typography.md },
                 ]}
               >
                 {activeAction === 'save' ? t('analytics.savingPdf') : t('analytics.savePdf')}
@@ -454,7 +455,7 @@ export function AnalyticsPage() {
               accessibilityState={{ disabled: isExporting }}
             >
               <Icon name="share-outline" size={22} color={colors.surface} />
-              <Text style={[styles.exportButtonText, { color: colors.surface }]}>
+              <Text style={[styles.exportButtonText, { color: colors.surface, fontSize: typography.md }]}>
                 {activeAction === 'share' ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
               </Text>
             </Pressable>
@@ -485,7 +486,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardTitle: {
-    fontSize: 18,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 12,
@@ -503,7 +503,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   rangeLabel: {
-    fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 4,
@@ -516,7 +515,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     minHeight: 80,
-    fontSize: 14,
     fontFamily: FONTS.regular,
     fontWeight: '400',
     textAlignVertical: 'top',
@@ -547,24 +545,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statLabel: {
-    fontSize: 13,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
   },
   statValue: {
-    fontSize: 28,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   statUnit: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
     marginTop: 2,
   },
   statNoData: {
-    fontSize: 13,
     fontFamily: FONTS.regular,
     marginTop: 4,
   },
@@ -577,12 +571,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   amPmLabel: {
-    fontSize: 12,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   amPmValue: {
-    fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
@@ -593,14 +585,12 @@ const styles = StyleSheet.create({
 
   // Circadian card
   cardSubtitle: {
-    fontSize: 15,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 10,
     marginBottom: 8,
   },
   noDataText: {
-    fontSize: 14,
     fontFamily: FONTS.regular,
     fontWeight: '400',
     marginTop: 8,
@@ -614,7 +604,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   surgeText: {
-    fontSize: 13,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -631,7 +620,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   toggleLabel: {
-    fontSize: 14,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -656,7 +644,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxLabel: {
-    fontSize: 15,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -677,7 +664,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   exportButtonText: {
-    fontSize: 16,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
