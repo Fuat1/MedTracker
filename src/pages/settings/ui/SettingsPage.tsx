@@ -22,7 +22,7 @@ import { getSettingsForRegion } from '../../../shared/lib/region-settings';
 export function SettingsPage() {
   const { t } = useTranslation('pages');
   const { t: tMedical } = useTranslation('medical');
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, typography } = useTheme();
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
 
   const {
@@ -164,8 +164,8 @@ export function SettingsPage() {
     backgroundColor: colors.warningBg,
     borderColor: colors.warningBorder,
   };
-  const warningTextStyle = { color: colors.warningText };
-  const cardTitleWithMarginStyle = { color: colors.textPrimary, marginBottom: 16 };
+  const warningTextStyle = { color: colors.warningText, fontSize: typography.sm };
+  const cardTitleWithMarginStyle = { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -176,7 +176,7 @@ export function SettingsPage() {
         {/* Profile Header */}
         <Animated.View entering={FadeInDown.duration(400)} style={styles.profileSection}>
           <Icon name="person-circle" size={80} color={colors.accent} />
-          <Text style={[styles.profileName, { color: colors.textPrimary }]}>
+          <Text style={[styles.profileName, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
             {t('settings.profile.defaultName')}
           </Text>
         </Animated.View>
@@ -190,16 +190,16 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="lock-closed" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.dataPrivacy.title')}
             </Text>
           </View>
 
           <View style={styles.settingRow}>
-            <Text style={[styles.settingLabel, { color: colors.textSecondary }]}>
+            <Text style={[styles.settingLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
               {t('settings.dataPrivacy.localEncrypted')}
             </Text>
-            <Text style={[styles.activeText, { color: colors.successText }]}>
+            <Text style={[styles.activeText, { color: colors.successText, fontSize: typography.sm }]}>
               {t('settings.dataPrivacy.active')}
             </Text>
           </View>
@@ -209,7 +209,7 @@ export function SettingsPage() {
           <View style={styles.settingRow}>
             <View style={styles.settingLabelRow}>
               <Icon name="finger-print" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.dataPrivacy.biometricLock')}
               </Text>
             </View>
@@ -234,10 +234,10 @@ export function SettingsPage() {
               <Icon name="cloud-outline" size={20} color={colors.accent} />
             </View>
             <View style={styles.cardHeaderTextCol}>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
                 {t('settings.cloudSync.title')}
               </Text>
-              <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
                 {t('settings.cloudSync.lastBackup', { time: t('settings.cloudSync.neverSynced') })}
               </Text>
             </View>
@@ -265,7 +265,7 @@ export function SettingsPage() {
               accessibilityRole="button"
               accessibilityLabel={t('settings.cloudSync.googleDrive')}
             >
-              <Text style={[styles.outlineButtonText, { color: colors.textSecondary }]}>
+              <Text style={[styles.outlineButtonText, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('settings.cloudSync.googleDrive')}
               </Text>
             </Pressable>
@@ -275,7 +275,7 @@ export function SettingsPage() {
               accessibilityRole="button"
               accessibilityLabel={t('settings.cloudSync.syncNow')}
             >
-              <Text style={[styles.filledButtonText, { color: colors.surface }]}>
+              <Text style={[styles.filledButtonText, { color: colors.surface, fontSize: typography.sm }]}>
                 {t('settings.cloudSync.syncNow')}
               </Text>
             </Pressable>
@@ -294,25 +294,25 @@ export function SettingsPage() {
           <View style={styles.legendGrid}>
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: bpColors.normal }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.bpLegend.normal')}
               </Text>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: bpColors.elevated }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.bpLegend.elevated')}
               </Text>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: bpColors.stage_1 }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.bpLegend.stage1')}
               </Text>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: bpColors.stage_2 }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary }]}>
+              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.bpLegend.stage2')}
               </Text>
             </View>
@@ -331,7 +331,7 @@ export function SettingsPage() {
           <View style={styles.settingRow}>
             <View style={styles.settingLabelRow}>
               <Icon name="moon" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.darkMode')}
               </Text>
             </View>
@@ -353,7 +353,7 @@ export function SettingsPage() {
               accessibilityLabel={t('settings.useSystemDefault')}
             >
               <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-              <Text style={[styles.systemThemeText, { color: colors.accent }]}>
+              <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
                 {t('settings.useSystemDefault')}
               </Text>
             </Pressable>
@@ -361,7 +361,7 @@ export function SettingsPage() {
           {theme === 'system' && (
             <View style={styles.systemThemeLink}>
               <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-              <Text style={[styles.systemThemeText, { color: colors.accent }]}>
+              <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
                 {t('settings.theme.system.label')}
               </Text>
             </View>
@@ -375,10 +375,10 @@ export function SettingsPage() {
         >
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.seniorMode.label')}
               </Text>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
                 {t('settings.seniorMode.description')}
               </Text>
             </View>
@@ -400,14 +400,14 @@ export function SettingsPage() {
         >
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>
+              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
                 {t('settings.highContrast.label')}
               </Text>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
                 {t('settings.highContrast.description')}
               </Text>
               {highContrast && (
-                <Text style={[styles.noteText, { color: colors.accent }]}>
+                <Text style={[styles.noteText, { color: colors.accent, fontSize: typography.xs }]}>
                   {t('settings.highContrast.note')}
                 </Text>
               )}
@@ -433,10 +433,10 @@ export function SettingsPage() {
               <Icon name="add-circle-outline" size={20} color={colors.accent} />
             </View>
             <View style={styles.cardHeaderTextCol}>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
                 {t('settings.entryMode.label')}
               </Text>
-              <Text style={[styles.cardSubtitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
                 {t('settings.entryMode.description')}
               </Text>
             </View>
@@ -466,7 +466,7 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="language-outline" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.language.title')}
             </Text>
           </View>
@@ -496,7 +496,7 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="medical-outline" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.guideline.title')}
             </Text>
           </View>
@@ -507,7 +507,7 @@ export function SettingsPage() {
             accessibilityLabel={t('settings.detectRegion.button')}
           >
             <Icon name="earth-outline" size={18} color={colors.accent} />
-            <Text style={[styles.detectRegionText, { color: colors.accent }]}>
+            <Text style={[styles.detectRegionText, { color: colors.accent, fontSize: typography.sm }]}>
               {t('settings.detectRegion.button')}
             </Text>
           </Pressable>
@@ -536,7 +536,7 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="speedometer-outline" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.unit.title')}
             </Text>
           </View>
@@ -564,7 +564,7 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="body-outline" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.defaultLocation.title')}
             </Text>
           </View>
@@ -594,7 +594,7 @@ export function SettingsPage() {
             <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
               <Icon name="accessibility-outline" size={20} color={colors.accent} />
             </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {t('settings.defaultPosture.title')}
             </Text>
           </View>
@@ -634,7 +634,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   profileName: {
-    fontSize: 24,
     fontFamily: FONTS.bold,
     fontWeight: '700',
     marginTop: 12,
@@ -660,12 +659,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 18,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
   cardSubtitle: {
-    fontSize: 13,
     fontFamily: FONTS.regular,
     marginTop: 2,
   },
@@ -693,7 +690,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingLabel: {
-    fontSize: 14,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -702,19 +698,16 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   settingDescription: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
     marginTop: 4,
     lineHeight: 18,
   },
   noteText: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 8,
   },
   activeText: {
-    fontSize: 14,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
@@ -740,7 +733,6 @@ const styles = StyleSheet.create({
   },
   warningText: {
     flex: 1,
-    fontSize: 13,
     fontFamily: FONTS.regular,
     lineHeight: 18,
   },
@@ -761,7 +753,6 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   outlineButtonText: {
-    fontSize: 14,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -774,7 +765,6 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   filledButtonText: {
-    fontSize: 14,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
@@ -787,7 +777,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   systemThemeText: {
-    fontSize: 13,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -811,7 +800,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   legendText: {
-    fontSize: 14,
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
@@ -829,7 +817,6 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   detectRegionText: {
-    fontSize: 14,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
