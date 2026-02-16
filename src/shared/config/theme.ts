@@ -14,7 +14,7 @@ export const TYPOGRAPHY_BASE = {
   hero: 56,  // Main BP reading hero display
 } as const;
 
-export type TypographyScale = typeof TYPOGRAPHY_BASE;
+export type TypographyScale = { [K in keyof typeof TYPOGRAPHY_BASE]: number };
 
 /** Scale multiplier applied in Senior Mode. 16 × 1.4 = 22.4 → 22px (rounds). */
 export const SENIOR_SCALE = 1.4;

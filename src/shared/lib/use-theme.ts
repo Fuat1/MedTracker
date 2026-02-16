@@ -1,12 +1,21 @@
 import { useColorScheme } from 'react-native';
 import { useSettingsStore } from './settings-store';
-import { lightColors, darkColors, highContrastColors, type ThemeColors } from '../config/theme';
+import {
+  lightColors,
+  darkColors,
+  highContrastColors,
+  computeTypographyScale,
+  SENIOR_SCALE,
+  type ThemeColors,
+  type TypographyScale,
+} from '../config/theme';
 
 interface UseThemeResult {
   colors: ThemeColors;
   isDark: boolean;
   fontScale: number;
   highContrast: boolean;
+  typography: TypographyScale;
 }
 
 export function useTheme(): UseThemeResult {
@@ -30,7 +39,10 @@ export function useTheme(): UseThemeResult {
     : (isDark ? darkColors : lightColors);
 
   // Font scale multiplier for Senior Mode
-  const fontScale = seniorMode ? 1.2 : 1.0;
+  const fontScale = seniorMode ? SENIOR_SCALE : 1.0;
 
-  return { colors, isDark, fontScale, highContrast };
+  // Pre-computed typography scale (use these in components instead of raw fontScale math)
+  const typography = computeTypographyScale(seniorMode);
+
+  return { colors, isDark, fontScale, highContrast, typography };
 }
