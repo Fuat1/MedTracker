@@ -44,12 +44,12 @@ export function BPTrendChart({
   legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic', pp: 'PP', map: 'MAP' },
   guidelineId = 'aha_acc',
 }: BPTrendChartProps) {
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
 
   if (!data || data.length === 0) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
-        <Text style={[styles.emptyText, { color: colors.textTertiary }]}>{emptyText}</Text>
+        <Text style={[styles.emptyText, { color: colors.textTertiary, fontSize: typography.sm }]}>{emptyText}</Text>
       </View>
     );
   }
@@ -146,7 +146,7 @@ export function BPTrendChart({
         <SvgText
           x={PADDING_LEFT + chartWidth + 8}
           y={(zoneNormalTop + zoneNormalBottom) / 2 + 4}
-          fontSize={10}
+          fontSize={typography.xs}
           fontFamily={FONTS.medium}
           fill={colors.textTertiary}
         >
@@ -155,7 +155,7 @@ export function BPTrendChart({
         <SvgText
           x={PADDING_LEFT + chartWidth + 8}
           y={(zoneElevatedTop + zoneNormalTop) / 2 + 4}
-          fontSize={10}
+          fontSize={typography.xs}
           fontFamily={FONTS.medium}
           fill={colors.textTertiary}
         >
@@ -164,7 +164,7 @@ export function BPTrendChart({
         <SvgText
           x={PADDING_LEFT + chartWidth + 8}
           y={(zoneHighTop + zoneElevatedTop) / 2 + 4}
-          fontSize={10}
+          fontSize={typography.xs}
           fontFamily={FONTS.medium}
           fill={colors.textTertiary}
         >
@@ -177,7 +177,7 @@ export function BPTrendChart({
             <SvgText
               x={PADDING_LEFT - 8}
               y={getY(val) + 4}
-              fontSize={10}
+              fontSize={typography.xs}
               fontFamily={FONTS.regular}
               fill={colors.textTertiary}
               textAnchor="end"
@@ -305,7 +305,7 @@ export function BPTrendChart({
         <SvgText
           x={PADDING_LEFT + 18}
           y={legendY + 4}
-          fontSize={11}
+          fontSize={typography.xs}
           fontFamily={FONTS.medium}
           fill={colors.textSecondary}
         >
@@ -317,7 +317,7 @@ export function BPTrendChart({
         <SvgText
           x={PADDING_LEFT + 100}
           y={legendY + 4}
-          fontSize={11}
+          fontSize={typography.xs}
           fontFamily={FONTS.medium}
           fill={colors.textSecondary}
         >
@@ -331,7 +331,7 @@ export function BPTrendChart({
             <SvgText
               x={PADDING_LEFT + 192}
               y={legendY + 4}
-              fontSize={11}
+              fontSize={typography.xs}
               fontFamily={FONTS.medium}
               fill={colors.textSecondary}
             >
@@ -347,7 +347,7 @@ export function BPTrendChart({
             <SvgText
               x={PADDING_LEFT + (showPP ? 242 : 192)}
               y={legendY + 4}
-              fontSize={11}
+              fontSize={typography.xs}
               fontFamily={FONTS.medium}
               fill={colors.textSecondary}
             >
@@ -366,7 +366,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 14,
     fontFamily: FONTS.regular,
   },
 });
