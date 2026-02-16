@@ -34,7 +34,7 @@ export function BPEntryForm() {
   const { t: tCommon } = useTranslation('common');
   const { t: tMedical } = useTranslation('medical');
   const { t: tValidation } = useTranslation('validation');
-  const { colors } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
   const { defaultLocation, defaultPosture, setDefaultLocation, setDefaultPosture } = useSettingsStore();
 
   const [systolic, setSystolic] = useState('');
@@ -199,15 +199,15 @@ export function BPEntryForm() {
               accessibilityRole="button"
               accessibilityLabel={t('bpEntry.systolic')}
             >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>{t('bpEntry.systolic')}</Text>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>{t('bpEntry.systolic')}</Text>
               <Text
-                style={[styles.valueText, { color: categoryColor }]}
+                style={[styles.valueText, { color: categoryColor, fontSize: typography['3xl'] }]}
               >
                 {systolic || '---'}
               </Text>
             </Pressable>
 
-            <Text style={[styles.separator, { color: colors.textTertiary }]}>/</Text>
+            <Text style={[styles.separator, { color: colors.textTertiary, fontSize: Math.round(24 * fontScale) }]}>/</Text>
 
             <Pressable
               style={[
@@ -219,9 +219,9 @@ export function BPEntryForm() {
               accessibilityRole="button"
               accessibilityLabel={t('bpEntry.diastolic')}
             >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary }]}>{t('bpEntry.diastolic')}</Text>
+              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>{t('bpEntry.diastolic')}</Text>
               <Text
-                style={[styles.valueText, { color: categoryColor }]}
+                style={[styles.valueText, { color: categoryColor, fontSize: typography['3xl'] }]}
               >
                 {diastolic || '---'}
               </Text>
@@ -238,8 +238,8 @@ export function BPEntryForm() {
             accessibilityRole="button"
             accessibilityLabel={t('bpEntry.pulse')}
           >
-            <Text style={[styles.pulseLabel, { color: colors.textSecondary }]}>{t('bpEntry.pulse')}</Text>
-            <Text style={[styles.pulseText, { color: colors.textPrimary }]}>
+            <Text style={[styles.pulseLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>{t('bpEntry.pulse')}</Text>
+            <Text style={[styles.pulseText, { color: colors.textPrimary, fontSize: Math.round(24 * fontScale) }]}>
               {pulse ? `${pulse} ${tCommon('units.bpm')}` : `--- ${tCommon('units.bpm')}`}
             </Text>
           </Pressable>
@@ -264,8 +264,8 @@ export function BPEntryForm() {
             accessibilityRole="button"
             accessibilityLabel={showMoreInfo ? t('bpEntry.hideOptions') : t('bpEntry.showOptions')}
           >
-            <Text style={[styles.moreInfoTitle, { color: colors.textPrimary }]}>{tCommon('common.moreInfo')}</Text>
-            <Text style={[styles.moreInfoArrow, { color: colors.textSecondary }]}>{showMoreInfo ? '▲' : '▼'}</Text>
+            <Text style={[styles.moreInfoTitle, { color: colors.textPrimary, fontSize: typography.md }]}>{tCommon('common.moreInfo')}</Text>
+            <Text style={[styles.moreInfoArrow, { color: colors.textSecondary, fontSize: typography.sm }]}>{showMoreInfo ? '▲' : '▼'}</Text>
           </Pressable>
 
           {showMoreInfo && (
@@ -345,7 +345,7 @@ export function BPEntryForm() {
           accessibilityLabel={t('bpEntry.saveReading')}
           accessibilityState={{ disabled: !isFormValid || recordBP.isPending }}
         >
-          <Text style={[styles.submitButtonText, { color: colors.surface }]}>
+          <Text style={[styles.submitButtonText, { color: colors.surface, fontSize: typography.lg }]}>
             {recordBP.isPending ? t('bpEntry.saving') : t('bpEntry.saveReading')}
           </Text>
         </Pressable>
@@ -354,7 +354,7 @@ export function BPEntryForm() {
         {!validation.isValid && systolic && diastolic && (
           <View style={[styles.errorContainer, { backgroundColor: colors.errorBackground }]}>
             {validation.errors.map((error, index) => (
-              <Text key={index} style={[styles.errorText, { color: colors.error }]}>
+              <Text key={index} style={[styles.errorText, { color: colors.error, fontSize: typography.sm }]}>
                 • {error}
               </Text>
             ))}
@@ -378,14 +378,14 @@ export function BPEntryForm() {
             <View style={styles.modalHandle}>
               <View style={[styles.modalHandleBar, { backgroundColor: colors.border }]} />
             </View>
-            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.modalTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {activeField === 'systolic'
                 ? t('bpEntry.modals.enterSystolic')
                 : activeField === 'diastolic'
                   ? t('bpEntry.modals.enterDiastolic')
                   : t('bpEntry.modals.enterPulse')}
             </Text>
-            <Text style={[styles.modalValue, { color: colors.textPrimary }]}>
+            <Text style={[styles.modalValue, { color: colors.textPrimary, fontSize: Math.round(30 * fontScale) }]}>
               {getCurrentValue() || '0'}
             </Text>
             <Numpad
@@ -399,7 +399,7 @@ export function BPEntryForm() {
               accessibilityRole="button"
               accessibilityLabel={tCommon('buttons.done')}
             >
-              <Text style={[styles.modalDoneText, { color: colors.surface }]}>{tCommon('buttons.done')}</Text>
+              <Text style={[styles.modalDoneText, { color: colors.surface, fontSize: typography.lg }]}>{tCommon('buttons.done')}</Text>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -440,16 +440,13 @@ const styles = StyleSheet.create({
   },
   valueLabel: {
     fontFamily: FONTS.regular,
-    fontSize: 14,
     marginBottom: 4,
   },
   valueText: {
-    fontSize: 36,
     fontFamily: FONTS.bold,
     fontWeight: '700',
   },
   separator: {
-    fontSize: 24,
     fontFamily: FONTS.regular,
   },
   pulseBox: {
@@ -459,11 +456,9 @@ const styles = StyleSheet.create({
   },
   pulseLabel: {
     fontFamily: FONTS.regular,
-    fontSize: 14,
     marginBottom: 4,
   },
   pulseText: {
-    fontSize: 24,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
@@ -494,10 +489,8 @@ const styles = StyleSheet.create({
   moreInfoTitle: {
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 16,
   },
   moreInfoArrow: {
-    fontSize: 14,
   },
   moreInfoContent: {
     paddingHorizontal: 12,
@@ -539,7 +532,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontFamily: FONTS.bold,
     fontWeight: '700',
-    fontSize: 18,
   },
   errorContainer: {
     marginTop: 16,
@@ -548,7 +540,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontFamily: FONTS.regular,
-    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
@@ -573,14 +564,12 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     textAlign: 'center',
-    fontSize: 18,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
   },
   modalValue: {
     textAlign: 'center',
-    fontSize: 30,
     fontFamily: FONTS.bold,
     fontWeight: '700',
     marginBottom: 16,
@@ -594,6 +583,5 @@ const styles = StyleSheet.create({
   modalDoneText: {
     fontFamily: FONTS.bold,
     fontWeight: '700',
-    fontSize: 18,
   },
 });
