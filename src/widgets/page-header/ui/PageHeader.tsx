@@ -14,21 +14,21 @@ interface PageHeaderProps {
 
 export function PageHeader({ variant, title }: PageHeaderProps) {
   const { t } = useTranslation('pages');
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
 
   return (
     <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
       {variant === 'greeting' ? (
         <View style={styles.greetingSection}>
-          <Text style={[styles.greetingText, { color: colors.textSecondary }]}>
+          <Text style={[styles.greetingText, { color: colors.textSecondary, fontSize: typography.xl }]}>
             {t(getGreetingKey())},
           </Text>
-          <Text style={[styles.userName, { color: colors.textPrimary }]}>
+          <Text style={[styles.userName, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
             {t('home.userName')}
           </Text>
         </View>
       ) : (
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
+        <Text style={[styles.title, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
           {title}
         </Text>
       )}
@@ -39,7 +39,7 @@ export function PageHeader({ variant, title }: PageHeaderProps) {
         ]}
       >
         <Icon name="shield-checkmark" size={20} color={colors.accent} />
-        <Text style={[styles.badgeText, { color: colors.textSecondary }]}>
+        <Text style={[styles.badgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
           {t('home.encryptedOffline')}
         </Text>
       </View>
@@ -60,18 +60,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   greetingText: {
-    fontSize: 22,
     fontFamily: FONTS.regular,
     fontWeight: '400',
   },
   userName: {
-    fontSize: 28,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   title: {
-    fontSize: 28,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -0.5,
@@ -90,7 +87,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   badgeText: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     textAlign: 'right',
