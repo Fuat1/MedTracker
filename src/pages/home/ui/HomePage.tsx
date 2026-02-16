@@ -40,7 +40,7 @@ export function HomePage() {
   const { data: latestRecord } = useLatestBPRecord();
   const { data: recentRecords } = useBPRecords(7);
   const { guideline } = useSettingsStore();
-  const { colors, isDark, fontScale } = useTheme();
+  const { colors, isDark, fontScale, typography } = useTheme();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<'pp' | 'map'>('pp');
@@ -111,7 +111,7 @@ export function HomePage() {
             {/* Decorative wave overlay */}
             <View style={styles.cardOverlay} />
 
-            <Text style={styles.bpCardLabel}>{t('home.bpReadings')}</Text>
+            <Text style={[styles.bpCardLabel, { fontSize: typography.md }]}>{t('home.bpReadings')}</Text>
 
             <View style={styles.bpValueRow}>
               <Text style={[styles.bpValueLarge, { fontSize: 56 * fontScale }]}>
@@ -120,7 +120,7 @@ export function HomePage() {
                   : '---/---'}
               </Text>
             </View>
-            <Text style={styles.bpUnit}>{tCommon('units.mmhg')}</Text>
+            <Text style={[styles.bpUnit, { fontSize: typography.md }]}>{tCommon('units.mmhg')}</Text>
 
             {/* Derived Metrics Row */}
             {latestRecord && (
@@ -145,7 +145,7 @@ export function HomePage() {
                 </View>
 
                 {/* Divider */}
-                <Text style={styles.metricDivider}>•</Text>
+                <Text style={[styles.metricDivider, { fontSize: typography.md }]}>•</Text>
 
                 {/* Mean Arterial Pressure */}
                 <View style={styles.metricItem}>
@@ -177,7 +177,7 @@ export function HomePage() {
                     <Text style={[styles.categoryText, { fontSize: 15 * fontScale }]}>{categoryLabel}</Text>
                   </>
                 ) : (
-                  <Text style={styles.categoryTextEmpty}>
+                  <Text style={[styles.categoryTextEmpty, { fontSize: typography.sm }]}>
                     {t('home.noReadingsYet')}
                   </Text>
                 )}
@@ -188,7 +188,7 @@ export function HomePage() {
                 <View style={styles.pulseBadge}>
                   <Icon name="heart" size={18} color="#ffffff" />
                   <Text style={[styles.pulseValue, { fontSize: 22 * fontScale }]}>{latestRecord.pulse}</Text>
-                  <Text style={styles.pulseUnit}>{tCommon('units.bpm')}</Text>
+                  <Text style={[styles.pulseUnit, { fontSize: typography.xs }]}>{tCommon('units.bpm')}</Text>
                 </View>
               ) : null}
             </View>
@@ -200,7 +200,7 @@ export function HomePage() {
           entering={FadeInUp.delay(200).duration(500)}
           style={[styles.trendCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
         >
-          <Text style={[styles.trendTitle, { color: colors.textPrimary }]}>
+          <Text style={[styles.trendTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('home.last7Days')}
           </Text>
           <LineChart
@@ -255,7 +255,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   bpCardLabel: {
-    fontSize: 16,
     color: 'rgba(255,255,255,0.85)',
     fontFamily: FONTS.medium,
     fontWeight: '500',
@@ -271,7 +270,6 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   bpUnit: {
-    fontSize: 16,
     color: 'rgba(255,255,255,0.7)',
     fontFamily: FONTS.medium,
     fontWeight: '500',
@@ -293,7 +291,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   categoryTextEmpty: {
-    fontSize: 14,
     color: 'rgba(255,255,255,0.7)',
     fontFamily: FONTS.medium,
     fontWeight: '500',
@@ -313,7 +310,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   pulseUnit: {
-    fontSize: 12,
     color: 'rgba(255,255,255,0.8)',
     fontFamily: FONTS.medium,
     fontWeight: '500',
@@ -343,7 +339,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   metricDivider: {
-    fontSize: 16,
     color: 'rgba(255,255,255,0.4)',
     fontFamily: FONTS.regular,
   },
@@ -362,7 +357,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   trendTitle: {
-    fontSize: 18,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 16,
