@@ -1,4 +1,5 @@
 ﻿import { useState, useCallback } from 'react';
+import { BP_LIMITS } from '../config';
 
 export type BPActiveField = 'systolic' | 'diastolic' | 'pulse';
 
@@ -14,16 +15,21 @@ export function useBPInput({ autoAdvance = false }: UseBPInputOptions = {}) {
 
   const handleNumpadChange = useCallback(
     (value: string) => {
+      const numValue = value ? parseInt(value, 10) : 0;
+
       switch (activeField) {
         case 'systolic':
+          if (value && numValue > BP_LIMITS.systolic.max) return;
           setSystolic(value);
           if (autoAdvance && value.length === 3) setActiveField('diastolic');
           break;
         case 'diastolic':
+          if (value && numValue > BP_LIMITS.diastolic.max) return;
           setDiastolic(value);
           if (autoAdvance && value.length === 3) setActiveField('pulse');
           break;
         case 'pulse':
+          if (value && numValue > BP_LIMITS.pulse.max) return;
           setPulse(value);
           break;
       }

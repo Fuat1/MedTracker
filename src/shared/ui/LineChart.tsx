@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path, Circle, Text as SvgText } from 'react-native-svg';
+import { LineChart as GiftedLineChart } from 'react-native-gifted-charts';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 
@@ -22,8 +22,30 @@ export function LineChart({
   height = 160,
   emptyText = 'No data yet',
 }: LineChartProps) {
-  const { colors, typography } = useTheme();
+  const { colors, typography, fontScale } = useTheme();
 
+  // Transform data for gifted-charts (safe with empty/null data)
+  const chartData = useMemo(
+    () => (data || []).map(d => ({ value: d.systolic })),
+    [data],
+  );
+
+  // Tooltip showing sys/dia values
+  const renderTooltip = useMemo(() => {
+    return (_items: Array<{ value: number }>, index: number) => {
+      const d = data[index];
+      if (!d) return null;
+      return (
+        <View style={[tooltipStyles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[tooltipStyles.value, { color: colors.chartLine }]}>
+            {d.systolic}/{d.diastolic}
+          </Text>
+        </View>
+      );
+    };
+  }, [data, colors]);
+
+  // Early return AFTER all hooks
   if (!data || data.length === 0) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
@@ -32,87 +54,107 @@ export function LineChart({
     );
   }
 
-  const PADDING_TOP = 28;
-  const PADDING_BOTTOM = 16;
-  const PADDING_X = 32;
-  const chartWidth = width - PADDING_X * 2;
-  const chartHeight = height - PADDING_TOP - PADDING_BOTTOM;
-
-  // Get min/max for scaling
+  // Compute Y range using 20 mmHg steps for clean integer labels
   const allValues = data.flatMap(d => [d.systolic, d.diastolic]);
-  const minVal = Math.min(...allValues) - 5;
-  const maxVal = Math.max(...allValues) + 5;
-  const range = maxVal - minVal || 1;
+  const step = 20;
+  const minVal = Math.floor((Math.min(...allValues) - 10) / step) * step;
+  const maxVal = Math.ceil((Math.max(...allValues) + 10) / step) * step;
+  const chartNoOfSections = Math.max(2, (maxVal - minVal) / step);
+  const yAxisLabels = Array.from({ length: chartNoOfSections + 1 }, (_, i) =>
+    String(minVal + i * step),
+  );
 
-  // Calculate point positions
-  const stepX = data.length > 1 ? chartWidth / (data.length - 1) : 0;
-
-  const getX = (index: number) =>
-    PADDING_X + (data.length > 1 ? index * stepX : chartWidth / 2);
-
-  const getY = (value: number) =>
-    PADDING_TOP + chartHeight - ((value - minVal) / range) * chartHeight;
-
-  // Build SVG path for the systolic line
-  const buildPath = (getValue: (d: DataPoint) => number) => {
-    if (data.length === 1) {
-      return '';
-    }
-    return data
-      .map((d, i) => {
-        const x = getX(i);
-        const y = getY(getValue(d));
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-      })
-      .join(' ');
-  };
-
-  // Use systolic values for the main line (as shown in screenshot)
-  const linePath = buildPath(d => d.systolic);
+  const chartInnerWidth = width - 30;
+  const idealSpacing = data.length <= 1
+    ? 0
+    : Math.floor(chartInnerWidth / (data.length - 1));
+  const minSpacing = 50 * fontScale;
+  const spacing = Math.max(minSpacing, Math.min(70, idealSpacing));
+  const needsScroll = data.length > 1 && (data.length - 1) * spacing > chartInnerWidth;
 
   return (
-    <View style={{ width, height }}>
-      <Svg width={width} height={height}>
-        {/* Line */}
-        {data.length > 1 && (
-          <Path
-            d={linePath}
-            fill="none"
-            stroke={colors.chartLine}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        )}
+    <GiftedLineChart
+      data={chartData}
+      height={height}
+      width={chartInnerWidth}
+      curved
+      isAnimated
+      animationDuration={600}
+      areaChart
+      startFillColor={colors.chartLine + '1F'}
+      endFillColor={colors.chartLine + '00'}
+      startOpacity={0.12}
+      endOpacity={0}
 
-        {/* Data points and labels */}
-        {data.map((d, i) => {
-          const x = getX(i);
-          const y = getY(d.systolic);
-          return (
-            <React.Fragment key={i}>
-              {/* Dot */}
-              <Circle cx={x} cy={y} r={5} fill={colors.chartDot} stroke={colors.chartLine} strokeWidth={2.5} />
+      maxValue={maxVal}
+      yAxisOffset={minVal}
+      noOfSections={chartNoOfSections}
+      yAxisLabelTexts={yAxisLabels}
 
-              {/* Label: systolic/diastolic */}
-              <SvgText
-                x={x}
-                y={y - 12}
-                fontSize={typography.xs}
-                fontFamily={FONTS.medium}
-                fontWeight="500"
-                fill={colors.chartLabel}
-                textAnchor="middle"
-              >
-                {d.systolic}/{d.diastolic}
-              </SvgText>
-            </React.Fragment>
-          );
-        })}
-      </Svg>
-    </View>
+      color={colors.chartLine}
+      thickness={2.5}
+      dataPointsColor={colors.chartLine}
+      dataPointsRadius={5}
+
+      rulesType="dashed"
+      rulesColor={colors.border + '60'}
+      dashWidth={4}
+      dashGap={4}
+
+      yAxisColor="transparent"
+      yAxisTextStyle={{
+        color: colors.textSecondary,
+        fontSize: typography.xs,
+        fontFamily: FONTS.regular,
+      }}
+
+      xAxisColor={colors.border}
+
+      spacing={spacing}
+      initialSpacing={15}
+      endSpacing={15}
+
+      disableScroll={!needsScroll}
+      scrollToEnd={false}
+      showScrollIndicator={false}
+
+      backgroundColor="transparent"
+
+      pointerConfig={{
+        pointerLabelComponent: renderTooltip,
+        showPointerStrip: true,
+        pointerStripColor: colors.textTertiary + '30',
+        pointerStripWidth: 1,
+        pointerColor: colors.chartLine,
+        radius: 6,
+        pointerLabelWidth: 90,
+        pointerLabelHeight: 36,
+        autoAdjustPointerLabelPosition: true,
+        shiftPointerLabelX: -45,
+        shiftPointerLabelY: -50,
+      }}
+    />
   );
 }
+
+const tooltipStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  value: {
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+});
 
 const styles = StyleSheet.create({
   emptyContainer: {

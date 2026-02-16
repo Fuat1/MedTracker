@@ -88,7 +88,7 @@ export function HomePage() {
     }));
   }, [recentRecords]);
 
-  const chartWidth = screenWidth - 40; // 20px margin on each side
+  const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
   // Metrics Row (PP/MAP)
   metricsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
@@ -351,6 +352,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 20,
     padding: 20,
+    overflow: 'hidden',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,

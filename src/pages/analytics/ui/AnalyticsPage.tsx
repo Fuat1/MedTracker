@@ -141,7 +141,7 @@ export function AnalyticsPage() {
     { windowKey: 'night',   avg: circadianBreakdown.nightAvg,   timeInRange: timeInRange.night },
   ];
 
-  const chartWidth = screenWidth - 40;
+  const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -210,7 +210,7 @@ export function AnalyticsPage() {
                 value={showPP}
                 onValueChange={setShowPP}
                 trackColor={{ false: colors.toggleTrackInactive, true: colors.ppColor }}
-                thumbColor={colors.surface}
+                thumbColor={colors.toggleThumb}
                 accessibilityRole="switch"
                 accessibilityLabel={t('analytics.toggles.showPP')}
               />
@@ -223,7 +223,7 @@ export function AnalyticsPage() {
                 value={showMAP}
                 onValueChange={setShowMAP}
                 trackColor={{ false: colors.toggleTrackInactive, true: colors.mapColor }}
-                thumbColor={colors.surface}
+                thumbColor={colors.toggleThumb}
                 accessibilityRole="switch"
                 accessibilityLabel={t('analytics.toggles.showMAP')}
               />
@@ -263,7 +263,11 @@ export function AnalyticsPage() {
             </Text>
             {weeklyAvg.hasData ? (
               <>
-                <Text style={[styles.statValue, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
+                <Text
+                  style={[styles.statValue, { color: colors.textPrimary, fontSize: typography['2xl'] }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
                   {weeklyAvg.systolic}/{weeklyAvg.diastolic}
                 </Text>
                 <Text style={[styles.statUnit, { color: colors.textTertiary, fontSize: typography.xs }]}>
@@ -289,14 +293,22 @@ export function AnalyticsPage() {
               <View style={styles.amPmContainer}>
                 <View style={styles.amPmRow}>
                   <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>AM</Text>
-                  <Text style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}>
+                  <Text
+                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {amPm.hasAmData ? `${amPm.am.systolic}/${amPm.am.diastolic}` : '---'}
                   </Text>
                 </View>
                 <View style={[styles.amPmDivider, { backgroundColor: colors.border }]} />
                 <View style={styles.amPmRow}>
                   <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>PM</Text>
-                  <Text style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}>
+                  <Text
+                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {amPm.hasPmData ? `${amPm.pm.systolic}/${amPm.pm.diastolic}` : '---'}
                   </Text>
                 </View>
@@ -523,12 +535,15 @@ const styles = StyleSheet.create({
   // Stats
   statsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 20,
     gap: 12,
     marginBottom: 16,
   },
   statCard: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: '46%',
     borderRadius: 20,
     padding: 16,
     shadowOffset: { width: 0, height: 4 },

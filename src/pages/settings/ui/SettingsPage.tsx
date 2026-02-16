@@ -217,7 +217,7 @@ export function SettingsPage() {
               value={biometricEnabled}
               onValueChange={handleBiometricToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.surface}
+              thumbColor={colors.toggleThumb}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.dataPrivacy.biometricLock')}
             />
@@ -339,7 +339,7 @@ export function SettingsPage() {
               value={isDarkToggled}
               onValueChange={handleThemeToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.surface}
+              thumbColor={colors.toggleThumb}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.darkMode')}
             />
@@ -386,7 +386,7 @@ export function SettingsPage() {
               value={seniorMode}
               onValueChange={handleSeniorModeToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.surface}
+              thumbColor={colors.toggleThumb}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.seniorMode.label')}
             />
@@ -416,7 +416,7 @@ export function SettingsPage() {
               value={highContrast}
               onValueChange={handleHighContrastToggle}
               trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.surface}
+              thumbColor={colors.toggleThumb}
               accessibilityRole="switch"
               accessibilityLabel={t('settings.highContrast.label')}
             />

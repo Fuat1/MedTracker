@@ -97,6 +97,7 @@ export interface ThemeColors {
   // Toggle / Switch
   toggleTrackActive: string;
   toggleTrackInactive: string;
+  toggleThumb: string;
 
   // Settings card icons
   iconCircleBg: string;
@@ -173,6 +174,7 @@ export const lightColors: ThemeColors = {
 
   toggleTrackActive: '#0D9488',
   toggleTrackInactive: '#d1d5db',
+  toggleThumb: '#ffffff',
   iconCircleBg: 'rgba(13,148,136,0.12)',
   successText: '#16a34a',
   successBg: '#f0fdf4',
@@ -187,7 +189,7 @@ export const lightColors: ThemeColors = {
   crisisRed: '#dc2626',
   crisisBorder: '#fca5a5',
 
-  ppColor: '#0D9488',
+  ppColor: '#f59e0b',
   mapColor: '#6366f1',
 
   surgeColor: '#f97316',
@@ -238,6 +240,7 @@ export const darkColors: ThemeColors = {
 
   toggleTrackActive: '#14B8A6',
   toggleTrackInactive: '#4b5563',
+  toggleThumb: '#f8fafc',
   iconCircleBg: 'rgba(20,184,166,0.15)',
   successText: '#4ade80',
   successBg: '#14532d',
@@ -252,7 +255,7 @@ export const darkColors: ThemeColors = {
   crisisRed: '#f87171',
   crisisBorder: '#f87171',
 
-  ppColor: '#14B8A6',
+  ppColor: '#fbbf24',
   mapColor: '#818cf8',
 
   surgeColor: '#fb923c',
@@ -313,6 +316,7 @@ export const highContrastColors: ThemeColors = {
   // Toggle
   toggleTrackActive: '#0D9488',
   toggleTrackInactive: '#CCCCCC',
+  toggleThumb: '#ffffff',
   iconCircleBg: '#E6E6E6',
   successText: '#006600',
   successBg: '#E8F5E9',
@@ -327,7 +331,7 @@ export const highContrastColors: ThemeColors = {
   crisisRed: '#CC0000',
   crisisBorder: '#CC0000',
 
-  ppColor: '#0D9488',
+  ppColor: '#d97706',
   mapColor: '#4338CA',
 
   surgeColor: '#E65100',

@@ -20,6 +20,15 @@ const WINDOW_ICONS: Record<TimeWindow, string> = {
   night: 'moon-outline',
 };
 
+// Icons for BP categories (used in senior mode compact cards)
+const CATEGORY_ICONS: Record<string, string> = {
+  normal: 'checkmark-circle',
+  elevated: 'arrow-up-circle',
+  stage_1: 'warning',
+  stage_2: 'alert-circle',
+  crisis: 'flash',
+};
+
 interface BPRecordCardProps {
   record: BPRecord;
   variant?: 'full' | 'compact';
@@ -54,24 +63,39 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
           ]}
         >
           {/* Time Column */}
-          <View style={compactStyles.timeColumn}>
-            <Text style={[compactStyles.time, { color: colors.textPrimary, fontSize: typography.md }]}>
+          <View style={[compactStyles.timeColumn, { width: Math.round(56 * fontScale) }]}>
+            <Text
+              style={[compactStyles.time, { color: colors.textPrimary, fontSize: typography.md }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {timeSplit.time}
             </Text>
-            <Text style={[compactStyles.period, { color: colors.textTertiary, fontSize: typography.xs }]}>
+            <Text
+              style={[compactStyles.period, { color: colors.textTertiary, fontSize: typography.xs }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {timeSplit.period}
             </Text>
           </View>
 
           {/* Divider */}
-          <View style={[compactStyles.divider, { backgroundColor: colors.borderLight }]} />
+          <View style={[compactStyles.divider, { backgroundColor: colors.borderLight, height: Math.round(32 * fontScale) }]} />
 
           {/* BP Value */}
           <View style={compactStyles.valueColumn}>
-            <Text style={[compactStyles.bpValue, { color: colors.textPrimary, fontSize: typography.xl }]}>
+            <Text
+              style={[compactStyles.bpValue, { color: colors.textPrimary, fontSize: typography.xl }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               {record.systolic}/{record.diastolic}
             </Text>
-            <Text style={[compactStyles.unit, { color: colors.textTertiary, fontSize: typography.xs }]}>
+            <Text
+              style={[compactStyles.unit, { color: colors.textTertiary, fontSize: typography.xs }]}
+              numberOfLines={1}
+            >
               {t('units.mmhg')}
             </Text>
           </View>
@@ -81,12 +105,30 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
             <Icon name={windowIcon} size={11} color={colors.textTertiary} />
           </View>
 
-          {/* Category Badge */}
-          <View style={[compactStyles.badge, { backgroundColor: categoryColor + '20' }]}>
-            <Text style={[compactStyles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>
-              {categoryLabel}
-            </Text>
-          </View>
+          {/* Category Badge — icon-only in senior mode to save space */}
+          {fontScale > 1 ? (
+            <View
+              style={[compactStyles.iconBadge, { backgroundColor: categoryColor + '20' }]}
+              accessibilityRole="text"
+              accessibilityLabel={categoryLabel}
+            >
+              <Icon
+                name={CATEGORY_ICONS[category] || 'help-circle'}
+                size={20}
+                color={categoryColor}
+              />
+            </View>
+          ) : (
+            <View style={[compactStyles.badge, { backgroundColor: categoryColor + '20' }]}>
+              <Text
+                style={[compactStyles.badgeText, { color: categoryColor, fontSize: typography.xs }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {categoryLabel}
+              </Text>
+            </View>
+          )}
         </View>
       </Animated.View>
     );
@@ -227,7 +269,6 @@ const compactStyles = StyleSheet.create({
     elevation: 2,
   },
   timeColumn: {
-    width: 56,
     alignItems: 'center',
   },
   time: {
@@ -257,14 +298,24 @@ const compactStyles = StyleSheet.create({
     marginTop: 1,
   },
   badge: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
-    marginLeft: 8,
+    marginLeft: 6,
+    flexShrink: 1,
+    maxWidth: 100,
   },
   badgeText: {
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
+  },
+  iconBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 6,
   },
   windowPill: {
     width: 22,

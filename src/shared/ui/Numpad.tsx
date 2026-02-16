@@ -102,7 +102,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
           {
             color: colors.numpadKeyText,
             fontSize: compact
-              ? (isAction ? 14 * fontScale : 18 * fontScale)
+              ? (isAction ? 18 * fontScale : 22 * fontScale)
               : (isAction ? 22 * fontScale : 28 * fontScale),
           },
           isClear && { color: colors.error },
@@ -124,9 +124,11 @@ export function Numpad({
 }: NumpadProps) {
   const { seniorMode } = useSettingsStore();
 
-  // Dynamic button sizing: compact when category badge is showing
+  // Dynamic button sizing: compact when category badge is showing (20% reduction)
   const keySize = compact
-    ? { width: 68, height: 44 }
+    ? seniorMode
+      ? { width: 69, height: 54 }   // 20% smaller than senior normal
+      : { width: 77, height: 45 }   // 20% smaller than normal
     : seniorMode
       ? { width: 86, height: 68 }
       : { width: 96, height: 56 };
@@ -185,6 +187,7 @@ const styles = StyleSheet.create({
   },
   containerCompact: {
     padding: 4,
+    marginTop: 8,
   },
   row: {
     flexDirection: 'row',
@@ -192,7 +195,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   rowCompact: {
-    marginBottom: 4,
+    marginBottom: 10,
   },
   key: {
     marginHorizontal: 14,

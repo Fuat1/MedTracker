@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Circle, G } from 'react-native-svg';
+import { PieChart } from 'react-native-gifted-charts';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 
@@ -22,75 +22,69 @@ interface DonutChartProps {
 export function DonutChart({
   segments,
   size = 120,
-  strokeWidth = 18,
   centerLabel,
   centerSubLabel,
 }: DonutChartProps) {
-  const { colors } = useTheme();
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const center = size / 2;
+  const { colors, typography } = useTheme();
 
-  // Build stroke-dasharray/offset per segment
-  let cumulativePercent = 0;
-  const arcs = segments
-    .filter(s => s.percent > 0)
-    .map(s => {
-      const dashArray = (s.percent / 100) * circumference;
-      const dashOffset = circumference - (cumulativePercent / 100) * circumference;
-      cumulativePercent += s.percent;
-      return { ...s, dashArray, dashOffset };
+  const activeSegments = segments.filter(s => s.percent > 0);
+
+  // Transform segments to PieChart data format
+  const pieData = activeSegments.map(s => ({
+    value: s.percent,
+    color: s.color,
+    text: `${s.percent}%`,
+    textColor: s.color,
+  }));
+
+  // If no data, show empty ring
+  if (pieData.length === 0) {
+    pieData.push({
+      value: 100,
+      color: colors.surfaceSecondary,
+      text: '',
+      textColor: 'transparent',
     });
+  }
+
+  const radius = size / 2;
+  const innerRadius = radius * 0.6;
+
+  const CenterLabel = useCallback(() => (
+    <View style={styles.center}>
+      {centerLabel && (
+        <Text style={[styles.centerLabel, { color: colors.textPrimary, fontSize: typography.xl }]}>
+          {centerLabel}
+        </Text>
+      )}
+      {centerSubLabel && (
+        <Text style={[styles.centerSubLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+          {centerSubLabel}
+        </Text>
+      )}
+    </View>
+  ), [centerLabel, centerSubLabel, colors, typography]);
 
   return (
     <View style={styles.container}>
-      <Svg width={size} height={size}>
-        {/* Background ring */}
-        <Circle
-          cx={center}
-          cy={center}
-          r={radius}
-          stroke={colors.surfaceSecondary}
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        {/* Segments — rotate so first starts at top */}
-        <G rotation="-90" origin={`${center}, ${center}`}>
-          {arcs.map((arc, i) => (
-            <Circle
-              key={i}
-              cx={center}
-              cy={center}
-              r={radius}
-              stroke={arc.color}
-              strokeWidth={strokeWidth}
-              fill="none"
-              strokeDasharray={`${arc.dashArray} ${circumference}`}
-              strokeDashoffset={arc.dashOffset - circumference}
-              strokeLinecap="butt"
-            />
-          ))}
-        </G>
-      </Svg>
-      {/* Center text */}
-      {centerLabel && (
-        <View style={[styles.center, { width: size, height: size }]}>
-          <Text style={[styles.centerLabel, { color: colors.textPrimary }]}>
-            {centerLabel}
-          </Text>
-          {centerSubLabel && (
-            <Text style={[styles.centerSubLabel, { color: colors.textSecondary }]}>
-              {centerSubLabel}
-            </Text>
-          )}
-        </View>
-      )}
+      <PieChart
+        data={pieData}
+        donut
+        radius={radius}
+        innerRadius={innerRadius}
+        isAnimated
+        animationDuration={800}
+        focusOnPress
+        toggleFocusOnPress
+        centerLabelComponent={CenterLabel}
+      />
+
       {/* Legend */}
       <View style={styles.legend}>
-        {segments.filter(s => s.percent > 0).map((s, i) => (
+        {activeSegments.map((s, i) => (
           <View key={i} style={styles.legendRow}>
             <View style={[styles.legendDot, { backgroundColor: s.color }]} />
-            <Text style={[styles.legendText, { color: colors.textSecondary }]}>
+            <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {s.label} {s.percent}%
             </Text>
           </View>
@@ -106,17 +100,14 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   center: {
-    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
   },
   centerLabel: {
-    fontSize: 20,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
   },
   centerSubLabel: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 2,
@@ -136,7 +127,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
-    fontSize: 12,
     fontFamily: FONTS.regular,
   },
 });

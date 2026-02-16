@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path, Circle, Rect, Line, Text as SvgText } from 'react-native-svg';
+import { LineChart as GiftedLineChart } from 'react-native-gifted-charts';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 import { BP_THRESHOLDS } from '../config/bp-guidelines';
@@ -40,12 +40,164 @@ export function BPTrendChart({
   emptyText = 'No data yet',
   showPP = false,
   showMAP = false,
-  zoneLabels = { normal: 'Normal', elevated: 'Elevated', high: 'High' },
+  zoneLabels,
   legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic', pp: 'PP', map: 'MAP' },
   guidelineId = 'aha_acc',
 }: BPTrendChartProps) {
   const { colors, typography } = useTheme();
 
+  const guideline = BP_THRESHOLDS[guidelineId] || BP_THRESHOLDS.aha_acc;
+  const normalThreshold = guideline.normalBelow.systolic;
+  const highThreshold = guideline.stage_2.systolic;
+
+  // Y-axis range: extend down to 20 when PP is shown (PP values can be 20–80)
+  const yAxisMin = showPP ? 20 : 60;
+  const yAxisMax = 180;
+  const yAxisStep = 20;
+  const noOfSections = (yAxisMax - yAxisMin) / yAxisStep;
+  const yAxisLabelTexts = useMemo(
+    () => Array.from({ length: noOfSections + 1 }, (_, i) => String(yAxisMin + i * yAxisStep)),
+    [yAxisMin, noOfSections, yAxisStep],
+  );
+
+  // Transform data for gifted-charts (safe with empty/null data)
+  const systolicData = useMemo(
+    () => (data || []).map(d => ({ value: d.systolic })),
+    [data],
+  );
+  const diastolicData = useMemo(
+    () => (data || []).map(d => ({ value: d.diastolic })),
+    [data],
+  );
+
+  // Build datasets array: always systolic + diastolic, conditionally PP + MAP
+  const datasets = useMemo(() => {
+    const safeData = data || [];
+    const sets: Array<{
+      data: Array<{ value: number }>;
+      color: string;
+      thickness: number;
+      dataPointsColor: string;
+      dataPointsRadius: number;
+      strokeDashArray?: number[];
+      hideDataPoints?: boolean;
+      startFillColor?: string;
+      endFillColor?: string;
+      startOpacity?: number;
+      endOpacity?: number;
+    }> = [
+      {
+        data: systolicData,
+        color: colors.chartLine,
+        thickness: 2.5,
+        dataPointsColor: colors.chartLine,
+        dataPointsRadius: 4,
+        startFillColor: colors.chartLine + '1F',
+        endFillColor: colors.chartLine + '00',
+        startOpacity: 0.12,
+        endOpacity: 0,
+      },
+      {
+        data: diastolicData,
+        color: colors.chartLineDiastolic,
+        thickness: 2,
+        dataPointsColor: colors.chartLineDiastolic,
+        dataPointsRadius: 3,
+        strokeDashArray: [6, 4],
+        startOpacity: 0,
+        endOpacity: 0,
+      },
+    ];
+
+    if (showPP) {
+      sets.push({
+        data: safeData.map(d => ({ value: d.pp || 0 })),
+        color: colors.ppColor,
+        thickness: 2,
+        dataPointsColor: colors.ppColor,
+        dataPointsRadius: 3,
+        strokeDashArray: [5, 3],
+        startOpacity: 0,
+        endOpacity: 0,
+      });
+    }
+
+    if (showMAP) {
+      sets.push({
+        data: safeData.map(d => ({ value: d.map || 0 })),
+        color: colors.mapColor,
+        thickness: 2,
+        dataPointsColor: colors.mapColor,
+        dataPointsRadius: 3,
+        strokeDashArray: [2, 3],
+        startOpacity: 0,
+        endOpacity: 0,
+      });
+    }
+
+    return sets;
+  }, [systolicData, diastolicData, data, showPP, showMAP, colors]);
+
+  // Tooltip renderer
+  const renderTooltip = useMemo(() => {
+    return (items: Array<{ value: number }>) => {
+      const sysVal = items[0]?.value;
+      const diaVal = items[1]?.value;
+
+      let ppIdx = -1;
+      let mapIdx = -1;
+      let idx = 2;
+      if (showPP) { ppIdx = idx++; }
+      if (showMAP) { mapIdx = idx; }
+
+      return (
+        <View style={[tooltipStyles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={tooltipStyles.row}>
+            <View style={[tooltipStyles.dot, { backgroundColor: colors.chartLine }]} />
+            <Text style={[tooltipStyles.label, { color: colors.textSecondary }]}>
+              {legendLabels.systolic}
+            </Text>
+            <Text style={[tooltipStyles.value, { color: colors.chartLine }]}>
+              {sysVal}
+            </Text>
+          </View>
+          <View style={tooltipStyles.row}>
+            <View style={[tooltipStyles.dot, { backgroundColor: colors.chartLineDiastolic }]} />
+            <Text style={[tooltipStyles.label, { color: colors.textSecondary }]}>
+              {legendLabels.diastolic}
+            </Text>
+            <Text style={[tooltipStyles.value, { color: colors.chartLineDiastolic }]}>
+              {diaVal}
+            </Text>
+          </View>
+          {ppIdx >= 0 && items[ppIdx] && (
+            <View style={tooltipStyles.row}>
+              <View style={[tooltipStyles.dot, { backgroundColor: colors.ppColor }]} />
+              <Text style={[tooltipStyles.label, { color: colors.textSecondary }]}>
+                {legendLabels.pp}
+              </Text>
+              <Text style={[tooltipStyles.value, { color: colors.ppColor }]}>
+                {items[ppIdx].value}
+              </Text>
+            </View>
+          )}
+          {mapIdx >= 0 && items[mapIdx] && (
+            <View style={tooltipStyles.row}>
+              <View style={[tooltipStyles.dot, { backgroundColor: colors.mapColor }]} />
+              <Text style={[tooltipStyles.label, { color: colors.textSecondary }]}>
+                {legendLabels.map}
+              </Text>
+              <Text style={[tooltipStyles.value, { color: colors.mapColor }]}>
+                {items[mapIdx].value}
+              </Text>
+            </View>
+          )}
+        </View>
+      );
+    };
+  }, [showPP, showMAP, colors, legendLabels]);
+
+  // Early return AFTER all hooks
   if (!data || data.length === 0) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
@@ -54,311 +206,175 @@ export function BPTrendChart({
     );
   }
 
-  const PADDING_TOP = 12;
-  const PADDING_BOTTOM = 40; // space for legend
-  const PADDING_LEFT = 36;
-  const PADDING_RIGHT = 60; // space for zone labels
-  const chartWidth = width - PADDING_LEFT - PADDING_RIGHT;
-  const chartHeight = height - PADDING_TOP - PADDING_BOTTOM;
-
-  // Fixed Y-axis range for BP (70-180 covers most readings)
-  const Y_MIN = 70;
-  const Y_MAX = 180;
-  const Y_RANGE = Y_MAX - Y_MIN;
-
-  // BP zone thresholds (from selected guideline)
-  const guideline = BP_THRESHOLDS[guidelineId] || BP_THRESHOLDS.aha_acc;
-  const ZONE_NORMAL_MAX = guideline.normalBelow.systolic;
-  const ZONE_ELEVATED_MAX = guideline.stage_2.systolic;
-
-  // Calculate point positions
-  const stepX = data.length > 1 ? chartWidth / (data.length - 1) : 0;
-
-  const getX = (index: number) =>
-    PADDING_LEFT + (data.length > 1 ? index * stepX : chartWidth / 2);
-
-  const getY = (value: number) => {
-    const clamped = Math.max(Y_MIN, Math.min(Y_MAX, value));
-    return PADDING_TOP + chartHeight - ((clamped - Y_MIN) / Y_RANGE) * chartHeight;
-  };
-
-  // Build SVG path
-  const buildPath = (getValue: (d: DataPoint) => number) => {
-    if (data.length === 1) return '';
-    return data
-      .map((d, i) => {
-        const x = getX(i);
-        const y = getY(getValue(d));
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-      })
-      .join(' ');
-  };
-
-  const systolicPath = buildPath(d => d.systolic);
-  const diastolicPath = buildPath(d => d.diastolic);
-  const ppPath = showPP ? buildPath(d => d.pp || 0) : '';
-  const mapPath = showMAP ? buildPath(d => d.map || 0) : '';
-
-  // Zone Y positions
-  const zoneNormalTop = getY(ZONE_NORMAL_MAX);
-  const zoneNormalBottom = PADDING_TOP + chartHeight; // bottom of chart
-  const zoneElevatedTop = getY(ZONE_ELEVATED_MAX);
-  const zoneHighTop = PADDING_TOP;
-
-  // Y-axis labels
-  const yLabels = [80, 100, 120, 140, 160];
-
-  const legendY = height - 14;
+  // Calculate point spacing — comfortable for touch but scrollable when dense
+  const chartInnerWidth = width - 40;
+  const idealSpacing = data.length <= 1
+    ? 0
+    : Math.floor(chartInnerWidth / (data.length - 1));
+  const spacing = Math.max(40, Math.min(60, idealSpacing));
+  const needsScroll = data.length > 1 && (data.length - 1) * spacing > chartInnerWidth;
 
   return (
-    <View style={{ width, height }}>
-      <Svg width={width} height={height}>
-        {/* Background zones */}
-        {/* Normal zone (bottom - green) */}
-        <Rect
-          x={PADDING_LEFT}
-          y={zoneNormalTop}
-          width={chartWidth}
-          height={zoneNormalBottom - zoneNormalTop}
-          fill={colors.chartZoneNormal}
-          opacity={0.5}
-        />
-        {/* Elevated zone (middle - yellow) */}
-        <Rect
-          x={PADDING_LEFT}
-          y={zoneElevatedTop}
-          width={chartWidth}
-          height={zoneNormalTop - zoneElevatedTop}
-          fill={colors.chartZoneElevated}
-          opacity={0.5}
-        />
-        {/* High zone (top - red) */}
-        <Rect
-          x={PADDING_LEFT}
-          y={zoneHighTop}
-          width={chartWidth}
-          height={zoneElevatedTop - zoneHighTop}
-          fill={colors.chartZoneHigh}
-          opacity={0.5}
-        />
+    <View>
+      <GiftedLineChart
+        dataSet={datasets}
+        height={height}
+        width={chartInnerWidth}
+        areaChart
+        curved
+        isAnimated
+        animationDuration={800}
+        animateOnDataChange
 
-        {/* Zone labels (right side) */}
-        <SvgText
-          x={PADDING_LEFT + chartWidth + 8}
-          y={(zoneNormalTop + zoneNormalBottom) / 2 + 4}
-          fontSize={typography.xs}
-          fontFamily={FONTS.medium}
-          fill={colors.textTertiary}
-        >
-          {zoneLabels.normal}
-        </SvgText>
-        <SvgText
-          x={PADDING_LEFT + chartWidth + 8}
-          y={(zoneElevatedTop + zoneNormalTop) / 2 + 4}
-          fontSize={typography.xs}
-          fontFamily={FONTS.medium}
-          fill={colors.textTertiary}
-        >
-          {zoneLabels.elevated}
-        </SvgText>
-        <SvgText
-          x={PADDING_LEFT + chartWidth + 8}
-          y={(zoneHighTop + zoneElevatedTop) / 2 + 4}
-          fontSize={typography.xs}
-          fontFamily={FONTS.medium}
-          fill={colors.textTertiary}
-        >
-          {zoneLabels.high}
-        </SvgText>
+        maxValue={yAxisMax}
+        yAxisOffset={yAxisMin}
+        noOfSections={noOfSections}
+        yAxisLabelTexts={yAxisLabelTexts}
 
-        {/* Y-axis labels */}
-        {yLabels.map(val => (
-          <React.Fragment key={val}>
-            <SvgText
-              x={PADDING_LEFT - 8}
-              y={getY(val) + 4}
-              fontSize={typography.xs}
-              fontFamily={FONTS.regular}
-              fill={colors.textTertiary}
-              textAnchor="end"
-            >
-              {val}
-            </SvgText>
-            <Line
-              x1={PADDING_LEFT}
-              y1={getY(val)}
-              x2={PADDING_LEFT + chartWidth}
-              y2={getY(val)}
-              stroke={colors.border}
-              strokeWidth={0.5}
-              strokeDasharray="4,4"
-            />
-          </React.Fragment>
-        ))}
+        rulesType="dashed"
+        rulesColor={colors.border + '80'}
+        dashWidth={4}
+        dashGap={4}
 
-        {/* Diastolic line (lighter, dashed) */}
-        {data.length > 1 && (
-          <Path
-            d={diastolicPath}
-            fill="none"
-            stroke={colors.chartLineDiastolic}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="6,4"
-          />
-        )}
+        yAxisColor="transparent"
+        yAxisTextStyle={{
+          color: colors.textSecondary,
+          fontSize: typography.xs,
+          fontFamily: FONTS.regular,
+        }}
 
-        {/* MAP line (dotted) */}
-        {showMAP && data.length > 1 && (
-          <Path
-            d={mapPath}
-            fill="none"
-            stroke={colors.mapColor}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="2,4"
-          />
-        )}
+        xAxisColor={colors.border}
+        hideDataPoints={false}
 
-        {/* PP line (dash-dot) */}
-        {showPP && data.length > 1 && (
-          <Path
-            d={ppPath}
-            fill="none"
-            stroke={colors.ppColor}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="8,4,2,4"
-          />
-        )}
+        spacing={spacing}
+        initialSpacing={15}
+        endSpacing={15}
 
-        {/* Systolic line (solid, primary) */}
-        {data.length > 1 && (
-          <Path
-            d={systolicPath}
-            fill="none"
-            stroke={colors.chartLine}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        )}
+        disableScroll={!needsScroll}
+        scrollToEnd={needsScroll}
+        showScrollIndicator={false}
 
-        {/* Diastolic dots */}
-        {data.map((d, i) => (
-          <Circle
-            key={`dia-${i}`}
-            cx={getX(i)}
-            cy={getY(d.diastolic)}
-            r={3.5}
-            fill={colors.chartDot}
-            stroke={colors.chartLineDiastolic}
-            strokeWidth={2}
-          />
-        ))}
+        backgroundColor="transparent"
 
-        {/* MAP dots */}
-        {showMAP && data.map((d, i) => (
-          <Circle
-            key={`map-${i}`}
-            cx={getX(i)}
-            cy={getY(d.map || 0)}
-            r={3}
-            fill={colors.chartDot}
-            stroke={colors.mapColor}
-            strokeWidth={2}
-          />
-        ))}
+        pointerConfig={{
+          pointerLabelComponent: renderTooltip,
+          showPointerStrip: true,
+          pointerStripColor: colors.textTertiary + '40',
+          pointerStripWidth: 1,
+          pointerColor: colors.chartLine,
+          radius: 5,
+          pointerLabelWidth: 160,
+          pointerLabelHeight: showPP || showMAP ? 110 : 70,
+          autoAdjustPointerLabelPosition: true,
+          shiftPointerLabelX: -80,
+          shiftPointerLabelY: -90,
+        }}
 
-        {/* PP dots */}
-        {showPP && data.map((d, i) => (
-          <Circle
-            key={`pp-${i}`}
-            cx={getX(i)}
-            cy={getY(d.pp || 0)}
-            r={3}
-            fill={colors.chartDot}
-            stroke={colors.ppColor}
-            strokeWidth={2}
-          />
-        ))}
+        showReferenceLine1
+        referenceLine1Position={normalThreshold}
+        referenceLine1Config={{
+          color: colors.textTertiary + '50',
+          dashWidth: 4,
+          dashGap: 4,
+          thickness: 1,
+        }}
 
-        {/* Systolic dots */}
-        {data.map((d, i) => (
-          <Circle
-            key={`sys-${i}`}
-            cx={getX(i)}
-            cy={getY(d.systolic)}
-            r={4}
-            fill={colors.chartDot}
-            stroke={colors.chartLine}
-            strokeWidth={2.5}
-          />
-        ))}
+        showReferenceLine2
+        referenceLine2Position={highThreshold}
+        referenceLine2Config={{
+          color: colors.error + '50',
+          dashWidth: 4,
+          dashGap: 4,
+          thickness: 1,
+        }}
+      />
 
-        {/* Legend */}
-        {/* Systolic legend */}
-        <Circle cx={PADDING_LEFT + 8} cy={legendY} r={5} fill={colors.chartLine} />
-        <SvgText
-          x={PADDING_LEFT + 18}
-          y={legendY + 4}
-          fontSize={typography.xs}
-          fontFamily={FONTS.medium}
-          fill={colors.textSecondary}
-        >
-          {legendLabels.systolic}
-        </SvgText>
-
-        {/* Diastolic legend */}
-        <Circle cx={PADDING_LEFT + 90} cy={legendY} r={5} fill={colors.chartLineDiastolic} />
-        <SvgText
-          x={PADDING_LEFT + 100}
-          y={legendY + 4}
-          fontSize={typography.xs}
-          fontFamily={FONTS.medium}
-          fill={colors.textSecondary}
-        >
-          {legendLabels.diastolic}
-        </SvgText>
-
-        {/* PP legend */}
+      {/* Legend */}
+      <View style={styles.legend}>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendDot, { backgroundColor: colors.chartLine }]} />
+          <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+            {legendLabels.systolic}
+          </Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendDot, { backgroundColor: colors.chartLineDiastolic }]} />
+          <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+            {legendLabels.diastolic}
+          </Text>
+        </View>
         {showPP && (
-          <>
-            <Circle cx={PADDING_LEFT + 182} cy={legendY} r={5} fill={colors.ppColor} />
-            <SvgText
-              x={PADDING_LEFT + 192}
-              y={legendY + 4}
-              fontSize={typography.xs}
-              fontFamily={FONTS.medium}
-              fill={colors.textSecondary}
-            >
+          <View style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: colors.ppColor }]} />
+            <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {legendLabels.pp}
-            </SvgText>
-          </>
+            </Text>
+          </View>
         )}
-
-        {/* MAP legend */}
         {showMAP && (
-          <>
-            <Circle cx={PADDING_LEFT + (showPP ? 232 : 182)} cy={legendY} r={5} fill={colors.mapColor} />
-            <SvgText
-              x={PADDING_LEFT + (showPP ? 242 : 192)}
-              y={legendY + 4}
-              fontSize={typography.xs}
-              fontFamily={FONTS.medium}
-              fill={colors.textSecondary}
-            >
+          <View style={styles.legendItem}>
+            <View style={[styles.legendDot, { backgroundColor: colors.mapColor }]} />
+            <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {legendLabels.map}
-            </SvgText>
-          </>
+            </Text>
+          </View>
         )}
-      </Svg>
+      </View>
+
+      {/* Reference line labels */}
+      {zoneLabels && (
+        <View style={styles.referenceLabelRow}>
+          <View style={[styles.refLabelChip, { backgroundColor: colors.chartZoneNormal }]}>
+            <Text style={[styles.refLabelText, { color: colors.textTertiary, fontSize: typography.xs }]}>
+              {'< '}{normalThreshold} {zoneLabels.normal}
+            </Text>
+          </View>
+          <View style={[styles.refLabelChip, { backgroundColor: colors.chartZoneHigh }]}>
+            <Text style={[styles.refLabelText, { color: colors.textTertiary, fontSize: typography.xs }]}>
+              {'>= '}{highThreshold} {zoneLabels.high}
+            </Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
+
+const tooltipStyles = StyleSheet.create({
+  container: {
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    gap: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  label: {
+    fontSize: 11,
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    flex: 1,
+  },
+  value: {
+    fontSize: 13,
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+    minWidth: 30,
+    textAlign: 'right',
+  },
+});
 
 const styles = StyleSheet.create({
   emptyContainer: {
@@ -367,5 +383,42 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontFamily: FONTS.regular,
+  },
+  legend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: 16,
+    marginTop: 8,
+    paddingHorizontal: 8,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  referenceLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 6,
+  },
+  refLabelChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  refLabelText: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
 });
