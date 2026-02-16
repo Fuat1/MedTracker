@@ -1,5 +1,42 @@
 import type { BPCategory } from './index';
 
+// ─── Typography Scale ────────────────────────────────────────────────────────
+
+/** Base font sizes (normal mode). All values are in logical pixels. */
+export const TYPOGRAPHY_BASE = {
+  xs: 12,    // Smallest: chart labels, decorators, units
+  sm: 14,    // Small: captions, timestamps, secondary info
+  md: 16,    // Base body text → 22px in senior mode (meets 22pt for 65+)
+  lg: 18,    // Section headers, card titles
+  xl: 22,    // Prominent values (pulse badge, category label)
+  '2xl': 28, // Statistics display values, large headings
+  '3xl': 36, // Entry form input display
+  hero: 56,  // Main BP reading hero display
+} as const;
+
+export type TypographyScale = typeof TYPOGRAPHY_BASE;
+
+/** Scale multiplier applied in Senior Mode. 16 × 1.4 = 22.4 → 22px (rounds). */
+export const SENIOR_SCALE = 1.4;
+
+/**
+ * Returns a TypographyScale with sizes multiplied by SENIOR_SCALE when seniorMode is true.
+ * All sizes are rounded to whole pixels.
+ */
+export function computeTypographyScale(seniorMode: boolean): TypographyScale {
+  const scale = seniorMode ? SENIOR_SCALE : 1.0;
+  return {
+    xs:    Math.round(TYPOGRAPHY_BASE.xs    * scale),
+    sm:    Math.round(TYPOGRAPHY_BASE.sm    * scale),
+    md:    Math.round(TYPOGRAPHY_BASE.md    * scale),
+    lg:    Math.round(TYPOGRAPHY_BASE.lg    * scale),
+    xl:    Math.round(TYPOGRAPHY_BASE.xl    * scale),
+    '2xl': Math.round(TYPOGRAPHY_BASE['2xl'] * scale),
+    '3xl': Math.round(TYPOGRAPHY_BASE['3xl'] * scale),
+    hero:  Math.round(TYPOGRAPHY_BASE.hero  * scale),
+  };
+}
+
 // Nunito font family mapping
 // On Android, fontFamily alone selects the weight.
 // On iOS, use fontFamily + fontWeight together for safety.
