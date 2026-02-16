@@ -27,7 +27,7 @@ const filterOptions: Array<{ key: HistoryFilterType; labelKey: string }> = [
 
 export function HistoryPage() {
   const { t } = useTranslation('pages');
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
   const { guideline } = useSettingsStore();
   const { data: records, isLoading, isError, refetch, isRefetching } = useBPRecords();
   const [filter, setFilter] = useState<HistoryFilterType>('all');
@@ -74,7 +74,7 @@ export function HistoryPage() {
                 accessibilityRole="button"
                 accessibilityLabel={t(item.labelKey as any)}
               >
-                <Text style={[styles.filterTabText, textStyle]}>
+                <Text style={[styles.filterTabText, textStyle, { fontSize: typography.sm }]}>
                   {t(item.labelKey as any)}
                 </Text>
               </Pressable>
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   filterTabText: {
-    fontSize: 14,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },

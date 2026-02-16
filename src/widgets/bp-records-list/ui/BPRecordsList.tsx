@@ -16,7 +16,7 @@ interface BPRecordsListProps {
 
 export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRefresh, renderCard }: BPRecordsListProps) {
   const { t } = useTranslation('widgets');
-  const { colors } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
 
   // Hooks MUST be declared before any early returns (Rules of Hooks)
   const renderItem = useCallback(({ item }: { item: BPRecord }) => (
@@ -25,29 +25,29 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
 
   const renderSectionHeader = useCallback(({ section }: { section: { title: string } }) => (
     <View style={styles.sectionHeader}>
-      <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+      <Text style={[styles.sectionTitle, { color: colors.textSecondary, fontSize: typography.sm }]}>
         {section.title}
       </Text>
     </View>
-  ), [colors.textSecondary]);
+  ), [colors.textSecondary, typography.sm]);
 
   const renderEmpty = useCallback(() => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>💓</Text>
-      <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+      <Text style={[styles.emptyIcon, { fontSize: Math.round(60 * fontScale) }]}>💓</Text>
+      <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
         {t('bpRecordsList.empty.title')}
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
         {t('bpRecordsList.empty.subtitle')}
       </Text>
     </View>
-  ), [colors.textPrimary, colors.textTertiary, t]);
+  ), [colors.textPrimary, colors.textTertiary, t, fontScale, typography.lg]);
 
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color={colors.accent} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+        <Text style={[styles.loadingText, { color: colors.textSecondary, fontSize: typography.sm }]}>
           {t('bpRecordsList.loading')}
         </Text>
       </View>
@@ -57,7 +57,7 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
   if (isError) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={[styles.errorTitle, { color: colors.error }]}>
+        <Text style={[styles.errorTitle, { color: colors.error, fontSize: typography.lg }]}>
           {t('bpRecordsList.error.title')}
         </Text>
         <Text style={[styles.errorSubtitle, { color: colors.textSecondary }]}>
@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   errorTitle: {
-    fontSize: 18,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 8,
@@ -116,11 +115,9 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyIcon: {
-    fontSize: 60,
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 18,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
@@ -136,7 +133,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   sectionTitle: {
-    fontSize: 14,
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
