@@ -18,30 +18,7 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
   const { t } = useTranslation('widgets');
   const { colors } = useTheme();
 
-  if (isLoading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.accent} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          {t('bpRecordsList.loading')}
-        </Text>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={styles.centerContainer}>
-        <Text style={[styles.errorTitle, { color: colors.error }]}>
-          {t('bpRecordsList.error.title')}
-        </Text>
-        <Text style={[styles.errorSubtitle, { color: colors.textSecondary }]}>
-          {t('bpRecordsList.error.subtitle')}
-        </Text>
-      </View>
-    );
-  }
-
+  // Hooks MUST be declared before any early returns (Rules of Hooks)
   const renderItem = useCallback(({ item }: { item: BPRecord }) => (
     renderCard(item)
   ), [renderCard]);
@@ -65,6 +42,30 @@ export function BPRecordsList({ sections, isLoading, isError, isRefetching, onRe
       </Text>
     </View>
   ), [colors.textPrimary, colors.textTertiary, t]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          {t('bpRecordsList.loading')}
+        </Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={[styles.errorTitle, { color: colors.error }]}>
+          {t('bpRecordsList.error.title')}
+        </Text>
+        <Text style={[styles.errorSubtitle, { color: colors.textSecondary }]}>
+          {t('bpRecordsList.error.subtitle')}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <SectionList
