@@ -364,5 +364,52 @@
         "message": "Failed to save reading. Please try again."
       }
     }
+  },
+  "editReading": {
+    "title": "Reading Details",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "deleteReading": "Delete Reading",
+    "noData": "Reading not found",
+    "derived": {
+      "pp": "Pulse Pressure",
+      "map": "Mean Arterial Pressure",
+      "timeWindow": "Time Window",
+      "window": {
+        "morning": "Morning",
+        "day": "Daytime",
+        "evening": "Evening",
+        "night": "Night"
+      }
+    },
+    "section": {
+      "measurement": "Measurement",
+      "details": "Details",
+      "location": "Location",
+      "posture": "Posture",
+      "notes": "Notes",
+      "notesPlaceholder": "Add notes about this reading..."
+    },
+    "numpad": {
+      "enterSystolic": "Enter Systolic",
+      "enterDiastolic": "Enter Diastolic",
+      "enterPulse": "Enter Pulse"
+    },
+    "deleteConfirm": {
+      "title": "Delete Reading?",
+      "message": "This reading will be permanently deleted. This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "alerts": {
+      "saveError": {
+        "title": "Save Failed",
+        "message": "Could not save changes. Please try again."
+      },
+      "deleteError": {
+        "title": "Delete Failed",
+        "message": "Could not delete reading. Please try again."
+      }
+    }
   }
 }

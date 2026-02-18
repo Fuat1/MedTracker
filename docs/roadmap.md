@@ -12,7 +12,7 @@
 - Pre-measurement guidance (breathing exercises, AHA checklist)
 - Derived metrics (PP, MAP with educational modals)
 - Circadian analysis (time windows, morning surge detection, time-in-range)
-- Lifestyle tagging (7 built-in tags, bottom-sheet picker, correlation insights on Analytics)
+- Lifestyle tagging (7 built-in tags + custom tags, bottom-sheet picker, correlation insights on Analytics)
 
 ## Phase 1: Completed ✅
 
@@ -47,6 +47,22 @@
    - Optional Analytics chart trend lines
    - Conditional PDF export inclusion
 
+### 1.5 Reading Detail, Edit & Delete ✅
+
+- Tapping a reading card in History opens a full-screen modal (`EditReadingPage`)
+- Modal shows ALL details: systolic/diastolic/pulse, PP, MAP, time window, category badge, date/time, location, posture, lifestyle tags, notes
+- User can edit any field (BP values via numpad-in-modal, datetime via picker, location/posture via chip selectors, tags via tag picker, notes via TextInput)
+- CrisisModal fires if edited values cross the crisis threshold before saving
+- Delete with confirmation `Alert` dialog; cascade-deletes bp_tags via FK `ON DELETE CASCADE`
+- Input validated by `validateBPValues` before any DB write
+
+**FSD Structure**:
+```
+src/features/edit-bp/              ← useEditBP mutation (update BP + tags) ✅
+src/features/delete-bp/            ← useDeleteBP mutation ✅
+src/pages/edit-reading/ui/EditReadingPage.tsx ← Detail/edit/delete modal page ✅
+```
+
 ## Phase 2: Advanced Analytics (Q2 2026)
 
 ### 2.1 Circadian Analysis ✅
@@ -59,9 +75,9 @@
 
 **Implemented FSD Structure**:
 ```
-src/entities/circadian-pattern/lib.ts          ← Time window logic, surge detection
-src/shared/lib/circadian-utils.ts              ← Pure time window calculations
-src/widgets/circadian-card/ui/CircadianCard.tsx ← Analytics page card
+src/shared/lib/circadian-utils.ts                        ← Pure time window calculations ✅
+src/entities/blood-pressure/circadian-classification.ts  ← computeTimeInRange ✅
+src/widgets/circadian-card/ui/CircadianCard.tsx          ← Reusable circadian patterns card ✅
 ```
 
 ### 2.2 Lifestyle Tagging ✅
@@ -74,19 +90,23 @@ src/widgets/circadian-card/ui/CircadianCard.tsx ← Analytics page card
 - Privacy-first: All analysis local (no cloud AI)
 - Tags stored in `bp_tags` table — **migration + repository done** ✅ (see `docs/database-schema.md`)
 
-**Planned Enhancement: Custom Tags**
-- Allow users to create their own tags beyond the 7 built-in ones
-- Custom tag: user-defined label + icon picker (from Ionicons subset)
+**Custom Tags** ✅
+- Users can create their own tags beyond the 7 built-in ones
+- Custom tag: user-defined label + icon picker (20 Ionicons options)
 - Stored in `custom_tags` table; merged into tag picker modal
-- Scope: free-form labels useful for personal patterns (e.g. "coffee", "gym", "travel")
+- Cascade delete: removing a custom tag clears it from all bp_tags rows
+- `custom:<uuid>` key prefix distinguishes custom from built-in tag keys
 
 **FSD Structure**:
 ```
 src/entities/lifestyle-tag/                    ← Tag types, LIFESTYLE_TAGS metadata, correlations ✅
-src/shared/ui/TagChip.tsx                      ← Toggleable chip component ✅
-src/widgets/tag-selector/ui/TagPickerModal.tsx ← Bottom-sheet multi-select ✅
+src/shared/types/custom-tag.ts                 ← CustomTag type, makeCustomTagKey helpers ✅
+src/shared/config/custom-tag-icons.ts          ← 20 curated Ionicons for icon picker ✅
+src/shared/api/custom-tags-repository.ts       ← CRUD + cascade delete ✅
+src/shared/ui/TagChip.tsx                      ← Toggleable chip, long-press to delete ✅
+src/widgets/tag-selector/ui/TagPickerModal.tsx ← Bottom-sheet, built-in + custom sections ✅
 src/widgets/correlation-card/ui/CorrelationCard.tsx ← Analytics insights display ✅
-src/features/manage-tags/                      ← TanStack Query hooks (useTagsForRecords etc.) ✅
+src/features/manage-tags/                      ← TanStack Query hooks (built-in + custom) ✅
 ```
 
 ## Phase 3: Platform Integration (Q3 2026)
@@ -155,8 +175,8 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete — Platform sync remaining
-**Tier 3 (Nice-to-Have)**: Medication tracking, Custom lifestyle tags, Voice logging
+**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete — Platform sync remaining
+**Tier 3 (Nice-to-Have)**: Medication tracking, Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-02-18
+**Last Updated**: 2026-02-19

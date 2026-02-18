@@ -4,6 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../app/navigation';
 import { PageHeader } from '../../../widgets/page-header';
 import { BPRecordsList } from '../../../widgets/bp-records-list';
 import { BPRecordCard } from '../../../widgets/bp-record-card';
@@ -32,6 +35,7 @@ export function HistoryPage() {
   const { t } = useTranslation('pages');
   const { colors, typography } = useTheme();
   const { guideline } = useSettingsStore();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: records, isLoading, isError, refetch, isRefetching } = useBPRecords();
   const [filter, setFilter] = useState<HistoryFilterType>('all');
 
@@ -121,6 +125,7 @@ export function HistoryPage() {
             tags={tagMap?.[record.id]}
             onPPPress={handlePPPress}
             onMAPPress={handleMAPPress}
+            onPress={() => navigation.navigate('EditReading', { recordId: record.id })}
           />
         )}
       />

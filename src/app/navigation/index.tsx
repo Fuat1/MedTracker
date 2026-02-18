@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage } from '../../pages';
+import { HomePage, HistoryPage, AnalyticsPage, SettingsPage, NewReadingPage, EditReadingPage } from '../../pages';
 import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
@@ -21,6 +21,7 @@ export type RootStackParamList = {
   QuickLog: undefined;
   PreMeasurement: undefined;
   NewReading: undefined;
+  EditReading: { recordId: string };
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -76,6 +77,14 @@ export function Navigation() {
         <Stack.Screen
           name="NewReading"
           component={NewReadingPage}
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="EditReading"
+          component={EditReadingPage}
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',

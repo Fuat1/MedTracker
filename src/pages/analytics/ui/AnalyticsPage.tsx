@@ -16,27 +16,22 @@ import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
 import { useExportPdf } from '../../../features/export-pdf';
 import { useTagsForRecords } from '../../../features/manage-tags';
-import { calculatePulsePressure, calculateMAP, computeTimeInRange } from '../../../entities/blood-pressure';
+import { calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure';
 import { computeTagCorrelations } from '../../../entities/lifestyle-tag';
 import { useTheme } from '../../../shared/lib/use-theme';
 import {
   computeWeeklyAverage,
   computeAmPmComparison,
-  computeCircadianBreakdown,
-  detectMorningSurge,
 } from '../../../shared/lib';
 import {
   BPTrendChart,
   OptionChip,
   DateTimePicker,
-  DonutChart,
-  CircadianBreakdownBars,
 } from '../../../shared/ui';
-import type { DonutSegment, CircadianWindowData } from '../../../shared/ui';
-import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
+import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
+import { CircadianCard } from '../../../widgets/circadian-card';
 import { CorrelationCard } from '../../../widgets/correlation-card';
-import { useSettingsStore } from '../../../shared/lib/settings-store';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 
 type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
@@ -44,13 +39,10 @@ type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
 export function AnalyticsPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { t: tMedical } = useTranslation('medical');
-  const { colors, isDark, typography } = useTheme();
+  const { colors, typography } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   const { data: allRecords } = useBPRecords();
   const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
-  const guideline = useSettingsStore(state => state.guideline);
-  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
 
   const [period, setPeriod] = useState<PeriodKey>('30d');
   const [customStart, setCustomStart] = useState<Date>(() => {
@@ -114,21 +106,6 @@ export function AnalyticsPage() {
     [records],
   );
 
-  const circadianBreakdown = useMemo(
-    () => computeCircadianBreakdown(records),
-    [records],
-  );
-
-  const timeInRange = useMemo(
-    () => computeTimeInRange(records, guideline),
-    [records, guideline],
-  );
-
-  const surgeResult = useMemo(
-    () => detectMorningSurge(allRecords ?? []),
-    [allRecords],
-  );
-
   const recordIds = useMemo(() => records.map(r => r.id), [records]);
   const { data: tagMap } = useTagsForRecords(recordIds);
 
@@ -136,21 +113,6 @@ export function AnalyticsPage() {
     () => (tagMap ? computeTagCorrelations(records, tagMap) : []),
     [records, tagMap],
   );
-
-  const donutSegments: DonutSegment[] = [
-    { percent: timeInRange.overall.normal,   color: bpColors.normal,   label: t('analytics.zones.normal') },
-    { percent: timeInRange.overall.elevated, color: bpColors.elevated, label: t('analytics.zones.elevated') },
-    { percent: timeInRange.overall.stage1,   color: bpColors.stage_1,  label: tMedical('categories.stage1') },
-    { percent: timeInRange.overall.stage2,   color: bpColors.stage_2,  label: tMedical('categories.stage2') },
-    { percent: timeInRange.overall.crisis,   color: bpColors.crisis,   label: tMedical('categories.crisis') },
-  ];
-
-  const circadianWindows: CircadianWindowData[] = [
-    { windowKey: 'morning', avg: circadianBreakdown.morningAvg, timeInRange: timeInRange.morning },
-    { windowKey: 'day',     avg: circadianBreakdown.dayAvg,     timeInRange: timeInRange.day },
-    { windowKey: 'evening', avg: circadianBreakdown.eveningAvg, timeInRange: timeInRange.evening },
-    { windowKey: 'night',   avg: circadianBreakdown.nightAvg,   timeInRange: timeInRange.night },
-  ];
 
   const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
@@ -334,46 +296,7 @@ export function AnalyticsPage() {
         </Animated.View>
 
         {/* Circadian Patterns Card */}
-        <Animated.View
-          entering={FadeInUp.delay(250).duration(500)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-            {t('analytics.circadian.title')}
-          </Text>
-
-          {records.length < 4 ? (
-            <Text style={[styles.noDataText, { color: colors.textSecondary, fontSize: typography.sm }]}>
-              {t('analytics.circadian.noData')}
-            </Text>
-          ) : (
-            <>
-              {/* Donut Chart — time in range */}
-              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
-                {t('analytics.circadian.timeInRange')}
-              </Text>
-              <DonutChart
-                segments={donutSegments}
-                size={140}
-                centerLabel={`${timeInRange.overall.normal}%`}
-                centerSubLabel={tMedical('categories.normal')}
-              />
-
-              {/* Per-window breakdown bars */}
-              <CircadianBreakdownBars windows={circadianWindows} />
-
-              {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
-              {surgeResult.hasSurge && (
-                <View style={[styles.surgeRow, { backgroundColor: colors.surgeBg }]}>
-                  <Icon name="trending-up-outline" size={14} color={colors.surgeColor} />
-                  <Text style={[styles.surgeText, { color: colors.surgeColor, fontSize: typography.sm }]}>
-                    {t('analytics.circadian.morningSurge', { count: 1 })}
-                  </Text>
-                </View>
-              )}
-            </>
-          )}
-        </Animated.View>
+        <CircadianCard records={records} allRecords={allRecords ?? []} />
 
         {/* Lifestyle Insights */}
         <Animated.View entering={FadeInUp.delay(270).duration(500)}>
@@ -618,31 +541,6 @@ const styles = StyleSheet.create({
   amPmDivider: {
     height: 1,
     marginVertical: 6,
-  },
-
-  // Circadian card
-  cardSubtitle: {
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
-    marginTop: 10,
-    marginBottom: 8,
-  },
-  noDataText: {
-    fontFamily: FONTS.regular,
-    fontWeight: '400',
-    marginTop: 8,
-  },
-  surgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  surgeText: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
   },
 
   // Toggles

@@ -44,9 +44,11 @@ interface BPRecordCardProps {
   onPPPress?: (value: number) => void;
   /** Called when the MAP info icon is tapped; receives the calculated MAP value */
   onMAPPress?: (value: number) => void;
+  /** Called when the card itself is tapped (compact variant only) */
+  onPress?: () => void;
 }
 
-export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, onPPPress, onMAPPress }: BPRecordCardProps) {
+export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, onPPPress, onMAPPress, onPress }: BPRecordCardProps) {
   const { t } = useTranslation('common');
   const { colors, isDark, fontScale, typography } = useTheme();
   const { guideline } = useSettingsStore();
@@ -76,7 +78,10 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
 
     return (
       <Animated.View entering={FadeInRight.duration(300)}>
-        <View
+        <Pressable
+          onPress={onPress}
+          disabled={!onPress}
+          accessibilityRole={onPress ? 'button' : undefined}
           style={[
             compactStyles.card,
             {
@@ -207,7 +212,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
               </Text>
             </View>
           )}
-        </View>
+        </Pressable>
       </Animated.View>
     );
   }
