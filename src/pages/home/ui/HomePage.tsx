@@ -13,10 +13,9 @@ import {
   calculatePulsePressure,
   calculateMAP,
 } from '../../../entities/blood-pressure';
-import { useSettingsStore } from '../../../shared/lib';
+import { useSettingsStore, computeWeeklyAverage, computeAmPmComparison } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
-import { LineChart } from '../../../shared/ui/LineChart';
-import { DerivedMetricsModal } from '../../../shared/ui';
+import { DerivedMetricsModal, BPTrendChart } from '../../../shared/ui';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
 
@@ -87,8 +86,13 @@ export function HomePage() {
     return [...recentRecords].reverse().map(r => ({
       systolic: r.systolic,
       diastolic: r.diastolic,
+      pp: calculatePulsePressure(r.systolic, r.diastolic),
+      map: calculateMAP(r.systolic, r.diastolic),
     }));
   }, [recentRecords]);
+
+  const weeklyAvg = useMemo(() => computeWeeklyAverage(recentRecords ?? []), [recentRecords]);
+  const amPm = useMemo(() => computeAmPmComparison(recentRecords ?? []), [recentRecords]);
 
   const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
@@ -98,6 +102,7 @@ export function HomePage() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        nestedScrollEnabled={true}
       >
         {/* Header */}
         <PageHeader variant="greeting" />
@@ -205,12 +210,89 @@ export function HomePage() {
           <Text style={[styles.trendTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
             {t('home.last7Days')}
           </Text>
-          <LineChart
+          <BPTrendChart
             data={chartData}
             width={chartWidth}
             height={160}
             emptyText={t('home.addFirstReading')}
+            legendLabels={{
+              systolic: tCommon('common.systolic'),
+              diastolic: tCommon('common.diastolic'),
+            }}
           />
+        </Animated.View>
+
+        {/* 7-Day Stats Row */}
+        <Animated.View
+          entering={FadeInUp.delay(300).duration(500)}
+          style={styles.statsRow}
+        >
+          {/* Weekly Average */}
+          <View style={[styles.statCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
+              <Icon name="trending-up" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+              {t('home.weeklyAvg')}
+            </Text>
+            {weeklyAvg.hasData ? (
+              <>
+                <Text
+                  style={[styles.statValue, { color: colors.textPrimary, fontSize: typography['2xl'] }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {weeklyAvg.systolic}/{weeklyAvg.diastolic}
+                </Text>
+                <Text style={[styles.statUnit, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                  {tCommon('units.mmhg')}
+                </Text>
+              </>
+            ) : (
+              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
+                {t('home.noData')}
+              </Text>
+            )}
+          </View>
+
+          {/* AM vs PM */}
+          <View style={[styles.statCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
+              <Icon name="sunny" size={20} color={colors.accent} />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+              {t('home.morningVsEvening')}
+            </Text>
+            {amPm.hasAmData || amPm.hasPmData ? (
+              <View style={styles.amPmContainer}>
+                <View style={styles.amPmRow}>
+                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>AM</Text>
+                  <Text
+                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {amPm.hasAmData ? `${amPm.am.systolic}/${amPm.am.diastolic}` : '---'}
+                  </Text>
+                </View>
+                <View style={[styles.amPmDivider, { backgroundColor: colors.border }]} />
+                <View style={styles.amPmRow}>
+                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>PM</Text>
+                  <Text
+                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {amPm.hasPmData ? `${amPm.pm.systolic}/${amPm.pm.diastolic}` : '---'}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
+                {t('home.noData')}
+              </Text>
+            )}
+          </View>
         </Animated.View>
       </ScrollView>
 
@@ -360,10 +442,78 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 3,
+    marginBottom: 16,
   },
   trendTitle: {
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     marginBottom: 16,
+  },
+
+  // Stats Row
+  statsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    gap: 12,
+    marginBottom: 16,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 20,
+    padding: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  statIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statLabel: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  statValue: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  statUnit: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    marginTop: 2,
+  },
+  statNoData: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    marginTop: 4,
+  },
+  amPmContainer: {
+    marginTop: 4,
+    gap: 4,
+  },
+  amPmRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  amPmLabel: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    width: 22,
+  },
+  amPmValue: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+    flex: 1,
+  },
+  amPmDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginVertical: 3,
   },
 });

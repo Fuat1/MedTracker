@@ -11,7 +11,9 @@ import {
   calculateMAP,
 } from '../../../entities/blood-pressure';
 import { LIFESTYLE_TAGS } from '../../../entities/lifestyle-tag';
-import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
+import { useCustomTags } from '../../../features/manage-tags';
+import { isCustomTagKey, getCustomTagId } from '../../../shared/types/custom-tag';
+import type { TagKey } from '../../../shared/api/bp-tags-repository';
 import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore, getTimeWindow } from '../../../shared/lib';
 import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
@@ -37,7 +39,7 @@ interface BPRecordCardProps {
   record: BPRecord;
   variant?: 'full' | 'compact';
   isMorningSurge?: boolean;
-  tags?: LifestyleTag[];
+  tags?: TagKey[];
   /** Called when the PP info icon is tapped; receives the calculated PP value */
   onPPPress?: (value: number) => void;
   /** Called when the MAP info icon is tapped; receives the calculated MAP value */
@@ -49,6 +51,17 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
   const { colors, isDark, fontScale, typography } = useTheme();
   const { guideline } = useSettingsStore();
   const category = classifyBP(record.systolic, record.diastolic, guideline);
+  const { data: customTags = [] } = useCustomTags();
+
+  const resolveTag = (tagKey: TagKey): { icon: string; label: string } | null => {
+    if (isCustomTagKey(tagKey)) {
+      const id = getCustomTagId(tagKey);
+      const ct = customTags.find(c => c.id === id);
+      return ct ? { icon: ct.icon, label: ct.label } : null;
+    }
+    const meta = LIFESTYLE_TAGS.find(m => m.key === tagKey);
+    return meta ? { icon: meta.icon, label: t(meta.labelKey as any) } : null;
+  };
   const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
   const categoryColor = bpColors[category];
   const categoryLabel = getBPCategoryLabel(category);
@@ -157,9 +170,9 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
           {tags && tags.length > 0 && (
             <View style={compactStyles.tagIcons}>
               {tags.slice(0, 3).map(tag => {
-                const meta = LIFESTYLE_TAGS.find(m => m.key === tag);
-                return meta ? (
-                  <Icon key={tag} name={meta.icon} size={12} color={colors.textTertiary} />
+                const display = resolveTag(tag);
+                return display ? (
+                  <Icon key={tag} name={display.icon} size={12} color={colors.textTertiary} />
                 ) : null;
               })}
               {tags.length > 3 && (
@@ -282,16 +295,16 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
             </Text>
           </View>
           {tags && tags.map(tag => {
-            const meta = LIFESTYLE_TAGS.find(m => m.key === tag);
-            if (!meta) return null;
+            const display = resolveTag(tag);
+            if (!display) return null;
             return (
               <View
                 key={tag}
                 style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}
               >
-                <Icon name={meta.icon} size={14} color={colors.textSecondary} />
+                <Icon name={display.icon} size={14} color={colors.textSecondary} />
                 <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t(meta.labelKey as any)}
+                  {display.label}
                 </Text>
               </View>
             );

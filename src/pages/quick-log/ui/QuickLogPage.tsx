@@ -21,7 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import { detectMorningSurge } from '../../../shared/lib';
 import { TagPickerModal } from '../../../widgets/tag-selector';
-import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
+import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export function QuickLogPage() {
   const { t } = useTranslation('pages');
@@ -41,7 +41,7 @@ export function QuickLogPage() {
 
   const [measurementTime, setMeasurementTime] = useState(new Date());
   const [crisisVisible, setCrisisVisible] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<LifestyleTag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagKey[]>([]);
   const [tagPickerVisible, setTagPickerVisible] = useState(false);
 
   const handleSubmit = async () => {

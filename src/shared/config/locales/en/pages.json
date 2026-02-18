@@ -20,6 +20,10 @@
       "readings": "Readings"
     },
     "sevenDayAverage": "7-Day Average",
+    "weeklyAvg": "7-Day Average",
+    "morningVsEvening": "AM vs PM",
+    "noData": "Not enough data",
+    "minMax": "Range",
     "actions": {
       "viewTrends": "View Trends",
       "exportData": "Export Data"

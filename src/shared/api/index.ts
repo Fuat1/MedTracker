@@ -14,3 +14,4 @@ export {
 export { convertHtmlToPdf } from './pdf-client';
 export type { PdfOptions, PdfResult } from './pdf-client';
 export * from './bp-tags-repository';
+export * from './custom-tags-repository';

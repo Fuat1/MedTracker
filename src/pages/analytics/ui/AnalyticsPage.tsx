@@ -159,6 +159,7 @@ export function AnalyticsPage() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        nestedScrollEnabled={true}
       >
         {/* Header */}
         <PageHeader variant="greeting" />

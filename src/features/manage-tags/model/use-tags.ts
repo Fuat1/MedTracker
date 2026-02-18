@@ -4,7 +4,7 @@ import {
   saveTagsForRecord,
   getTagsForRecords,
 } from '../../../shared/api';
-import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
+import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export const BP_TAGS_QUERY_KEY = ['bp-tags'];
 
@@ -20,7 +20,7 @@ export function useSaveTagsForRecord() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ recordId, tags }: { recordId: string; tags: LifestyleTag[] }) => {
+    mutationFn: async ({ recordId, tags }: { recordId: string; tags: TagKey[] }) => {
       return saveTagsForRecord(recordId, tags);
     },
     onSuccess: (_data, variables) => {

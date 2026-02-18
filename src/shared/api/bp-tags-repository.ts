@@ -1,6 +1,8 @@
 import { getDatabase } from './db';
 import { generateUUID, getCurrentTimestamp } from '../lib';
-import type { LifestyleTag } from '../types/lifestyle-tag';
+
+/** A tag key is either a built-in LifestyleTag or a "custom:<uuid>" string */
+export type TagKey = string;
 
 interface BPTagRow {
   id: string;
@@ -10,20 +12,20 @@ interface BPTagRow {
 }
 
 /** Returns all tags for a single record */
-export async function getTagsForRecord(recordId: string): Promise<LifestyleTag[]> {
+export async function getTagsForRecord(recordId: string): Promise<TagKey[]> {
   const db = getDatabase();
   const result = await db.execute(
     'SELECT tag FROM bp_tags WHERE record_id = ? ORDER BY created_at ASC',
     [recordId],
   );
   const rows = (result.rows ?? []) as Array<{ tag: string }>;
-  return rows.map(r => r.tag as LifestyleTag);
+  return rows.map(r => r.tag);
 }
 
 /** Replaces all tags for a record (delete + insert) */
 export async function saveTagsForRecord(
   recordId: string,
-  tags: LifestyleTag[],
+  tags: TagKey[],
 ): Promise<void> {
   const db = getDatabase();
   const now = getCurrentTimestamp();
@@ -41,7 +43,7 @@ export async function saveTagsForRecord(
 /** Returns a map of recordId → tag[] for a set of record IDs */
 export async function getTagsForRecords(
   recordIds: string[],
-): Promise<Record<string, LifestyleTag[]>> {
+): Promise<Record<string, TagKey[]>> {
   if (recordIds.length === 0) return {};
   const db = getDatabase();
 
@@ -52,10 +54,10 @@ export async function getTagsForRecords(
   );
 
   const rows = (result.rows ?? []) as unknown as BPTagRow[];
-  const map: Record<string, LifestyleTag[]> = {};
+  const map: Record<string, TagKey[]> = {};
   for (const row of rows) {
     if (!map[row.record_id]) map[row.record_id] = [];
-    map[row.record_id].push(row.tag as LifestyleTag);
+    map[row.record_id].push(row.tag);
   }
   return map;
 }

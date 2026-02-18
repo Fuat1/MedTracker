@@ -45,6 +45,15 @@ const CREATE_BP_TAGS_IDX_TAG_SQL = `
   CREATE INDEX IF NOT EXISTS idx_bp_tags_tag ON bp_tags(tag);
 `;
 
+const CREATE_CUSTOM_TAGS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS custom_tags (
+    id         TEXT PRIMARY KEY NOT NULL,
+    label      TEXT NOT NULL,
+    icon       TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+`;
+
 export async function initDatabase(): Promise<DB> {
   if (db) {
     return db;
@@ -60,6 +69,7 @@ export async function initDatabase(): Promise<DB> {
     db.execute(CREATE_BP_TAGS_TABLE_SQL);
     db.execute(CREATE_BP_TAGS_IDX_RECORD_SQL);
     db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
+    db.execute(CREATE_CUSTOM_TAGS_TABLE_SQL);
 
     console.log('Database initialized successfully');
     return db;

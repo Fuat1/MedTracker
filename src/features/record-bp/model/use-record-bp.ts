@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { insertBPRecord, saveTagsForRecord, type BPRecordInput } from '../../../shared/api';
 import { validateBPValues } from '../../../entities/blood-pressure';
-import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
+import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export const BP_RECORDS_QUERY_KEY = ['bp-records'];
 
 interface RecordBPInput extends BPRecordInput {
-  tags?: LifestyleTag[];
+  tags?: TagKey[];
 }
 
 export function useRecordBP() {

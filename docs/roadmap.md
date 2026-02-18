@@ -12,6 +12,7 @@
 - Pre-measurement guidance (breathing exercises, AHA checklist)
 - Derived metrics (PP, MAP with educational modals)
 - Circadian analysis (time windows, morning surge detection, time-in-range)
+- Lifestyle tagging (7 built-in tags, bottom-sheet picker, correlation insights on Analytics)
 
 ## Phase 1: Completed ✅
 
@@ -63,24 +64,29 @@ src/shared/lib/circadian-utils.ts              ← Pure time window calculations
 src/widgets/circadian-card/ui/CircadianCard.tsx ← Analytics page card
 ```
 
-### 2.2 Lifestyle Tagging (Entry UI ✅, History/Analytics pending)
+### 2.2 Lifestyle Tagging ✅
 
 - Optional tags per reading: Salt, Stress, Alcohol, Exercise, Medication, Caffeine, Poor Sleep
-- Tag entry UI ✅ — compact pill button on QuickLog + NewReading, opens bottom-sheet multi-select modal
+- Tag entry UI ✅ — compact pill button next to date picker on QuickLog + NewReading, opens bottom-sheet multi-select modal
 - Tags saved with BP record via `useRecordBP` mutation ✅
+- Tags displayed on BPRecordCard ✅ — icon-only in compact/History view, labeled chips in full view
+- Correlation insights on Analytics page ✅ — "Your readings are X mmHg higher on salt days" (requires ≥3 tagged + ≥3 untagged readings)
 - Privacy-first: All analysis local (no cloud AI)
 - Tags stored in `bp_tags` table — **migration + repository done** ✅ (see `docs/database-schema.md`)
 
-**Remaining**:
-- Display saved tags on BPRecordCard in History page
-- Correlation card on Analytics page ("Your readings are 8 mmHg higher on high-salt days")
+**Planned Enhancement: Custom Tags**
+- Allow users to create their own tags beyond the 7 built-in ones
+- Custom tag: user-defined label + icon picker (from Ionicons subset)
+- Stored in `custom_tags` table; merged into tag picker modal
+- Scope: free-form labels useful for personal patterns (e.g. "coffee", "gym", "travel")
 
 **FSD Structure**:
 ```
-src/entities/lifestyle-tag/                    ← Tag types, LIFESTYLE_TAGS metadata ✅
+src/entities/lifestyle-tag/                    ← Tag types, LIFESTYLE_TAGS metadata, correlations ✅
 src/shared/ui/TagChip.tsx                      ← Toggleable chip component ✅
 src/widgets/tag-selector/ui/TagPickerModal.tsx ← Bottom-sheet multi-select ✅
-src/widgets/correlation-card/                  ← Lifestyle insights display (pending)
+src/widgets/correlation-card/ui/CorrelationCard.tsx ← Analytics insights display ✅
+src/features/manage-tags/                      ← TanStack Query hooks (useTagsForRecords etc.) ✅
 ```
 
 ## Phase 3: Platform Integration (Q3 2026)
@@ -149,8 +155,8 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete — Platform sync remaining
-**Tier 3 (Nice-to-Have)**: Medication tracking, Lifestyle tags History/Analytics display, Voice logging
+**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete — Platform sync remaining
+**Tier 3 (Nice-to-Have)**: Medication tracking, Custom lifestyle tags, Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
 **Last Updated**: 2026-02-18

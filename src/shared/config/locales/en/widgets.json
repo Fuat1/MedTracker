@@ -31,7 +31,22 @@
     "title": "Lifestyle Tags",
     "subtitle": "Optional — helps identify patterns",
     "addTags": "Add tags",
-    "tagCount": "{{count}} tags"
+    "tagCount": "{{count}} tags",
+    "customSection": "My Tags",
+    "builtInSection": "Built-in Tags",
+    "createNew": "Create new tag",
+    "createForm": {
+      "title": "New Tag",
+      "labelPlaceholder": "Tag name",
+      "pickIcon": "Pick an icon",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "deleteHint": "Long-press a tag to delete it",
+    "confirmDelete": "Delete \"{{label}}\"?",
+    "confirmDeleteSubtitle": "This will remove the tag from all readings.",
+    "deleteConfirm": "Delete",
+    "deleteCancel": "Cancel"
   },
   "correlationCard": {
     "title": "Lifestyle Insights",

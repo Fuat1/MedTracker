@@ -1,8 +1,8 @@
 import type { BPRecord } from '../../../shared/api/bp-repository';
-import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
+import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export interface TagCorrelation {
-  tag: LifestyleTag;
+  tag: TagKey;
   avgSystolicDelta: number;
   avgDiastolicDelta: number;
   taggedCount: number;
@@ -18,12 +18,12 @@ const MIN_SAMPLE_SIZE = 3;
  */
 export function computeTagCorrelations(
   records: BPRecord[],
-  tagMap: Record<string, LifestyleTag[]>,
+  tagMap: Record<string, TagKey[]>,
 ): TagCorrelation[] {
   if (records.length === 0) return [];
 
   // Collect all unique tags present in the data
-  const allTags = new Set<LifestyleTag>();
+  const allTags = new Set<TagKey>();
   for (const tags of Object.values(tagMap)) {
     for (const tag of tags) {
       allTags.add(tag);

@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { FONTS } from '../../../shared/config/theme';
 import { LIFESTYLE_TAGS } from '../../../entities/lifestyle-tag';
+import { useCustomTags } from '../../../features/manage-tags';
+import { isCustomTagKey, getCustomTagId } from '../../../shared/types/custom-tag';
 import type { TagCorrelation } from '../../../entities/lifestyle-tag';
 
 const MIN_DELTA = 3; // Only show correlations with |delta| >= 3 mmHg
@@ -18,7 +20,22 @@ export function CorrelationCard({ correlations }: CorrelationCardProps) {
   const { t: tCommon } = useTranslation('common');
   const { colors, typography } = useTheme();
 
+  const { data: customTags = [] } = useCustomTags();
+
   const significant = correlations.filter(c => Math.abs(c.avgSystolicDelta) >= MIN_DELTA);
+
+  /** Resolve icon + label for any TagKey (built-in or custom) */
+  const resolveTagDisplay = (tagKey: string): { icon: string; label: string } | null => {
+    if (isCustomTagKey(tagKey)) {
+      const id = getCustomTagId(tagKey);
+      const ct = customTags.find(c => c.id === id);
+      if (!ct) return null;
+      return { icon: ct.icon, label: ct.label };
+    }
+    const meta = LIFESTYLE_TAGS.find(m => m.key === tagKey);
+    if (!meta) return null;
+    return { icon: meta.icon, label: tCommon(meta.labelKey as any) };
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
@@ -35,22 +52,21 @@ export function CorrelationCard({ correlations }: CorrelationCardProps) {
         </Text>
       ) : (
         significant.map(c => {
-          const meta = LIFESTYLE_TAGS.find(m => m.key === c.tag);
-          if (!meta) return null;
+          const display = resolveTagDisplay(c.tag);
+          if (!display) return null;
           const isHigher = c.avgSystolicDelta > 0;
           const delta = Math.abs(c.avgSystolicDelta);
-          const tagLabel = tCommon(meta.labelKey as any);
 
           return (
             <View key={c.tag} style={[styles.row, { borderBottomColor: colors.borderLight }]}>
               <View style={[styles.iconCircle, { backgroundColor: (isHigher ? colors.error : colors.successText) + '15' }]}>
-                <Icon name={meta.icon} size={18} color={isHigher ? colors.error : colors.successText} />
+                <Icon name={display.icon} size={18} color={isHigher ? colors.error : colors.successText} />
               </View>
               <View style={styles.rowContent}>
                 <Text style={[styles.insightText, { color: colors.textPrimary, fontSize: typography.sm }]}>
                   {isHigher
-                    ? t('correlationCard.higher', { delta, tag: tagLabel })
-                    : t('correlationCard.lower', { delta, tag: tagLabel })}
+                    ? t('correlationCard.higher', { delta, tag: display.label })
+                    : t('correlationCard.lower', { delta, tag: display.label })}
                 </Text>
                 <Text style={[styles.countText, { color: colors.textTertiary, fontSize: typography.xs }]}>
                   {t('correlationCard.readingsCount', { count: c.taggedCount })}

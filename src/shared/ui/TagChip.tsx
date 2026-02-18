@@ -9,11 +9,12 @@ interface TagChipProps {
   label: string;
   selected: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
   fontScale?: number;
   disabled?: boolean;
 }
 
-export function TagChip({ icon, label, selected, onPress, fontScale = 1, disabled }: TagChipProps) {
+export function TagChip({ icon, label, selected, onPress, onLongPress, fontScale = 1, disabled }: TagChipProps) {
   const { colors } = useTheme();
   const iconSize = Math.round(14 * fontScale);
 
@@ -27,6 +28,7 @@ export function TagChip({ icon, label, selected, onPress, fontScale = 1, disable
         },
       ]}
       onPress={onPress}
+      onLongPress={onLongPress}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={label}

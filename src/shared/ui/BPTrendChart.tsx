@@ -252,7 +252,8 @@ export function BPTrendChart({
 
         disableScroll={!needsScroll}
         scrollToEnd={needsScroll}
-        showScrollIndicator={false}
+        showScrollIndicator={needsScroll}
+        nestedScrollEnabled={needsScroll}
 
         backgroundColor="transparent"
 
