@@ -5,6 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useLatestBPRecord, useBPRecords } from '../../../features/record-bp';
 import {
   classifyBP,
@@ -44,6 +45,7 @@ export function HomePage() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<'pp' | 'map'>('pp');
+  const tabBarHeight = useBottomTabBarHeight();
 
   const latestCategory = latestRecord
     ? classifyBP(latestRecord.systolic, latestRecord.diastolic, guideline)
@@ -218,6 +220,7 @@ export function HomePage() {
         type={modalType}
         value={modalType === 'pp' ? ppValue ?? 0 : mapValue ?? 0}
         onClose={() => setModalVisible(false)}
+        bottomOffset={tabBarHeight}
       />
     </SafeAreaView>
   );

@@ -30,23 +30,37 @@ export interface ReportStats {
 
 /** Range description per guideline + category */
 function getCategoryRange(key: BPCategory, guideline: BPGuideline): string {
-  if (guideline === BP_GUIDELINES.AHA_ACC) {
-    const ranges: Record<BPCategory, string> = {
+  const guidelineRanges: Record<string, Record<BPCategory, string>> = {
+    [BP_GUIDELINES.AHA_ACC]: {
       normal: '<120 / <80 mmHg',
       elevated: '120–129 / <80 mmHg',
       stage_1: '130–139 / 80–89 mmHg',
       stage_2: '≥140 / ≥90 mmHg',
       crisis: '≥180 / ≥120 mmHg',
-    };
-    return ranges[key] ?? '–';
-  }
-  const ranges: Record<BPCategory, string> = {
-    normal: '<130 / <85 mmHg',
-    elevated: '130–139 / 85–89 mmHg',
-    stage_1: '140–159 / 90–99 mmHg',
-    stage_2: '160–179 / 100–109 mmHg',
-    crisis: '≥180 / ≥110 mmHg',
+    },
+    [BP_GUIDELINES.JSH]: {
+      normal: '<130 / <80 mmHg',
+      elevated: '130–139 / 80–89 mmHg',
+      stage_1: '140–159 / 90–99 mmHg',
+      stage_2: '160–179 / 100–109 mmHg',
+      crisis: '≥180 / ≥110 mmHg',
+    },
+    [BP_GUIDELINES.ESC_ESH]: {
+      normal: '<130 / <85 mmHg',
+      elevated: '130–139 / 85–89 mmHg',
+      stage_1: '140–159 / 90–99 mmHg',
+      stage_2: '160–179 / 100–109 mmHg',
+      crisis: '≥180 / ≥110 mmHg',
+    },
+    [BP_GUIDELINES.WHO]: {
+      normal: '<130 / <85 mmHg',
+      elevated: '130–139 / 85–89 mmHg',
+      stage_1: '140–159 / 90–99 mmHg',
+      stage_2: '160–179 / 100–109 mmHg',
+      crisis: '≥180 / ≥110 mmHg',
+    },
   };
+  const ranges = guidelineRanges[guideline] ?? guidelineRanges[BP_GUIDELINES.AHA_ACC];
   return ranges[key] ?? '–';
 }
 

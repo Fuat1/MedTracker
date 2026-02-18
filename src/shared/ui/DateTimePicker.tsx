@@ -76,26 +76,24 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
     setTempDate(new Date());
   };
 
+  const isNow = (new Date().getTime() - value.getTime()) < 60 * 1000;
+  const pillColor = isNow ? colors.textSecondary : colors.accent;
+  const pillBg = isNow ? 'transparent' : colors.accent + '15';
+  const pillBorder = isNow ? colors.border : colors.accent;
+
   return (
     <>
       <Pressable
-        style={[
-          styles.trigger,
-          {
-            backgroundColor: colors.surfaceSecondary,
-            borderColor: colors.border,
-          },
-        ]}
+        style={[styles.trigger, { backgroundColor: pillBg, borderColor: pillBorder }]}
         onPress={() => !disabled && setModalVisible(true)}
         disabled={disabled}
         accessibilityRole="button"
         accessibilityLabel={t('dateTime.selectTime')}
       >
-        <Icon name="calendar-outline" size={20} color={colors.textSecondary} />
-        <Text style={[styles.triggerText, { color: colors.textPrimary }]}>
+        <Icon name="calendar-outline" size={13} color={pillColor} />
+        <Text style={[styles.triggerText, { color: pillColor }]}>
           {formatDateTime(value)}
         </Text>
-        <Icon name="chevron-down" size={20} color={colors.textSecondary} />
       </Pressable>
 
       <Modal
@@ -256,17 +254,17 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
     borderWidth: 1,
-    gap: 10,
+    gap: 5,
   },
   triggerText: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
+    fontSize: 12,
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,

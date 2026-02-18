@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,11 @@ import type { BPRecord } from '../../../shared/api';
 import {
   classifyBP,
   getBPCategoryLabel,
+  calculatePulsePressure,
+  calculateMAP,
 } from '../../../entities/blood-pressure';
+import { LIFESTYLE_TAGS } from '../../../entities/lifestyle-tag';
+import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
 import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore, getTimeWindow } from '../../../shared/lib';
 import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
@@ -33,9 +37,14 @@ interface BPRecordCardProps {
   record: BPRecord;
   variant?: 'full' | 'compact';
   isMorningSurge?: boolean;
+  tags?: LifestyleTag[];
+  /** Called when the PP info icon is tapped; receives the calculated PP value */
+  onPPPress?: (value: number) => void;
+  /** Called when the MAP info icon is tapped; receives the calculated MAP value */
+  onMAPPress?: (value: number) => void;
 }
 
-export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRecordCardProps) {
+export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, onPPPress, onMAPPress }: BPRecordCardProps) {
   const { t } = useTranslation('common');
   const { colors, isDark, fontScale, typography } = useTheme();
   const { guideline } = useSettingsStore();
@@ -45,6 +54,8 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
   const categoryLabel = getBPCategoryLabel(category);
   const timeWindow = getTimeWindow(record.timestamp);
   const windowIcon = WINDOW_ICONS[timeWindow];
+  const ppValue = calculatePulsePressure(record.systolic, record.diastolic);
+  const mapValue = calculateMAP(record.systolic, record.diastolic);
 
   // Compact variant for History page
   if (variant === 'compact') {
@@ -98,12 +109,66 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
             >
               {t('units.mmhg')}
             </Text>
+
+            {/* PP / MAP derived metrics row */}
+            {(onPPPress || onMAPPress) && (
+              <View style={compactStyles.derivedRow}>
+                {onPPPress && (
+                  <Pressable
+                    style={compactStyles.derivedBtn}
+                    onPress={() => onPPPress(ppValue)}
+                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`PP ${ppValue} mmHg, more info`}
+                  >
+                    <Text style={[compactStyles.derivedLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                      PP: {ppValue}
+                    </Text>
+                    <Icon name="information-circle-outline" size={11} color={colors.textTertiary} />
+                  </Pressable>
+                )}
+                {onPPPress && onMAPPress && (
+                  <Text style={[compactStyles.derivedDot, { color: colors.borderLight }]}>·</Text>
+                )}
+                {onMAPPress && (
+                  <Pressable
+                    style={compactStyles.derivedBtn}
+                    onPress={() => onMAPPress(mapValue)}
+                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`MAP ${mapValue} mmHg, more info`}
+                  >
+                    <Text style={[compactStyles.derivedLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                      MAP: {mapValue}
+                    </Text>
+                    <Icon name="information-circle-outline" size={11} color={colors.textTertiary} />
+                  </Pressable>
+                )}
+              </View>
+            )}
           </View>
 
           {/* Time-window icon */}
           <View style={[compactStyles.windowPill, { backgroundColor: colors.surfaceSecondary }]}>
             <Icon name={windowIcon} size={11} color={colors.textTertiary} />
           </View>
+
+          {/* Tag icons (max 3 + overflow) */}
+          {tags && tags.length > 0 && (
+            <View style={compactStyles.tagIcons}>
+              {tags.slice(0, 3).map(tag => {
+                const meta = LIFESTYLE_TAGS.find(m => m.key === tag);
+                return meta ? (
+                  <Icon key={tag} name={meta.icon} size={12} color={colors.textTertiary} />
+                ) : null;
+              })}
+              {tags.length > 3 && (
+                <Text style={[compactStyles.tagOverflow, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                  +{tags.length - 3}
+                </Text>
+              )}
+            </View>
+          )}
 
           {/* Category Badge — icon-only in senior mode to save space */}
           {fontScale > 1 ? (
@@ -216,6 +281,21 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge }: BPRec
               {postureLabels[record.posture] || record.posture}
             </Text>
           </View>
+          {tags && tags.map(tag => {
+            const meta = LIFESTYLE_TAGS.find(m => m.key === tag);
+            if (!meta) return null;
+            return (
+              <View
+                key={tag}
+                style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}
+              >
+                <Icon name={meta.icon} size={14} color={colors.textSecondary} />
+                <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t(meta.labelKey as any)}
+                </Text>
+              </View>
+            );
+          })}
         </View>
 
         {/* Timestamp */}
@@ -324,6 +404,34 @@ const compactStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 4,
+  },
+  tagIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginRight: 4,
+  },
+  tagOverflow: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  derivedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 3,
+    gap: 4,
+  },
+  derivedBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  derivedLabel: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+  },
+  derivedDot: {
+    fontFamily: FONTS.regular,
   },
 });
 

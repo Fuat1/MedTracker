@@ -9,7 +9,27 @@
   },
   "crisis": {
     "title": "⚠️ Hypertensive Crisis",
-    "message": "This reading indicates a hypertensive crisis. Please seek immediate medical attention if you are experiencing symptoms such as chest pain, shortness of breath, severe headache, vision changes, difficulty speaking, back pain, numbness, or weakness."
+    "subtitle": "Your reading of {{systolic}}/{{diastolic}} mmHg significantly exceeds normal limits.",
+    "symptomsQuestion": "Are you experiencing any of these symptoms?",
+    "symptoms": {
+      "chestPain": "Severe chest pain",
+      "headache": "Severe headache",
+      "breathShortness": "Shortness of breath",
+      "visionChanges": "Vision changes or blurriness",
+      "difficultySpeak": "Difficulty speaking",
+      "backPain": "Back pain",
+      "numbness": "Numbness or tingling",
+      "weakness": "Weakness (especially one side)"
+    },
+    "emergency": {
+      "title": "CALL 911 / EMERGENCY SERVICES",
+      "message": "You reported symptoms that may indicate a medical emergency. Call emergency services immediately."
+    },
+    "urgency": {
+      "title": "Contact Your Provider",
+      "message": "No symptoms reported. Contact your healthcare provider immediately for same-day evaluation. Do not wait for a scheduled appointment."
+    },
+    "disclaimer": "This app is not a medical device. This is an automated warning based on published medical guidelines and does not constitute medical advice."
   },
   "guidelines": {
     "ahaAcc": {

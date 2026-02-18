@@ -125,7 +125,7 @@ export function BPEntryForm() {
     if (isCrisisReading(systolicNum, diastolicNum)) {
       Alert.alert(
         tMedical('crisis.title'),
-        tMedical('crisis.message'),
+        tMedical('crisis.subtitle', { systolic: systolicNum, diastolic: diastolicNum }),
         [
           { text: tCommon('buttons.cancel'), style: 'cancel' },
           {

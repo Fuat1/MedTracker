@@ -39,6 +39,7 @@
     "exportComingSoon": "PDF export coming soon!",
     "noData": "Not enough data",
     "noDataSubtitle": "Add more readings to see trends",
+    "disclaimer": "For informational purposes only. Not a substitute for professional medical advice.",
     "toggles": {
       "showPP": "Show PP",
       "showMAP": "Show MAP"

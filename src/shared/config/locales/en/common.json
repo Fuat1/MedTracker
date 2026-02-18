@@ -81,6 +81,15 @@
     "minute": "Minute",
     "setToNow": "Set to Now"
   },
+  "tags": {
+    "salt": "High Salt",
+    "stress": "Stress",
+    "alcohol": "Alcohol",
+    "exercise": "Exercise",
+    "medication": "Medication",
+    "caffeine": "Caffeine",
+    "poorSleep": "Poor Sleep"
+  },
   "entryMode": {
     "title": "Log Blood Pressure",
     "message": "Choose your preferred entry method",

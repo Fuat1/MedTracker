@@ -64,7 +64,7 @@ export function useExportPdf() {
       setActiveAction('share');
 
       requestIdleCallback(() => {
-        void (async () => {
+        const run = async () => {
           try {
             const filePath = await buildPdf(records, options);
 
@@ -99,7 +99,8 @@ export function useExportPdf() {
           } finally {
             setActiveAction(null);
           }
-        })();
+        };
+        run().catch(console.error);
       });
     },
     [buildPdf],
@@ -118,7 +119,7 @@ export function useExportPdf() {
       setActiveAction('save');
 
       requestIdleCallback(() => {
-        void (async () => {
+        const run = async () => {
           try {
             const filePath = await buildPdf(records, options);
             const fileName = filePath.split('/').pop() ?? 'bp-report.pdf';
@@ -159,7 +160,8 @@ export function useExportPdf() {
           } finally {
             setActiveAction(null);
           }
-        })();
+        };
+        run().catch(console.error);
       });
     },
     [buildPdf],

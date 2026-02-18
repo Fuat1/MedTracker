@@ -1,5 +1,6 @@
 import { open, type DB } from '@op-engineering/op-sqlite';
 import { DB_CONFIG } from '../config';
+import { getOrCreateEncryptionKey } from '../lib/encryption-key';
 
 let db: DB | null = null;
 
@@ -16,7 +17,8 @@ const CREATE_TABLE_SQL = `
     notes TEXT,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
-    is_synced INTEGER DEFAULT 0
+    is_synced INTEGER DEFAULT 0,
+    CHECK(systolic > diastolic)
   );
 `;
 
@@ -49,7 +51,8 @@ export async function initDatabase(): Promise<DB> {
   }
 
   try {
-    db = open({ name: DB_CONFIG.name });
+    const encryptionKey = await getOrCreateEncryptionKey();
+    db = open({ name: DB_CONFIG.name, encryptionKey });
 
     // Create tables
     db.execute(CREATE_TABLE_SQL);

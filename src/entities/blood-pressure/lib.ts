@@ -47,7 +47,7 @@ export function classifyBP(
     // Range-based elevated (ESC/ESH, JSH, WHO)
     const rule = elev as RangeElevatedRule;
     if (rule.systolicBelow !== undefined) {
-      // WHO: uses AND logic with explicit SBP range (130-139 AND/OR DBP 85-89)
+      // WHO: uses OR logic — SBP in range (130-139) OR DBP in range (85-89)
       if (
         (systolic >= rule.systolicMin && systolic < rule.systolicBelow) ||
         (diastolic >= rule.diastolicMin && diastolic < rule.diastolicBelow)

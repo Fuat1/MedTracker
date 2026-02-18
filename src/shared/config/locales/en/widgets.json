@@ -27,6 +27,20 @@
       }
     }
   },
+  "tagSelector": {
+    "title": "Lifestyle Tags",
+    "subtitle": "Optional — helps identify patterns",
+    "addTags": "Add tags",
+    "tagCount": "{{count}} tags"
+  },
+  "correlationCard": {
+    "title": "Lifestyle Insights",
+    "noData": "Not enough tagged readings for insights",
+    "higher": "Your readings are {{delta}} mmHg higher on {{tag}} days",
+    "lower": "Your readings are {{delta}} mmHg lower on {{tag}} days",
+    "readingsCount": "{{count}} readings",
+    "disclaimer": "Statistical patterns only. Consult your healthcare provider."
+  },
   "bpRecordCard": {
     "metadata": {
       "location": "Location",

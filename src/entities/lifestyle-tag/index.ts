@@ -1,5 +1,7 @@
 import type { LifestyleTag } from '../../shared/types/lifestyle-tag';
 export type { LifestyleTag } from '../../shared/types/lifestyle-tag';
+export { computeTagCorrelations } from './lib/compute-correlations';
+export type { TagCorrelation } from './lib/compute-correlations';
 
 export interface LifestyleTagMeta {
   key: LifestyleTag;

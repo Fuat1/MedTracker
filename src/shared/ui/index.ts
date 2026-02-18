@@ -6,6 +6,7 @@ export { Toast } from './Toast';
 export { CrisisModal } from './CrisisModal';
 export { DerivedMetricsModal } from './DerivedMetricsModal';
 export { OptionChip } from './OptionChip';
+export { TagChip } from './TagChip';
 export { SaveButton } from './SaveButton';
 export { DonutChart } from './DonutChart';
 export type { DonutSegment } from './DonutChart';

@@ -63,20 +63,24 @@ src/shared/lib/circadian-utils.ts              ← Pure time window calculations
 src/widgets/circadian-card/ui/CircadianCard.tsx ← Analytics page card
 ```
 
-### 2.2 Lifestyle Tagging (DB layer ✅, UI pending)
+### 2.2 Lifestyle Tagging (Entry UI ✅, History/Analytics pending)
 
-- Optional tags per reading: Salt, Stress, Alcohol, Exercise, Medication Taken
-- Tag management UI (multi-select chips)
-- Correlation analysis: "Your readings are 8 mmHg higher on high-salt days"
+- Optional tags per reading: Salt, Stress, Alcohol, Exercise, Medication, Caffeine, Poor Sleep
+- Tag entry UI ✅ — compact pill button on QuickLog + NewReading, opens bottom-sheet multi-select modal
+- Tags saved with BP record via `useRecordBP` mutation ✅
 - Privacy-first: All analysis local (no cloud AI)
 - Tags stored in `bp_tags` table — **migration + repository done** ✅ (see `docs/database-schema.md`)
 
-**FSD Structure** (UI layers pending):
+**Remaining**:
+- Display saved tags on BPRecordCard in History page
+- Correlation card on Analytics page ("Your readings are 8 mmHg higher on high-salt days")
+
+**FSD Structure**:
 ```
-src/entities/lifestyle-tag/                    ← Tag types, validation
-src/features/add-lifestyle-tags/               ← Tag management mutations
-src/widgets/correlation-card/                  ← Lifestyle insights display
-src/widgets/tag-selector/                      ← Multi-select tag chips
+src/entities/lifestyle-tag/                    ← Tag types, LIFESTYLE_TAGS metadata ✅
+src/shared/ui/TagChip.tsx                      ← Toggleable chip component ✅
+src/widgets/tag-selector/ui/TagPickerModal.tsx ← Bottom-sheet multi-select ✅
+src/widgets/correlation-card/                  ← Lifestyle insights display (pending)
 ```
 
 ## Phase 3: Platform Integration (Q3 2026)
@@ -146,7 +150,7 @@ src/pages/medications/                         ← Medication management page
 
 **Tier 1 (Must-Have)**: ✅ All completed
 **Tier 2 (High Value)**: ✅ Circadian analysis complete — Platform sync remaining
-**Tier 3 (Nice-to-Have)**: Medication tracking, Lifestyle tags UI (DB done), Voice logging
+**Tier 3 (Nice-to-Have)**: Medication tracking, Lifestyle tags History/Analytics display, Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-02-16
+**Last Updated**: 2026-02-18

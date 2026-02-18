@@ -8,6 +8,7 @@ import {
   ScrollView,
   BackHandler,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/use-theme';
@@ -18,6 +19,9 @@ interface DerivedMetricsModalProps {
   type: 'pp' | 'map';
   value: number;
   onClose: () => void;
+  /** Height of the bottom tab bar — shifts the modal's visual centre upward so it
+   *  appears centred in the content area rather than the full screen height. */
+  bottomOffset?: number;
 }
 
 export function DerivedMetricsModal({
@@ -25,10 +29,12 @@ export function DerivedMetricsModal({
   type,
   value,
   onClose,
+  bottomOffset = 0,
 }: DerivedMetricsModalProps) {
   const { t: tMedical } = useTranslation('medical');
   const { t: tCommon } = useTranslation('common');
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const cardScale = useRef(new Animated.Value(0.88)).current;
@@ -86,8 +92,12 @@ export function DerivedMetricsModal({
   const iconColor = type === 'pp' ? colors.ppColor : colors.mapColor;
   const formulaTextStyle = { color: colors.textPrimary, fontFamily: FONTS.semiBold, fontWeight: '600' as const };
 
+  // Shift the centre point upward by (tab bar + system home indicator) so the
+  // card appears centred in the visible content area, not the full screen.
+  const bottomPad = bottomOffset + insets.bottom;
+
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
+    <View style={[styles.overlay, { paddingBottom: bottomPad }]} pointerEvents="box-none">
       {/* Backdrop */}
       <Animated.View
         style={[styles.backdrop, { opacity: backdropOpacity }]}
@@ -113,7 +123,7 @@ export function DerivedMetricsModal({
 
           {/* Icon */}
           <View style={[styles.iconCircle, { backgroundColor: iconColor }]}>
-            <Icon name={iconName} size={32} color={colors.surface} />
+            <Icon name={iconName} size={24} color={colors.surface} />
           </View>
 
           {/* Title */}
@@ -318,7 +328,7 @@ const styles = StyleSheet.create({
   cardWrapper: {
     width: '88%',
     maxWidth: 380,
-    maxHeight: '85%',
+    maxHeight: '58%',
   },
   card: {
     borderRadius: 20,
@@ -334,23 +344,23 @@ const styles = StyleSheet.create({
     height: 6,
   },
   iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 8,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 6,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
-    marginBottom: 14,
+    marginBottom: 10,
     letterSpacing: -0.3,
     textAlign: 'center',
     paddingHorizontal: 20,
@@ -359,11 +369,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   badgeLabel: {
     fontSize: 14,
@@ -371,7 +381,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   badgeValue: {
-    fontSize: 32,
+    fontSize: 26,
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
@@ -383,14 +393,14 @@ const styles = StyleSheet.create({
   },
   contentScroll: {
     width: '100%',
-    maxHeight: 380,
+    maxHeight: 220,
   },
   content: {
     paddingHorizontal: 20,
     paddingBottom: 12,
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 15,
@@ -419,9 +429,9 @@ const styles = StyleSheet.create({
   rangeItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 10,
     borderLeftWidth: 3,
   },
@@ -457,7 +467,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     width: '100%',
-    paddingVertical: 14,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },

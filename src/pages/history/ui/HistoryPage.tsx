@@ -3,10 +3,12 @@ import { Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { PageHeader } from '../../../widgets/page-header';
 import { BPRecordsList } from '../../../widgets/bp-records-list';
 import { BPRecordCard } from '../../../widgets/bp-record-card';
 import { useBPRecords } from '../../../features/record-bp';
+import { useTagsForRecords } from '../../../features/manage-tags';
 import { classifyBP } from '../../../entities/blood-pressure';
 import {
   useSettingsStore,
@@ -14,6 +16,7 @@ import {
   filterRecords,
   groupRecordsByTimePeriod,
 } from '../../../shared/lib';
+import { DerivedMetricsModal } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import type { HistoryFilterType } from '../../../shared/lib';
 import type { BPRecord } from '../../../shared/api';
@@ -31,6 +34,27 @@ export function HistoryPage() {
   const { guideline } = useSettingsStore();
   const { data: records, isLoading, isError, refetch, isRefetching } = useBPRecords();
   const [filter, setFilter] = useState<HistoryFilterType>('all');
+
+  const recordIds = useMemo(() => (records ?? []).map(r => r.id), [records]);
+  const { data: tagMap } = useTagsForRecords(recordIds);
+
+  // PP / MAP modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<'pp' | 'map'>('pp');
+  const [modalValue, setModalValue] = useState(0);
+  const tabBarHeight = useBottomTabBarHeight();
+
+  const handlePPPress = useCallback((value: number) => {
+    setModalType('pp');
+    setModalValue(value);
+    setModalVisible(true);
+  }, []);
+
+  const handleMAPPress = useCallback((value: number) => {
+    setModalType('map');
+    setModalValue(value);
+    setModalVisible(true);
+  }, []);
 
   const isHighAlert = useCallback(
     (record: BPRecord) => {
@@ -90,7 +114,24 @@ export function HistoryPage() {
         isError={isError}
         isRefetching={isRefetching}
         onRefresh={refetch}
-        renderCard={(record) => <BPRecordCard record={record} variant="compact" />}
+        renderCard={(record) => (
+          <BPRecordCard
+            record={record}
+            variant="compact"
+            tags={tagMap?.[record.id]}
+            onPPPress={handlePPPress}
+            onMAPPress={handleMAPPress}
+          />
+        )}
+      />
+
+      {/* PP / MAP info modal — rendered at page level so it floats above the list */}
+      <DerivedMetricsModal
+        visible={modalVisible}
+        type={modalType}
+        value={modalValue}
+        onClose={() => setModalVisible(false)}
+        bottomOffset={tabBarHeight}
       />
     </SafeAreaView>
   );

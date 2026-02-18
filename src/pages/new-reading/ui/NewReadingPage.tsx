@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,11 +20,14 @@ import { useRecordBP, BP_RECORDS_QUERY_KEY } from '../../../features/record-bp';
 import { useQueryClient } from '@tanstack/react-query';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import { detectMorningSurge } from '../../../shared/lib';
+import { TagPickerModal } from '../../../widgets/tag-selector';
+import type { LifestyleTag } from '../../../shared/types/lifestyle-tag';
 
 export function NewReadingPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { t: tValidation } = useTranslation('validation');
+  const { t: tWidgets } = useTranslation('widgets');
   const { colors, fontScale, typography } = useTheme();
   const navigation = useNavigation();
   const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
@@ -37,6 +41,8 @@ export function NewReadingPage() {
 
   const [measurementTime, setMeasurementTime] = useState(new Date());
   const [crisisVisible, setCrisisVisible] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<LifestyleTag[]>([]);
+  const [tagPickerVisible, setTagPickerVisible] = useState(false);
 
   const handleSubmit = async () => {
     if (!validation.isValid || !systolicNum || !diastolicNum) {
@@ -59,6 +65,7 @@ export function NewReadingPage() {
         timestamp: Math.floor(measurementTime.getTime() / 1000),
         location: defaultLocation,
         posture: defaultPosture,
+        tags: selectedTags.length > 0 ? selectedTags : undefined,
       });
 
       // Detect morning surge after save (separate try-catch to avoid misleading error)
@@ -88,6 +95,10 @@ export function NewReadingPage() {
 
   const isValid = validation.isValid && !!systolic && !!diastolic;
   const hasCategory = !!(category && validation.isValid);
+  const hasTags = selectedTags.length > 0;
+  const tagPillBg = hasTags ? colors.accent + '15' : 'transparent';
+  const tagPillBorder = hasTags ? colors.accent : colors.border;
+  const tagPillColor = hasTags ? colors.accent : colors.textSecondary;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -126,6 +137,20 @@ export function NewReadingPage() {
               onChange={setMeasurementTime}
               disabled={recordBP.isPending}
             />
+            <Pressable
+              style={[styles.tagPill, { backgroundColor: tagPillBg, borderColor: tagPillBorder }]}
+              onPress={() => setTagPickerVisible(true)}
+              disabled={recordBP.isPending}
+              accessibilityRole="button"
+              accessibilityLabel={tWidgets('tagSelector.title')}
+            >
+              <Icon name="pricetags-outline" size={13} color={tagPillColor} />
+              <Text style={[styles.tagPillText, { color: tagPillColor, fontSize: 12 * fontScale }]}>
+                {hasTags
+                  ? tWidgets('tagSelector.tagCount', { count: selectedTags.length })
+                  : tWidgets('tagSelector.addTags')}
+              </Text>
+            </Pressable>
           </View>
 
           {/* Value cards row */}
@@ -245,9 +270,9 @@ export function NewReadingPage() {
             </TouchableOpacity>
           </View>
 
-          {/* Category badge – reserved height, overflow clipped */}
-          <View style={styles.categoryRow}>
-            {category && validation.isValid && (
+          {/* Category badge row */}
+          {category && validation.isValid ? (
+            <View style={styles.categoryRow}>
               <View
                 style={[
                   styles.categoryBadge,
@@ -262,8 +287,8 @@ export function NewReadingPage() {
                   {categoryLabel}
                 </Text>
               </View>
-            )}
-          </View>
+            </View>
+          ) : null}
         </View>
 
         {/* ── Bottom section: numpad + save ── */}
@@ -294,6 +319,15 @@ export function NewReadingPage() {
         diastolic={diastolicNum ?? 0}
         onCancel={() => setCrisisVisible(false)}
         onConfirm={() => { setCrisisVisible(false); saveRecord(); }}
+      />
+
+      {/* ── Lifestyle tag picker ── */}
+      <TagPickerModal
+        visible={tagPickerVisible}
+        selectedTags={selectedTags}
+        onTagsChange={setSelectedTags}
+        onClose={() => setTagPickerVisible(false)}
+        disabled={recordBP.isPending}
       />
     </SafeAreaView>
   );
@@ -329,7 +363,13 @@ const styles = StyleSheet.create({
 
   // ── Top section ──
   topSection: { paddingTop: 8 },
-  dateTimeWrapper: { paddingHorizontal: 16, paddingBottom: 10 },
+  dateTimeWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 6,
+  },
 
   // ── Value cards ──
   valuesRow: {
@@ -389,10 +429,21 @@ const styles = StyleSheet.create({
 
   // ── Category badge ──
   categoryRow: {
-    minHeight: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
     marginTop: 10,
+  },
+  tagPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  tagPillText: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
   },
   categoryBadge: {
     flexDirection: 'row',

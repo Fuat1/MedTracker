@@ -15,7 +15,9 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useBPRecords } from '../../../features/record-bp';
 import { useExportPdf } from '../../../features/export-pdf';
+import { useTagsForRecords } from '../../../features/manage-tags';
 import { calculatePulsePressure, calculateMAP, computeTimeInRange } from '../../../entities/blood-pressure';
+import { computeTagCorrelations } from '../../../entities/lifestyle-tag';
 import { useTheme } from '../../../shared/lib/use-theme';
 import {
   computeWeeklyAverage,
@@ -33,6 +35,7 @@ import {
 import type { DonutSegment, CircadianWindowData } from '../../../shared/ui';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
+import { CorrelationCard } from '../../../widgets/correlation-card';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 
@@ -124,6 +127,14 @@ export function AnalyticsPage() {
   const surgeResult = useMemo(
     () => detectMorningSurge(allRecords ?? []),
     [allRecords],
+  );
+
+  const recordIds = useMemo(() => records.map(r => r.id), [records]);
+  const { data: tagMap } = useTagsForRecords(recordIds);
+
+  const correlations = useMemo(
+    () => (tagMap ? computeTagCorrelations(records, tagMap) : []),
+    [records, tagMap],
   );
 
   const donutSegments: DonutSegment[] = [
@@ -363,6 +374,11 @@ export function AnalyticsPage() {
           )}
         </Animated.View>
 
+        {/* Lifestyle Insights */}
+        <Animated.View entering={FadeInUp.delay(270).duration(500)}>
+          <CorrelationCard correlations={correlations} />
+        </Animated.View>
+
         {/* Doctor Notes */}
         <Animated.View
           entering={FadeInUp.delay(280).duration(500)}
@@ -389,6 +405,11 @@ export function AnalyticsPage() {
             ]}
           />
         </Animated.View>
+
+        {/* Medical Disclaimer */}
+        <Text style={[styles.disclaimerText, { color: colors.textTertiary, fontSize: typography.xs }]}>
+          {t('analytics.disclaimer')}
+        </Text>
 
         {/* Export PDF Button */}
         <Animated.View entering={FadeInUp.delay(350).duration(500)} style={styles.exportContainer}>
@@ -637,6 +658,16 @@ const styles = StyleSheet.create({
   toggleLabel: {
     fontFamily: FONTS.medium,
     fontWeight: '500',
+  },
+
+  // Disclaimer
+  disclaimerText: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingHorizontal: 32,
+    marginBottom: 16,
   },
 
   // Export
