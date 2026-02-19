@@ -38,15 +38,12 @@ function generateRandomHexKey(byteLength: number): string {
 
   // crypto.getRandomValues is available in Hermes 0.76+ and JSC
   const g = globalThis as any;
-  if (typeof g.crypto?.getRandomValues === 'function') {
-    g.crypto.getRandomValues(bytes);
-  } else {
-    // Fallback: Math.random is not cryptographically secure but sufficient
-    // for an encryption key stored in keychain (the keychain is the security layer)
-    for (let i = 0; i < byteLength; i++) {
-      bytes[i] = Math.floor(Math.random() * 256);
-    }
+  if (typeof g.crypto?.getRandomValues !== 'function') {
+    throw new Error(
+      'crypto.getRandomValues is not available. A cryptographically secure RNG is required for encryption key generation.',
+    );
   }
+  g.crypto.getRandomValues(bytes);
 
   return Array.from(bytes)
     .map(b => b.toString(16).padStart(2, '0'))

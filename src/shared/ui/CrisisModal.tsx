@@ -135,13 +135,11 @@ export function CrisisModal({
 
   return (
     <View style={styles.overlay} pointerEvents="box-none" accessibilityRole="alert" accessibilityLiveRegion="assertive">
-      {/* Backdrop */}
+      {/* Backdrop — not dismissible; user must use Cancel button */}
       <Animated.View
         style={[styles.backdrop, { opacity: backdropOpacity }]}
         pointerEvents="auto"
-      >
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={onCancel} />
-      </Animated.View>
+      />
 
       {/* Card */}
       <Animated.View

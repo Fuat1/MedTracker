@@ -12,7 +12,7 @@ These rules apply universally across all MedTracker development.
 ## Classification Safety (MUST)
 
 - **NEVER hardcode BP thresholds** — import from `src/shared/config/bp-guidelines.ts`
-- **Support all 4 guidelines**: AHA/ACC (2025), WHO (2021), ESC/ESH (2024), JSH
+- **Support all 4 guidelines**: AHA/ACC (2025), WHO/ISH (1999), ESC/ESH (2018), JSH (2025)
 - **Default guideline**: AHA/ACC 2025
 - **Crisis threshold**: ≥180/120 (AHA/ACC) or ≥180/110 (WHO/ESC/JSH)
 - **Crisis warnings MUST** display prominent modal with medical guidance

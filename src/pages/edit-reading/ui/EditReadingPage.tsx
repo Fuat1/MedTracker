@@ -25,10 +25,8 @@ import { useToast } from '../../../shared/lib';
 import {
   isCrisisReading,
   useBPClassification,
-  classifyBP,
   calculatePulsePressure,
   calculateMAP,
-  getBPCategoryLabel,
 } from '../../../entities/blood-pressure';
 import {
   MEASUREMENT_LOCATIONS,
@@ -36,7 +34,7 @@ import {
   type MeasurementLocation,
   type MeasurementPosture,
 } from '../../../shared/config';
-import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
+import { FONTS } from '../../../shared/config/theme';
 import { formatDateTime, getTimeWindow } from '../../../shared/lib';
 import { useBPRecords } from '../../../features/record-bp';
 import { useTagsForRecord } from '../../../features/manage-tags';
@@ -60,13 +58,12 @@ export function EditReadingPage() {
   const { t: tCommon } = useTranslation('common');
   const { t: tValidation } = useTranslation('validation');
   const { t: tWidgets } = useTranslation('widgets');
-  const { colors, isDark, fontScale, typography } = useTheme();
+  const { colors, fontScale, typography } = useTheme();
   const { guideline } = useSettingsStore();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'EditReading'>>();
   const { recordId } = route.params;
 
-  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
   const { toastMsg, toastType, toastVisible, showToast, hideToast } = useToast();
 
   // ── Data fetching ──
