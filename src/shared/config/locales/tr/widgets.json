@@ -4,8 +4,8 @@
     "systolic": "Sistolik",
     "diastolic": "Diyastolik",
     "pulse": "Nabız (isteğe bağlı)",
-    "location": "Ölçüm Yeri",
-    "posture": "Duruş",
+    "location": "Ölçüm Konumu",
+    "posture": "Vücut Duruşu",
     "notes": "Notlar",
     "saveReading": "Ölçümü Kaydet",
     "saving": "Kaydediliyor...",
@@ -14,16 +14,47 @@
       "enterDiastolic": "Diyastolik Girin",
       "enterPulse": "Nabız Girin"
     },
+    "showOptions": "Seçenekleri Göster",
+    "hideOptions": "Seçenekleri Gizle",
     "alerts": {
       "success": {
         "title": "Başarılı",
-        "message": "Tansiyon ölçümü kaydedildi!"
+        "message": "Kan basıncı ölçümü kaydedildi!"
       },
       "error": {
         "title": "Hata",
         "message": "Ölçüm kaydedilemedi"
       }
     }
+  },
+  "tagSelector": {
+    "title": "Yaşam Tarzı Etiketleri",
+    "subtitle": "İsteğe bağlı — kalıpları belirlemeye yardımcı olur",
+    "addTags": "Etiket ekle",
+    "tagCount": "{{count}} etiket",
+    "customSection": "Etiketlerim",
+    "builtInSection": "Hazır Etiketler",
+    "createNew": "Yeni etiket oluştur",
+    "createForm": {
+      "title": "Yeni Etiket",
+      "labelPlaceholder": "Etiket adı",
+      "pickIcon": "İkon seç",
+      "save": "Kaydet",
+      "cancel": "İptal"
+    },
+    "deleteHint": "Silmek için etikete uzun basın",
+    "confirmDelete": "\"{{label}}\" silinsin mi?",
+    "confirmDeleteSubtitle": "Bu işlem etiketi tüm ölçümlerden kaldıracaktır.",
+    "deleteConfirm": "Sil",
+    "deleteCancel": "İptal"
+  },
+  "correlationCard": {
+    "title": "Yaşam Tarzı Analizleri",
+    "noData": "Analiz için yeterli etiketli ölçüm yok",
+    "higher": "Ölçümleriniz {{tag}} günlerinde {{delta}} mmHg daha yüksek",
+    "lower": "Ölçümleriniz {{tag}} günlerinde {{delta}} mmHg daha düşük",
+    "readingsCount": "{{count}} ölçüm",
+    "disclaimer": "Sadece istatistiksel kalıplardır. Sağlık uzmanınıza danışın."
   },
   "bpRecordCard": {
     "metadata": {
@@ -39,7 +70,7 @@
     },
     "empty": {
       "title": "Henüz ölçüm yok",
-      "subtitle": "İlk ölçümünüzü ekleyerek tansiyonunuzu takip etmeye başlayın"
+      "subtitle": "İlk ölçümünüzü ekleyerek kan basıncınızı takip etmeye başlayın"
     }
   }
 }

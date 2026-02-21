@@ -59,3 +59,6 @@ export * from './bp-guidelines';
 
 // Settings
 export * from './settings';
+
+// Profile constants
+export * from './profile-constants';

@@ -1,41 +1,56 @@
 {
   "home": {
     "title": "MedTracker",
-    "subtitle": "Blood Pressure Monitor",
-    "lastReading": "Last Reading",
+    "subtitle": "Pemantau Tekanan Darah",
+    "lastReading": "Pembacaan Terakhir",
     "greeting": {
-      "morning": "Good morning",
-      "afternoon": "Good afternoon",
-      "evening": "Good evening"
+      "morning": "Selamat pagi",
+      "afternoon": "Selamat siang",
+      "evening": "Selamat malam"
     },
-    "userName": "Alex",
-    "bpReadings": "Blood Pressure readings",
-    "last7Days": "Last 7 Days Trend",
-    "noReadingsYet": "No readings yet",
-    "addFirstReading": "Tap + to add your first reading",
-    "encryptedOffline": "Encrypted\n& Offline",
+    "userName": "Tamu",
+    "bpReadings": "Catatan Tekanan Darah",
+    "last7Days": "Tren 7 Hari Terakhir",
+    "noReadingsYet": "Belum ada catatan",
+    "addFirstReading": "Ketuk + untuk menambah catatan pertama",
+    "encryptedOffline": "Terenkripsi\n& Offline",
     "stats": {
-      "bloodPressure": "Blood Pressure",
-      "avgPulse": "Avg Pulse",
-      "readings": "Readings"
+      "bloodPressure": "Tekanan Darah",
+      "avgPulse": "Rata-rata Nadi",
+      "readings": "Catatan"
     },
-    "sevenDayAverage": "7-Day Average",
+    "sevenDayAverage": "Rata-rata 7 Hari",
+    "weeklyAvg": "Rata-rata 7 Hari",
+    "morningVsEvening": "Pagi vs Malam",
+    "noData": "Data tidak cukup",
+    "minMax": "Rentang",
     "actions": {
-      "viewTrends": "View Trends",
-      "exportData": "Export Data"
+      "viewTrends": "Lihat Tren",
+      "exportData": "Ekspor Data"
     }
   },
   "analytics": {
     "title": "Analitik",
     "bpTrends": "Tren Tekanan Darah",
     "weeklyAverage": "Rata-rata Mingguan",
-    "morningVsEvening": "Pagi vs. Sore",
+    "morningVsEvening": "Pagi vs. Malam",
     "morning": "Pagi",
-    "evening": "Sore",
+    "evening": "Malam",
     "exportPdf": "Ekspor laporan PDF untuk Dokter",
+    "generatingPdf": "Membuat PDF...",
+    "savePdf": "Simpan ke Perangkat",
+    "savingPdf": "Menyimpan...",
     "exportComingSoon": "Ekspor PDF segera hadir!",
-    "noData": "Data belum cukup",
-    "noDataSubtitle": "Tambahkan lebih banyak catatan untuk melihat tren",
+    "noData": "Data tidak cukup",
+    "noDataSubtitle": "Tambah lebih banyak catatan untuk melihat tren",
+    "disclaimer": "Hanya untuk tujuan informasi. Bukan pengganti saran medis profesional.",
+    "toggles": {
+      "showPP": "Tampilkan PP",
+      "showMAP": "Tampilkan MAP"
+    },
+    "export": {
+      "includePPMAP": "Sertakan PP/MAP dalam ekspor PDF"
+    },
     "legend": {
       "systolic": "Sistolik",
       "diastolic": "Diastolik"
@@ -44,6 +59,101 @@
       "normal": "Normal",
       "elevated": "Meningkat",
       "high": "Tinggi"
+    },
+    "period": {
+      "title": "Periode Laporan",
+      "days7": "7 Hari",
+      "days14": "14 Hari",
+      "days30": "30 Hari",
+      "days90": "90 Hari",
+      "all": "Semua Waktu",
+      "custom": "Rentang Kustom"
+    },
+    "customRange": {
+      "from": "Dari",
+      "to": "Ke"
+    },
+    "profile": {
+      "age": "{{age}} thn"
+    },
+    "doctorNote": {
+      "label": "Catatan Dokter (Opsional)",
+      "placeholder": "Tambah catatan untuk dokter Anda (misal: obat, gejala...)"
+    },
+    "report": {
+      "title": "Laporan Tekanan Darah",
+      "generatedBy": "Dibuat oleh MedTracker",
+      "patient": "Pasien",
+      "period": "Periode",
+      "guideline": "Panduan",
+      "summary": "Ringkasan",
+      "totalReadings": "Total Catatan",
+      "average": "Rata-rata",
+      "minMax": "Min / Maks",
+      "patientNotes": "Catatan Pasien",
+      "categoryBreakdown": "Rincian Kategori",
+      "allReadings": "Semua Catatan",
+      "generated": "Dibuat pada",
+      "readings": "catatan",
+      "averageBP": "Rata-rata TD",
+      "avgPulse": "Rata-rata Nadi",
+      "averagePP": "Rata-rata PP",
+      "averageMAP": "Rata-rata MAP",
+      "minSystolic": "Sistolik Min",
+      "maxSystolic": "Sistolik Maks",
+      "rangeDia": "Rentang (Dia)",
+      "avgWeight": "Rata-rata Berat",
+      "weightRange": "Rentang Berat",
+      "profileAge": "Usia",
+      "profileHeight": "Tinggi",
+      "profileGender": "Jenis Kelamin",
+      "bpTrend": "Tren Tekanan Darah",
+      "columns": {
+        "dateTime": "Tanggal & Waktu",
+        "systolic": "Sistolik",
+        "diastolic": "Diastolik",
+        "pulse": "Nadi",
+        "pp": "PP",
+        "map": "MAP",
+        "category": "Kategori",
+        "range": "Rentang",
+        "count": "Jumlah",
+        "location": "Lokasi",
+        "notes": "Catatan",
+        "weight": "Berat"
+      },
+      "disclaimer": "Laporan ini hanya untuk tujuan informasi dan bukan pengganti saran, diagnosis, atau perawatan medis profesional.",
+      "guidelineNote": "Klasifikasi tekanan darah berdasarkan panduan {{guideline}}.",
+      "consultNote": "Konsultasikan dengan penyedia layanan kesehatan Anda untuk menafsirkan hasil ini dalam konteks kesehatan Anda secara keseluruhan.",
+      "fullDisclaimer": "PENAFIAN: Laporan ini hanya untuk tujuan informasi dan bukan pengganti saran, diagnosis, atau perawatan medis profesional. Klasifikasi tekanan darah berdasarkan panduan {{guideline}}. Konsultasikan dengan penyedia layanan kesehatan Anda untuk menafsirkan hasil ini berdasarkan status kesehatan dan riwayat medis Anda.",
+      "fileName": "laporan-td",
+      "noData": "Tidak ada catatan pada periode ini untuk diekspor.",
+      "noDataTitle": "Tidak Ada Data",
+      "noDataMessage": "Tidak ada catatan dalam periode yang dipilih untuk diekspor.",
+      "exportFailedTitle": "Ekspor Gagal",
+      "exportFailedMessage": "Gagal membuat PDF. Silakan coba lagi.",
+      "shareTitle": "Bagikan Laporan TD",
+      "saveSuccessTitle": "PDF Disimpan",
+      "saveSuccessMessage": "Disimpan sebagai {{fileName}}",
+      "saveFailedTitle": "Simpan Gagal",
+      "saveFailedMessage": "Gagal menyimpan PDF. Silakan periksa izin penyimpanan dan coba lagi."
+    },
+    "weightTrend": {
+      "title": "Tren Berat Badan",
+      "avgWeight": "Rata-rata Berat",
+      "weightRange": "Rentang Berat",
+      "bmiTrend": "Tren BMI",
+      "noData": "Tidak ada data berat badan",
+      "correlation": "Korelasi Berat & TD",
+      "correlationDisclaimer": "Korelasi tidak berarti sebab-akibat. Konsultasikan dengan dokter Anda untuk saran medis."
+    },
+    "circadian": {
+      "title": "Pola Sirkadian",
+      "timeInRange": "Waktu dalam Rentang",
+      "morningSurge_one": "Lonjakan pagi terdeteksi {{count}} hari",
+      "morningSurge_other": "Lonjakan pagi terdeteksi {{count}} hari",
+      "noData": "Data tidak cukup untuk analisis sirkadian",
+      "windowAvg": "rata-rata"
     }
   },
   "history": {
@@ -51,7 +161,7 @@
     "filters": {
       "all": "Semua",
       "morning": "Pagi",
-      "evening": "Sore",
+      "evening": "Malam",
       "highAlert": "Peringatan Tinggi"
     },
     "sections": {
@@ -62,7 +172,7 @@
     },
     "empty": {
       "title": "Belum ada catatan",
-      "subtitle": "Mulai pantau tekanan darah Anda dengan menambahkan catatan pertama"
+      "subtitle": "Mulai pantau tekanan darah Anda dengan menambah catatan pertama"
     },
     "loading": "Memuat catatan...",
     "error": {
@@ -71,91 +181,100 @@
     }
   },
   "settings": {
-    "title": "Settings",
-    "subtitle": "Configure your blood pressure monitoring preferences",
+    "title": "Pengaturan",
+    "subtitle": "Konfigurasikan preferensi pemantauan tekanan darah Anda",
     "theme": {
-      "title": "Theme",
-      "description": "Choose your preferred color theme",
+      "title": "Tema",
+      "description": "Pilih tema warna yang Anda sukai",
       "light": {
-        "label": "Light Mode",
-        "description": "Light background with dark text"
+        "label": "Mode Terang",
+        "description": "Latar terang dengan teks gelap"
       },
       "dark": {
-        "label": "Dark Mode",
-        "description": "Dark background with light text"
+        "label": "Mode Gelap",
+        "description": "Latar gelap dengan teks terang"
       },
       "system": {
-        "label": "System Default",
-        "description": "Follow system theme settings"
+        "label": "Default Sistem",
+        "description": "Ikuti pengaturan tema sistem"
       }
     },
+    "seniorMode": {
+      "label": "Mode Senior",
+      "description": "Tombol dan teks lebih besar agar lebih mudah dibaca"
+    },
+    "highContrast": {
+      "label": "Kontras Tinggi",
+      "description": "Teks hitam di atas latar putih untuk keterbacaan maksimal",
+      "note": "⚠️ Memaksa mode terang saat diaktifkan"
+    },
     "language": {
-      "title": "Language",
-      "description": "Choose your preferred language for the app"
+      "title": "Bahasa",
+      "description": "Pilih bahasa aplikasi yang Anda sukai"
     },
     "unit": {
-      "title": "Measurement Unit",
-      "description": "Choose your preferred unit for blood pressure values",
+      "title": "Satuan Pengukuran",
+      "description": "Pilih satuan tekanan darah yang Anda sukai",
       "mmhg": {
-        "label": "mmHg (Millimeters of Mercury)",
-        "description": "Standard worldwide"
+        "label": "mmHg (Milimeter Merkuri)",
+        "description": "Standar internasional"
       },
       "kpa": {
-        "label": "kPa (Kilopascals)",
-        "description": "Used in some regions"
+        "label": "kPa (Kilopascal)",
+        "description": "Digunakan di beberapa wilayah"
       },
-      "note": "ℹ️ Note: 1 kPa ≈ 7.5 mmHg. All values are stored in mmHg and converted for display."
+      "note": "ℹ️ Catatan: 1 kPa ≈ 7,5 mmHg. Semua nilai disimpan dalam mmHg dan dikonversi untuk tampilan."
     },
     "guideline": {
-      "title": "Classification Guidelines",
-      "description": "Select the regional guidelines for blood pressure categorization",
-      "note": "ℹ️ Different regions use different thresholds for categorizing blood pressure levels. Choose the guideline recommended by your healthcare provider."
+      "title": "Panduan Klasifikasi",
+      "description": "Pilih panduan regional untuk kategorisasi tekanan darah",
+      "note": "ℹ️ Panduan klasifikasi berasal dari organisasi medis resmi (AHA/ACC, WHO, ESC/ESH, JSH). Dokter Anda mungkin menggunakan ambang batas berbeda berdasarkan status kesehatan, usia, dan faktor risiko individu Anda. Selalu ikuti rekomendasi dokter Anda."
     },
     "defaultLocation": {
-      "title": "Default Measurement Location",
-      "description": "Choose your preferred default location for blood pressure measurements",
+      "title": "Lokasi Pengukuran Default",
+      "description": "Pilih lokasi default untuk pengukuran tekanan darah",
       "leftArm": {
-        "label": "Left Arm",
-        "description": "Standard measurement location"
+        "label": "Lengan Kiri",
+        "description": "Lokasi pengukuran standar"
       },
       "rightArm": {
-        "label": "Right Arm",
-        "description": "Alternative arm measurement"
+        "label": "Lengan Kanan",
+        "description": "Pengukuran lengan alternatif"
       },
       "leftWrist": {
-        "label": "Left Wrist",
-        "description": "Wrist measurement (less accurate)"
+        "label": "Pergelangan Kiri",
+        "description": "Pengukuran pergelangan (kurang akurat)"
       },
       "rightWrist": {
-        "label": "Right Wrist",
-        "description": "Wrist measurement (less accurate)"
+        "label": "Pergelangan Kanan",
+        "description": "Pengukuran pergelangan (kurang akurat)"
       }
     },
     "defaultPosture": {
-      "title": "Default Posture",
-      "description": "Choose your preferred default posture for blood pressure measurements",
+      "title": "Postur Default",
+      "description": "Pilih postur default untuk pengukuran tekanan darah",
       "sitting": {
-        "label": "Sitting",
-        "description": "Standard measurement posture"
+        "label": "Duduk",
+        "description": "Postur pengukuran standar"
       },
       "standing": {
-        "label": "Standing",
-        "description": "Standing measurement"
+        "label": "Berdiri",
+        "description": "Pengukuran saat berdiri"
       },
       "lying": {
-        "label": "Lying Down",
-        "description": "Lying down measurement"
+        "label": "Berbaring",
+        "description": "Pengukuran saat berbaring"
       }
     },
     "guidelinesComparison": {
-      "title": "Guidelines Comparison",
+      "title": "Perbandingan Panduan",
       "table": {
-        "category": "Category",
+        "category": "Kategori",
         "normal": "Normal",
-        "elevated": "Elevated",
-        "stage1": "Stage 1",
-        "stage2": "Stage 2",
-        "crisis": "Crisis"
+        "elevated": "Meningkat",
+        "stage1": "Tahap 1",
+        "stage2": "Tahap 2",
+        "crisis": "Krisis"
       }
     },
     "toast": {
@@ -163,11 +282,46 @@
       "preferenceUpdated": "Preferensi {{setting}} diperbarui"
     },
     "profile": {
-      "defaultName": "Alex"
+      "defaultName": "Tamu",
+      "age": "Usia: {{age}}",
+      "bmi": "BMI: {{bmi}} ({{category}})",
+      "noAge": "Usia: --",
+      "noBmi": "BMI: --"
+    },
+    "appSettings": {
+      "title": "Pengaturan Aplikasi"
+    },
+    "personalization": {
+      "title": "Personalisasi",
+      "personalInfo": "Informasi Pribadi",
+      "privacyNote": "Disimpan secara lokal di perangkat Anda. Tidak pernah dibagikan atau diunggah.",
+      "fullName": "Nama Lengkap",
+      "fullNamePlaceholder": "Masukkan nama Anda",
+      "dateOfBirth": "Tanggal Lahir",
+      "dateOfBirthPlaceholder": "Pilih tanggal lahir",
+      "height": "Tinggi Badan",
+      "heightPlaceholder": "Masukkan tinggi",
+      "gender": "Jenis Kelamin",
+      "genderPlaceholder": "Pilih jenis kelamin",
+      "genderMale": "Laki-laki",
+      "genderFemale": "Perempuan",
+      "genderOther": "Lainnya",
+      "defaultWeight": "Berat Badan Default",
+      "defaultWeightPlaceholder": "Masukkan berat",
+      "defaultWeightHint": "Mengisi otomatis berat pada catatan baru",
+      "defaultLocation": "Lokasi Default",
+      "defaultPosture": "Postur Default"
+    },
+    "entryMode": {
+      "label": "Mode Input Default",
+      "description": "Pilih cara kerja tombol +",
+      "alwaysAsk": "Selalu Tanya",
+      "quickLog": "Log Cepat",
+      "guided": "Input Terpandu"
     },
     "dataPrivacy": {
       "title": "Privasi Data",
-      "localEncrypted": "Penyimpanan Terenkripsi Lokal:",
+      "localEncrypted": "Penyimpanan Lokal Terenkripsi:",
       "active": "Aktif",
       "biometricLock": "Kunci Biometrik\n(FaceID/TouchID)",
       "comingSoon": "Segera Hadir",
@@ -190,17 +344,126 @@
       "stage1": "Tahap 1 (Oranye)",
       "stage2": "Tahap 2 (Merah)"
     },
+    "detectRegion": {
+      "button": "Deteksi Wilayah Saya",
+      "updated": "Pengaturan diperbarui untuk wilayah Anda",
+      "noChange": "Pengaturan Anda sudah sesuai dengan wilayah Anda"
+    },
     "darkMode": "Mode Gelap",
-    "useSystemDefault": "Gunakan Default Sistem"
+    "useSystemDefault": "Gunakan Default Sistem",
+    "about": {
+      "title": "Tentang MedTracker",
+      "disclaimer": "MedTracker adalah alat pencatatan dan pelacakan tekanan darah hanya untuk tujuan informasi. Ini BUKAN alat medis dan TIDAK mengukur tekanan darah.\n\nAplikasi ini tidak memberikan saran, diagnosis, atau perawatan medis. Semua data kesehatan dan klasifikasi didasarkan pada panduan medis yang dipublikasikan tetapi tidak boleh menggantikan evaluasi medis profesional.\n\nSelalu konsultasikan dengan penyedia layanan kesehatan yang berkualifikasi untuk saran, diagnosis, dan keputusan perawatan medis. Dalam keadaan darurat, segera hubungi nomor darurat lokal Anda.",
+      "version": "Versi {{version}}"
+    }
   },
-  "newReading": {
-    "title": "New Reading",
-    "saveMeasurement": "Save Measurement",
-    "saving": "Saving...",
+  "preMeasurement": {
+    "title": "Persiapan Pengukuran",
+    "skip": "Lewati Persiapan",
+    "startMeasurement": "Mulai Pengukuran",
+    "skipWarning": {
+      "title": "Lewati Persiapan?",
+      "message": "Untuk pembacaan yang akurat, panduan AHA/ACC menyarankan istirahat selama 5 menit sebelum pengukuran. Apakah Anda yakin ingin melewati langkah persiapan?",
+      "confirm": "Tetap Lewati"
+    },
+    "checklist": {
+      "title": "Daftar Periksa Pengukuran",
+      "subtitle": "Ikuti panduan AHA/ACC ini untuk hasil yang akurat. Langkah-langkah ini meningkatkan keandalan pengukuran tetapi tidak menggantikan evaluasi medis yang tepat.",
+      "rest": "Istirahat dengan tenang selama 5 menit sebelum mengukur",
+      "posture": "Duduk dengan punggung bersandar dan kaki rata di lantai",
+      "arm": "Letakkan lengan setinggi jantung di permukaan datar",
+      "feet": "Jaga kaki tetap rata di lantai, kaki tidak menyilang",
+      "quiet": "Hindari berbicara selama pengukuran"
+    },
+    "breathing": {
+      "title": "Latihan Relaksasi",
+      "subtitle": "Pernapasan tenang membantu mengurangi lonjakan TD akibat kecemasan",
+      "inhale": "Tarik Napas",
+      "hold": "Tahan",
+      "exhale": "Buang Napas",
+      "cycle": "Siklus {{current}} dari {{total}}",
+      "complete": "Pernapasan selesai"
+    },
+    "timer": {
+      "title": "Periode Istirahat",
+      "subtitle": "Rileks selagi kami menyiapkan pengukuran Anda",
+      "hint": "Duduk dengan tenang dan bernapas secara alami"
+    },
+    "ready": {
+      "title": "Anda Siap!",
+      "subtitle": "Tubuh Anda rileks dan siap untuk pembacaan tekanan darah yang akurat"
+    }
+  },
+  "quickLog": {
+    "title": "Log Cepat",
+    "subtitle": "Input cepat untuk pengguna tingkat lanjut",
+    "saveReading": "Simpan Catatan",
+    "saving": "Menyimpan...",
     "alerts": {
       "error": {
-        "title": "Error",
-        "message": "Failed to save reading. Please try again."
+        "title": "Kesalahan",
+        "message": "Gagal menyimpan catatan. Silakan coba lagi."
+      }
+    }
+  },
+  "newReading": {
+    "title": "Catatan Baru",
+    "saveMeasurement": "Simpan Pengukuran",
+    "saving": "Menyimpan...",
+    "alerts": {
+      "error": {
+        "title": "Kesalahan",
+        "message": "Gagal menyimpan catatan. Silakan coba lagi."
+      }
+    }
+  },
+  "editReading": {
+    "title": "Detail Catatan",
+    "saveChanges": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "deleteReading": "Hapus Catatan",
+    "noData": "Catatan tidak ditemukan",
+    "derived": {
+      "pp": "Tekanan Nadi (PP)",
+      "map": "Tekanan Arteri Rata-rata (MAP)",
+      "timeWindow": "Jendela Waktu",
+      "window": {
+        "morning": "Pagi",
+        "day": "Siang Hari",
+        "evening": "Malam",
+        "night": "Larut Malam"
+      }
+    },
+    "section": {
+      "measurement": "Pengukuran",
+      "details": "Detail",
+      "location": "Lokasi",
+      "posture": "Postur",
+      "notes": "Catatan",
+      "notesPlaceholder": "Tambah catatan tentang hasil ini...",
+      "weight": "Berat Badan",
+      "weightPlaceholder": "Masukkan berat",
+      "bmi": "BMI"
+    },
+    "numpad": {
+      "enterSystolic": "Masukkan Sistolik",
+      "enterDiastolic": "Masukkan Diastolik",
+      "enterPulse": "Masukkan Nadi"
+    },
+    "deleteConfirm": {
+      "title": "Hapus Catatan?",
+      "message": "Catatan ini akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "alerts": {
+      "saveError": {
+        "title": "Gagal Menyimpan",
+        "message": "Tidak dapat menyimpan perubahan. Silakan coba lagi."
+      },
+      "deleteError": {
+        "title": "Gagal Menghapus",
+        "message": "Tidak dapat menghapus catatan. Silakan coba lagi."
       }
     }
   }

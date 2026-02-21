@@ -16,6 +16,10 @@ export interface ReportOptions {
   doctorNote?: string;
   guideline?: string; // BPGuideline value e.g. 'aha_acc', 'who', 'esc_esh', 'jsh'
   includePPMAP?: boolean;
+  age?: number | null;
+  height?: string | null; // Pre-formatted e.g. "175 cm" or "5'9\""
+  weightUnit?: string; // 'kg' or 'lbs'
+  gender?: 'male' | 'female' | 'other' | null;
 }
 
 function escapeHtml(str: string): string {
@@ -64,7 +68,8 @@ export function generateReportHtml(
   chartSvg: string,
   options: ReportOptions,
 ): string {
-  const { period, userName, generatedDate, guidelineName, doctorNote, includePPMAP = false } = options;
+  const { period, userName, generatedDate, guidelineName, doctorNote, includePPMAP = false, age, height: heightStr, weightUnit = 'kg', gender } = options;
+  const hasWeight = stats.recordsWithWeight > 0;
 
   const sorted = [...records].sort((a, b) => b.timestamp - a.timestamp);
 
@@ -91,12 +96,17 @@ export function generateReportHtml(
         <td style="text-align:center;">${map}</td>`
         : '';
 
+      const weightCell = hasWeight
+        ? `<td style="text-align:center;">${r.weight != null ? `${Math.round(r.weight * 10) / 10}` : '–'}</td>`
+        : '';
+
       return `<tr>
         <td>${formatTimestamp(r.timestamp)}</td>
         <td style="text-align:center;font-weight:600;">${r.systolic}</td>
         <td style="text-align:center;font-weight:600;">${r.diastolic}</td>
         <td style="text-align:center;">${r.pulse ?? '–'}</td>
         ${ppMapCells}
+        ${weightCell}
         <td style="text-align:center;color:${cat.color};font-weight:600;">${cat.label}</td>
         <td>${escapeHtml(formatLocation(r.location))}</td>
         <td>${escapeHtml(r.notes ?? '')}</td>
@@ -159,8 +169,8 @@ export function generateReportHtml(
   <div class="header-left">
     <h1>MedTracker — ${t('title')}</h1>
     <div class="header-meta">
-      <strong>${t('patient')}:</strong> ${escapeHtml(userName)} &nbsp;|&nbsp;
-      <strong>${t('generated')}:</strong> ${escapeHtml(generatedDate)}<br/>
+      <strong>${t('patient')}:</strong> ${escapeHtml(userName)}${age != null ? ` &nbsp;|&nbsp; <strong>${t('profileAge')}:</strong> ${age}` : ''}${gender ? ` &nbsp;|&nbsp; <strong>${t('profileGender')}:</strong> ${escapeHtml(gender.charAt(0).toUpperCase() + gender.slice(1))}` : ''}${heightStr ? ` &nbsp;|&nbsp; <strong>${t('profileHeight')}:</strong> ${escapeHtml(heightStr)}` : ''}<br/>
+      <strong>${t('generated')}:</strong> ${escapeHtml(generatedDate)} &nbsp;|&nbsp;
       <strong>${t('period')}:</strong> ${escapeHtml(period)} &nbsp;|&nbsp;
       <strong>${t('guideline')}:</strong> ${escapeHtml(guidelineName)}
     </div>
@@ -200,6 +210,16 @@ ${ppMapStatsBoxes}
     <div class="stat-value">${stats.minDiastolic}–${stats.maxDiastolic}</div>
     <div class="stat-unit">mmHg</div>
   </div>
+${hasWeight ? `  <div class="stat-box">
+    <div class="stat-label">${t('avgWeight')}</div>
+    <div class="stat-value">${stats.avgWeight}</div>
+    <div class="stat-unit">${escapeHtml(weightUnit)}</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-label">${t('weightRange')}</div>
+    <div class="stat-value">${stats.minWeight}–${stats.maxWeight}</div>
+    <div class="stat-unit">${escapeHtml(weightUnit)}</div>
+  </div>` : ''}
 </div>
 
 ${doctorNoteSection}
@@ -224,6 +244,7 @@ ${doctorNoteSection}
       <th style="text-align:center;">${t('columns.diastolic')}</th>
       <th style="text-align:center;">${t('columns.pulse')}</th>
       ${includePPMAP ? `<th style="text-align:center;">${t('columns.pp')}</th><th style="text-align:center;">${t('columns.map')}</th>` : ''}
+      ${hasWeight ? `<th style="text-align:center;">${t('columns.weight')}</th>` : ''}
       <th style="text-align:center;">${t('columns.category')}</th>
       <th>${t('columns.location')}</th>
       <th>${t('columns.notes')}</th>
@@ -234,9 +255,7 @@ ${doctorNoteSection}
 
 <div class="footer">
   ${t('generatedBy')} — Encrypted &amp; Offline Blood Pressure Monitor<br/>
-  ${t('disclaimer')}
-  ${t('guidelineNote', { guideline: escapeHtml(guidelineName) })}
-  ${t('consultNote')}
+  ${t('fullDisclaimer', { guideline: escapeHtml(guidelineName) })}
 </div>
 
 </body>

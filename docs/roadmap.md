@@ -109,6 +109,30 @@ src/widgets/correlation-card/ui/CorrelationCard.tsx ← Analytics insights displ
 src/features/manage-tags/                      ← TanStack Query hooks (built-in + custom) ✅
 ```
 
+### 2.4 Personalization & Per-Reading Weight Tracking
+
+- Unified **Personalization** section at top of Settings page, grouping profile + measurement defaults + classification guidelines + unit + BP legend
+- **App Settings** section below Personalization, grouping entry mode + theme + senior mode + high contrast + language
+- **Medical Safety Audit** fixes: consolidated PDF disclaimer, added app-wide About/Disclaimer card, improved guideline notes, pre-measurement disclaimer enhanced
+- User profile: date of birth, gender (Male/Female/Other), height (cm/ft), default weight (kg/lbs)
+- **Per-reading weight** stored in `bp_records` table (nullable `weight REAL` column)
+- BMI derived at display time from per-reading weight + profile height
+- Weight trend chart on Analytics page (line chart, avg/range)
+- Weight-vs-BP correlation insights (requires ≥5 readings with weight)
+- Profile info displayed everywhere: Settings, Home, History cards, Analytics, PDF reports
+- Age and BMI badges on profile card and Home greeting
+- PDF report includes age, height, weight stats, BMI in header
+- Internal storage always metric (kg, cm); display converts per user preference
+- No BP classification changes — none of the 4 guidelines use age/weight/BMI for thresholds
+
+**FSD Structure**:
+```
+src/entities/user-profile/              ← BMI, age, conversion, validation pure functions
+src/shared/config/profile-constants.ts  ← WEIGHT_LIMITS, HEIGHT_LIMITS, BMI_THRESHOLDS
+```
+
+**Design**: `docs/plans/2026-02-19-personalization-weight-tracking-design.md`
+
 ## Phase 3: Platform Integration (Q3 2026)
 
 ### 3.1 Apple Health / Health Connect Sync
@@ -175,8 +199,9 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete — Platform sync remaining
+**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete — Personalization & weight tracking in progress, Platform sync remaining
 **Tier 3 (Nice-to-Have)**: Medication tracking, Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-02-19
+**Last Updated**: 2026-02-20
+

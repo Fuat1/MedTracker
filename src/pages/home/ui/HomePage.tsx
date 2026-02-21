@@ -13,6 +13,7 @@ import {
   calculatePulsePressure,
   calculateMAP,
 } from '../../../entities/blood-pressure';
+import { calculateAge, calculateBMI, getBMICategory } from '../../../entities/user-profile';
 import { useSettingsStore, computeWeeklyAverage, computeAmPmComparison } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { DerivedMetricsModal, BPTrendChart } from '../../../shared/ui';
@@ -39,7 +40,7 @@ export function HomePage() {
   const { width: screenWidth } = useWindowDimensions();
   const { data: latestRecord } = useLatestBPRecord();
   const { data: recentRecords } = useBPRecords(7);
-  const { guideline } = useSettingsStore();
+  const { guideline, dateOfBirth, height: userHeight } = useSettingsStore();
   const { colors, isDark, fontScale, typography } = useTheme();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -94,6 +95,13 @@ export function HomePage() {
   const weeklyAvg = useMemo(() => computeWeeklyAverage(recentRecords ?? []), [recentRecords]);
   const amPm = useMemo(() => computeAmPmComparison(recentRecords ?? []), [recentRecords]);
 
+  const userAge = useMemo(() => calculateAge(dateOfBirth), [dateOfBirth]);
+  const latestBmi = useMemo(() => {
+    if (!latestRecord?.weight || !userHeight) return null;
+    return calculateBMI(latestRecord.weight, userHeight);
+  }, [latestRecord?.weight, userHeight]);
+  const bmiCategory = latestBmi != null ? getBMICategory(latestBmi) : null;
+
   const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
   return (
@@ -106,6 +114,28 @@ export function HomePage() {
       >
         {/* Header */}
         <PageHeader variant="greeting" />
+
+        {/* Profile Badges */}
+        {(userAge != null || latestBmi != null) && (
+          <View style={styles.profileBadgesRow}>
+            {userAge != null && (
+              <View style={[styles.profileBadge, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+                <Icon name="calendar-outline" size={14} color={colors.textSecondary} />
+                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {tCommon('age.years', { count: userAge })}
+                </Text>
+              </View>
+            )}
+            {latestBmi != null && bmiCategory != null && (
+              <View style={[styles.profileBadge, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+                <Icon name="body-outline" size={14} color={colors.textSecondary} />
+                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {tCommon('bmi.label')}: {latestBmi} ({tCommon(`bmi.${bmiCategory}` as any)})
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Main BP Reading Card */}
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.bpCardWrapper}>
@@ -317,6 +347,30 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 100,
+  },
+
+  // Profile Badges
+  profileBadgesRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    gap: 8,
+    marginBottom: 12,
+  },
+  profileBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  profileBadgeText: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
 
   // BP Card

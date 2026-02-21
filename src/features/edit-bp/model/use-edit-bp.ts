@@ -16,6 +16,7 @@ export interface EditBPInput {
   location: MeasurementLocation;
   posture: MeasurementPosture;
   notes?: string | null;
+  weight?: number | null;
   tags?: TagKey[];
 }
 
@@ -24,7 +25,7 @@ export function useEditBP() {
 
   return useMutation({
     mutationFn: async (input: EditBPInput) => {
-      const { id, systolic, diastolic, pulse, timestamp, location, posture, notes, tags } = input;
+      const { id, systolic, diastolic, pulse, timestamp, location, posture, notes, weight, tags } = input;
 
       const validation = validateBPValues(systolic, diastolic, pulse ?? null);
       if (!validation.isValid) {
@@ -39,6 +40,7 @@ export function useEditBP() {
         location,
         posture,
         notes: notes ?? null,
+        weight: weight ?? null,
       });
 
       await saveTagsForRecord(id, tags ?? []);

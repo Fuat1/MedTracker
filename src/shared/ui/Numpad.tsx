@@ -17,6 +17,7 @@ interface NumpadProps {
   maxLength?: number;
   disabled?: boolean;
   compact?: boolean;
+  allowDecimal?: boolean;
 }
 
 interface KeyButtonProps {
@@ -121,6 +122,7 @@ export function Numpad({
   maxLength = 3,
   disabled = false,
   compact = false,
+  allowDecimal = false,
 }: NumpadProps) {
   const { seniorMode } = useSettingsStore();
 
@@ -133,6 +135,11 @@ export function Numpad({
       ? { width: 86, height: 68 }
       : { width: 96, height: 56 };
 
+  // When decimal mode is on, replace 'C' with '.' in the bottom row
+  const keys = allowDecimal
+    ? [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['.', '0', '⌫']]
+    : KEYS;
+
   const handleKeyPress = (key: string) => {
     if (disabled) {
       return;
@@ -144,6 +151,14 @@ export function Numpad({
     } else if (key === '⌫') {
       // Backspace
       onValueChange(value.slice(0, -1));
+    } else if (key === '.') {
+      // Decimal point: only one allowed, must have a digit already
+      if (value === '' || value.includes('.')) {
+        return;
+      }
+      if (value.length < maxLength) {
+        onValueChange(value + '.');
+      }
     } else {
       // Number key
       if (value.length < maxLength) {
@@ -162,7 +177,7 @@ export function Numpad({
 
   return (
     <View style={[styles.container, compact && styles.containerCompact]}>
-      {KEYS.map((row, rowIndex) => (
+      {keys.map((row, rowIndex) => (
         <View key={rowIndex} style={[styles.row, compact && styles.rowCompact]}>
           {row.map((key) => (
             <KeyButton

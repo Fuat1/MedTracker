@@ -87,8 +87,12 @@ export {
 export {
   computeWeeklyAverage,
   computeAmPmComparison,
+  computeWeightTrend,
+  computeWeightBPCorrelation,
   type WeeklyAverage,
   type AmPmComparison,
+  type WeightTrend,
+  type WeightBPCorrelation,
 } from './analytics-utils';
 
 // Region settings

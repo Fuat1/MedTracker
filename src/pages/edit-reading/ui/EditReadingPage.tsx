@@ -43,8 +43,9 @@ import { useDeleteBP } from '../../../features/delete-bp';
 import { TagPickerModal } from '../../../widgets/tag-selector';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 import type { RootStackParamList } from '../../../app/navigation';
+import { getWeightDisplayValue, parseWeightToKg, calculateBMI, getBMICategory } from '../../../entities/user-profile';
 
-type ActiveField = 'systolic' | 'diastolic' | 'pulse' | null;
+type ActiveField = 'systolic' | 'diastolic' | 'pulse' | 'weight' | null;
 
 const WINDOW_ICONS = {
   morning: 'sunny-outline',
@@ -59,7 +60,7 @@ export function EditReadingPage() {
   const { t: tValidation } = useTranslation('validation');
   const { t: tWidgets } = useTranslation('widgets');
   const { colors, fontScale, typography } = useTheme();
-  const { guideline } = useSettingsStore();
+  const { guideline, height: userHeight, weightUnit } = useSettingsStore();
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'EditReading'>>();
   const { recordId } = route.params;
@@ -83,6 +84,7 @@ export function EditReadingPage() {
   const [location, setLocation] = useState<MeasurementLocation>('left_arm');
   const [posture, setPosture] = useState<MeasurementPosture>('sitting');
   const [notes, setNotes] = useState('');
+  const [weightText, setWeightText] = useState('');
   const [selectedTags, setSelectedTags] = useState<TagKey[]>([]);
   const [initialized, setInitialized] = useState(false);
 
@@ -104,9 +106,10 @@ export function EditReadingPage() {
       setLocation(record.location);
       setPosture(record.posture);
       setNotes(record.notes ?? '');
+      setWeightText(record.weight != null ? String(getWeightDisplayValue(record.weight, weightUnit)) : '');
       setInitialized(true);
     }
-  }, [record, initialized]);
+  }, [record, initialized, weightUnit]);
 
   useEffect(() => {
     if (existingTags.length > 0 && initialized) {
@@ -135,6 +138,7 @@ export function EditReadingPage() {
       case 'systolic': setSystolic(value); break;
       case 'diastolic': setDiastolic(value); break;
       case 'pulse': setPulse(value); break;
+      case 'weight': setWeightText(value); break;
     }
   }, [activeField]);
 
@@ -143,9 +147,10 @@ export function EditReadingPage() {
       case 'systolic': return systolic;
       case 'diastolic': return diastolic;
       case 'pulse': return pulse;
+      case 'weight': return weightText;
       default: return '';
     }
-  }, [activeField, systolic, diastolic, pulse]);
+  }, [activeField, systolic, diastolic, pulse, weightText]);
 
   // ── Save handler ──
   const handleSave = async () => {
@@ -162,6 +167,9 @@ export function EditReadingPage() {
 
   const performSave = async () => {
     try {
+      const parsedWeight = weightText.trim() ? parseFloat(weightText) : NaN;
+      const weightKg = !isNaN(parsedWeight) ? parseWeightToKg(parsedWeight, weightUnit) : null;
+
       await editBP.mutateAsync({
         id: recordId,
         systolic: systolicNum!,
@@ -171,6 +179,7 @@ export function EditReadingPage() {
         location,
         posture,
         notes: notes.trim() || null,
+        weight: weightKg,
         tags: selectedTags,
       });
       navigation.goBack();
@@ -518,6 +527,58 @@ export function EditReadingPage() {
                 ))}
               </View>
             </View>
+
+            <View style={[styles.pickerDivider, { backgroundColor: colors.border }]} />
+
+            {/* Weight + BMI */}
+            <View style={styles.pickerSection}>
+              <Text style={[styles.pickerLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                {t('editReading.section.weight')}
+              </Text>
+              <View style={styles.weightRow}>
+                <Pressable
+                  style={[
+                    styles.weightInputContainer,
+                    {
+                      backgroundColor: colors.surfaceSecondary,
+                      borderColor: activeField === 'weight' ? colors.accent : colors.border,
+                    },
+                  ]}
+                  onPress={() => setActiveField('weight')}
+                  disabled={isPending}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('editReading.section.weight')}
+                >
+                  <Icon name="scale-outline" size={16} color={colors.textTertiary} />
+                  <Text style={[styles.weightFieldInput, { color: weightText ? colors.textPrimary : colors.textTertiary, fontSize: typography.md }]}>
+                    {weightText || t('editReading.section.weightPlaceholder')}
+                  </Text>
+                  <Text style={[styles.weightUnitLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {tCommon(`weight.${weightUnit}`)}
+                  </Text>
+                </Pressable>
+                {(() => {
+                  const parsedW = weightText.trim() ? parseFloat(weightText) : NaN;
+                  const wKg = !isNaN(parsedW) ? parseWeightToKg(parsedW, weightUnit) : null;
+                  const bmi = calculateBMI(wKg, userHeight);
+                  if (bmi == null) return null;
+                  const cat = getBMICategory(bmi);
+                  return (
+                    <View style={[styles.bmiChip, { backgroundColor: colors.surfaceSecondary }]}>
+                      <Text style={[styles.bmiLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                        {t('editReading.section.bmi')}
+                      </Text>
+                      <Text style={[styles.bmiValue, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                        {bmi}
+                      </Text>
+                      <Text style={[styles.bmiCategory, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                        {tCommon(`bmi.${cat}`)}
+                      </Text>
+                    </View>
+                  );
+                })()}
+              </View>
+            </View>
           </View>
 
           {/* ── Notes section ── */}
@@ -602,7 +663,9 @@ export function EditReadingPage() {
                 ? t('editReading.numpad.enterSystolic')
                 : activeField === 'diastolic'
                 ? t('editReading.numpad.enterDiastolic')
-                : t('editReading.numpad.enterPulse')}
+                : activeField === 'pulse'
+                ? t('editReading.numpad.enterPulse')
+                : tCommon('weight.label')}
             </Text>
             <Text style={[styles.modalValue, { color: colors.textPrimary, fontSize: 36 * fontScale }]}>
               {getCurrentValue() || '0'}
@@ -610,7 +673,8 @@ export function EditReadingPage() {
             <Numpad
               value={getCurrentValue()}
               onValueChange={handleNumpadChange}
-              maxLength={3}
+              maxLength={activeField === 'weight' ? 6 : 3}
+              allowDecimal={activeField === 'weight'}
               disabled={isPending}
             />
             <Pressable
@@ -786,6 +850,34 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipText: { fontFamily: FONTS.medium, fontWeight: '500' },
+
+  // ── Weight + BMI ──
+  weightRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  weightInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  weightFieldInput: {
+    flex: 1,
+    fontFamily: FONTS.regular,
+  },
+  weightUnitLabel: { fontFamily: FONTS.medium, fontWeight: '500' },
+  bmiChip: {
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    gap: 1,
+  },
+  bmiLabel: { fontFamily: FONTS.semiBold, fontWeight: '600' },
+  bmiValue: { fontFamily: FONTS.bold, fontWeight: '700' },
+  bmiCategory: { fontFamily: FONTS.regular },
 
   // ── Notes card ──
   notesCard: {

@@ -15,6 +15,7 @@ import { useCustomTags } from '../../../features/manage-tags';
 import { isCustomTagKey, getCustomTagId } from '../../../shared/types/custom-tag';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 import { formatDateTime, getRelativeTime, formatTimeSplit, useSettingsStore, getTimeWindow } from '../../../shared/lib';
+import { formatWeight, calculateBMI, getBMICategory } from '../../../entities/user-profile';
 import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
@@ -51,7 +52,7 @@ interface BPRecordCardProps {
 export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, onPPPress, onMAPPress, onPress }: BPRecordCardProps) {
   const { t } = useTranslation('common');
   const { colors, isDark, fontScale, typography } = useTheme();
-  const { guideline } = useSettingsStore();
+  const { guideline, height: userHeight, weightUnit } = useSettingsStore();
   const category = classifyBP(record.systolic, record.diastolic, guideline);
   const { data: customTags = [] } = useCustomTags();
 
@@ -314,6 +315,26 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
               </View>
             );
           })}
+          {record.weight != null && (
+            <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
+              <Icon name="scale-outline" size={14} color={colors.textSecondary} />
+              <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                {formatWeight(record.weight, weightUnit)}
+              </Text>
+            </View>
+          )}
+          {record.weight != null && userHeight != null && (() => {
+            const bmi = calculateBMI(record.weight, userHeight);
+            if (bmi == null) return null;
+            const cat = getBMICategory(bmi);
+            return (
+              <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
+                <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t('bmi.label')}: {bmi} ({t(`bmi.${cat}` as any)})
+                </Text>
+              </View>
+            );
+          })()}
         </View>
 
         {/* Timestamp */}

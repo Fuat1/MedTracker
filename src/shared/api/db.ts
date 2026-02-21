@@ -71,6 +71,15 @@ export async function initDatabase(): Promise<DB> {
     db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
     db.execute(CREATE_CUSTOM_TAGS_TABLE_SQL);
 
+    // Migrations — use PRAGMA + executeSync so errors are caught synchronously
+    const tableInfo = db.executeSync('PRAGMA table_info(bp_records)');
+    const hasWeight = tableInfo.rows.some((row) => row.name === 'weight');
+    if (!hasWeight) {
+      db.executeSync(
+        'ALTER TABLE bp_records ADD COLUMN weight REAL CHECK(weight IS NULL OR weight BETWEEN 20 AND 500)',
+      );
+    }
+
     console.log('Database initialized successfully');
     return db;
   } catch (error) {

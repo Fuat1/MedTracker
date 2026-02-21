@@ -1,12 +1,12 @@
 {
   "errors": {
-    "systolicRequired": "Systolic value is required",
-    "diastolicRequired": "Diastolic value is required",
-    "systolicRange": "Systolic must be between {{min}} and {{max}}",
-    "diastolicRange": "Diastolic must be between {{min}} and {{max}}",
-    "pulseRange": "Pulse must be between {{min}} and {{max}}",
-    "systolicGreater": "Systolic must be greater than diastolic",
-    "validationError": "Validation Error",
-    "failedToSave": "Failed to save reading"
+    "systolicRequired": "Nilai sistolik wajib diisi",
+    "diastolicRequired": "Nilai diastolik wajib diisi",
+    "systolicRange": "Sistolik harus di antara {{min}} dan {{max}}",
+    "diastolicRange": "Diastolik harus di antara {{min}} dan {{max}}",
+    "pulseRange": "Nadi harus di antara {{min}} dan {{max}}",
+    "systolicGreater": "Sistolik harus lebih besar dari diastolik",
+    "validationError": "Kesalahan Validasi",
+    "failedToSave": "Gagal menyimpan catatan"
   }
 }

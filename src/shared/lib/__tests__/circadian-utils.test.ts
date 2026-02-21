@@ -27,6 +27,7 @@ function makeRecord(
     location: 'left_arm',
     posture: 'sitting',
     notes: null,
+    weight: null,
     createdAt: timestamp,
     updatedAt: timestamp,
     isSynced: false,

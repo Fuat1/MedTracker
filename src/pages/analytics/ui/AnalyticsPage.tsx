@@ -18,10 +18,14 @@ import { useExportPdf } from '../../../features/export-pdf';
 import { useTagsForRecords } from '../../../features/manage-tags';
 import { calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure';
 import { computeTagCorrelations } from '../../../entities/lifestyle-tag';
+import { calculateBMI, getBMICategory, formatWeight, calculateAge } from '../../../entities/user-profile';
 import { useTheme } from '../../../shared/lib/use-theme';
 import {
+  useSettingsStore,
   computeWeeklyAverage,
   computeAmPmComparison,
+  computeWeightTrend,
+  computeWeightBPCorrelation,
 } from '../../../shared/lib';
 import {
   BPTrendChart,
@@ -43,6 +47,7 @@ export function AnalyticsPage() {
   const { width: screenWidth } = useWindowDimensions();
   const { data: allRecords } = useBPRecords();
   const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
+  const { height: userHeight, weightUnit, dateOfBirth, gender } = useSettingsStore();
 
   const [period, setPeriod] = useState<PeriodKey>('30d');
   const [customStart, setCustomStart] = useState<Date>(() => {
@@ -106,6 +111,9 @@ export function AnalyticsPage() {
     [records],
   );
 
+  const weightTrend = useMemo(() => computeWeightTrend(records), [records]);
+  const weightCorrelation = useMemo(() => computeWeightBPCorrelation(records), [records]);
+
   const recordIds = useMemo(() => records.map(r => r.id), [records]);
   const { data: tagMap } = useTagsForRecords(recordIds);
 
@@ -116,6 +124,15 @@ export function AnalyticsPage() {
 
   const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
+  const profileAge = useMemo(() => calculateAge(dateOfBirth), [dateOfBirth]);
+  const profileBmi = useMemo(() => {
+    const avgW = weightTrend?.avgWeight ?? null;
+    const bmi = calculateBMI(avgW, userHeight);
+    return bmi != null ? { value: bmi, category: getBMICategory(bmi) } : null;
+  }, [weightTrend, userHeight]);
+
+  const hasProfileData = profileAge != null || gender != null || profileBmi != null;
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView
@@ -125,6 +142,39 @@ export function AnalyticsPage() {
       >
         {/* Header */}
         <PageHeader variant="greeting" />
+
+        {/* Profile Context Row */}
+        {hasProfileData && (
+          <Animated.View
+            entering={FadeInUp.delay(30).duration(400)}
+            style={styles.profileRow}
+          >
+            {profileAge != null && (
+              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
+                <Icon name="person-outline" size={12} color={colors.textTertiary} />
+                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t('analytics.profile.age', { age: profileAge })}
+                </Text>
+              </View>
+            )}
+            {gender != null && (
+              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
+                <Icon name="male-female-outline" size={12} color={colors.textTertiary} />
+                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t(`settings.personalization.gender${gender.charAt(0).toUpperCase() + gender.slice(1)}` as any)}
+                </Text>
+              </View>
+            )}
+            {profileBmi != null && (
+              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
+                <Icon name="body-outline" size={12} color={colors.textTertiary} />
+                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {`BMI ${profileBmi.value.toFixed(1)} · ${tCommon(`bmi.${profileBmi.category}` as any)}`}
+                </Text>
+              </View>
+            )}
+          </Animated.View>
+        )}
 
         {/* Period Selector */}
         <Animated.View
@@ -298,8 +348,96 @@ export function AnalyticsPage() {
         {/* Circadian Patterns Card */}
         <CircadianCard records={records} allRecords={allRecords ?? []} />
 
+        {/* Weight Trend Card */}
+        {weightTrend.hasData && (
+          <Animated.View
+            entering={FadeInUp.delay(270).duration(500)}
+            style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+          >
+            <View style={styles.weightTitleRow}>
+              <Icon name="scale-outline" size={20} color={colors.accent} />
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 0 }]}>
+                {t('analytics.weightTrend.title')}
+              </Text>
+            </View>
+
+            {/* Weight Stats Grid */}
+            <View style={styles.weightStatsGrid}>
+              <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t('analytics.weightTrend.avgWeight')}
+                </Text>
+                <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                  {formatWeight(weightTrend.avgWeight!, weightUnit)}
+                </Text>
+              </View>
+              <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t('analytics.weightTrend.weightRange')}
+                </Text>
+                <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                  {formatWeight(weightTrend.minWeight!, weightUnit)} – {formatWeight(weightTrend.maxWeight!, weightUnit)}
+                </Text>
+              </View>
+            </View>
+
+            {/* BMI from average weight */}
+            {userHeight != null && weightTrend.avgWeight != null && (() => {
+              const avgBmi = calculateBMI(weightTrend.avgWeight, userHeight);
+              if (avgBmi == null) return null;
+              const cat = getBMICategory(avgBmi);
+              return (
+                <View style={[styles.bmiTrendRow, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                  <Icon name="body-outline" size={16} color={colors.textSecondary} />
+                  <Text style={[styles.bmiTrendLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.weightTrend.bmiTrend')}
+                  </Text>
+                  <Text style={[styles.bmiTrendValue, { color: colors.textPrimary, fontSize: typography.md }]}>
+                    {avgBmi}
+                  </Text>
+                  <View style={[styles.bmiCategoryChip, { backgroundColor: colors.accent + '15' }]}>
+                    <Text style={[styles.bmiCategoryText, { color: colors.accent, fontSize: typography.xs }]}>
+                      {tCommon(`bmi.${cat}` as any)}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })()}
+
+            {/* Weight-BP Correlation */}
+            {weightCorrelation.hasData && (
+              <View style={styles.correlationSection}>
+                <Text style={[styles.correlationTitle, { color: colors.textPrimary, fontSize: typography.md }]}>
+                  {t('analytics.weightTrend.correlation')}
+                </Text>
+                <View style={styles.correlationRow}>
+                  <View style={styles.correlationItem}>
+                    <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                      {tCommon('common.systolic')}
+                    </Text>
+                    <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                      {weightCorrelation.systolicCorrelation?.toFixed(2) ?? '—'}
+                    </Text>
+                  </View>
+                  <View style={styles.correlationItem}>
+                    <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                      {tCommon('common.diastolic')}
+                    </Text>
+                    <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                      {weightCorrelation.diastolicCorrelation?.toFixed(2) ?? '—'}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={[styles.correlationDisclaimer, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                  {t('analytics.weightTrend.correlationDisclaimer')}
+                </Text>
+              </View>
+            )}
+          </Animated.View>
+        )}
+
         {/* Lifestyle Insights */}
-        <Animated.View entering={FadeInUp.delay(270).duration(500)}>
+        <Animated.View entering={FadeInUp.delay(300).duration(500)}>
           <CorrelationCard correlations={correlations} />
         </Animated.View>
 
@@ -543,6 +681,94 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
 
+  // Weight Trend
+  weightTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 14,
+  },
+  weightStatsGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
+  weightStatItem: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  weightStatLabel: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  weightStatValue: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  bmiTrendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginBottom: 10,
+  },
+  bmiTrendLabel: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    flex: 1,
+  },
+  bmiTrendValue: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+    marginRight: 6,
+  },
+  bmiCategoryChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  bmiCategoryText: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+  },
+  correlationSection: {
+    marginTop: 4,
+  },
+  correlationTitle: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  correlationRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 8,
+  },
+  correlationItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  correlationLabel: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  correlationValue: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  correlationDisclaimer: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+
   // Toggles
   togglesRow: {
     flexDirection: 'row',
@@ -611,5 +837,26 @@ const styles = StyleSheet.create({
   exportButtonText: {
     fontFamily: FONTS.bold,
     fontWeight: '700',
+  },
+
+  // Profile context row
+  profileRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 4,
+  },
+  profileBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  profileBadgeText: {
+    fontFamily: FONTS.medium,
+    fontWeight: '500',
   },
 });

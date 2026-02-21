@@ -1,39 +1,95 @@
 {
   "categories": {
     "normal": "Normal",
-    "elevated": "Elevated",
-    "stage1": "High BP Stage 1",
-    "stage2": "High BP Stage 2",
-    "crisis": "Hypertensive Crisis"
+    "elevated": "Meningkat",
+    "stage1": "TD Tinggi Tahap 1",
+    "stage2": "TD Tinggi Tahap 2",
+    "crisis": "Krisis Hipertensi",
+    "unknown": "Tidak Diketahui"
   },
   "crisis": {
-    "title": "⚠️ Hypertensive Crisis",
-    "message": "This reading indicates a hypertensive crisis. Please seek immediate medical attention if you are experiencing symptoms such as chest pain, shortness of breath, or severe headache."
+    "title": "⚠️ Krisis Hipertensi",
+    "subtitle": "Hasil pembacaan Anda {{systolic}}/{{diastolic}} mmHg secara signifikan melebihi batas normal.",
+    "symptomsQuestion": "Apakah Anda mengalami salah satu dari gejala berikut?",
+    "symptoms": {
+      "chestPain": "Nyeri dada parah",
+      "headache": "Sakit kepala parah",
+      "breathShortness": "Sesak napas",
+      "visionChanges": "Perubahan penglihatan atau kabur",
+      "difficultySpeak": "Kesulitan berbicara",
+      "backPain": "Nyeri punggung",
+      "numbness": "Mati rasa atau kesemutan",
+      "weakness": "Lemah (terutama pada satu sisi tubuh)"
+    },
+    "emergency": {
+      "title": "HUBUNGI LAYANAN DARURAT (112 / 119)",
+      "message": "Anda melaporkan gejala yang mungkin mengindikasikan darurat medis. Segera hubungi layanan darurat."
+    },
+    "urgency": {
+      "title": "Hubungi Penyedia Layanan Kesehatan Anda",
+      "message": "Tidak ada gejala yang dilaporkan. Segera hubungi dokter Anda untuk evaluasi di hari yang sama. Jangan menunggu jadwal janji temu berikutnya."
+    },
+    "disclaimer": "Aplikasi ini bukan alat medis. Ini adalah peringatan otomatis berdasarkan panduan medis yang dipublikasikan dan bukan merupakan saran medis."
   },
   "guidelines": {
     "ahaAcc": {
       "name": "AHA/ACC",
-      "fullName": "American Heart Association (USA)",
-      "regions": "Americas, International"
+      "fullName": "American Heart Association (AS)",
+      "regions": "Amerika, Internasional"
     },
     "escEsh": {
       "name": "ESC/ESH",
-      "fullName": "European Society of Cardiology (Europe)",
-      "regions": "Europe, Africa, Middle East"
+      "fullName": "European Society of Cardiology (Eropa)",
+      "regions": "Eropa, Afrika, Timur Tengah"
     },
     "jsh": {
       "name": "JSH",
-      "fullName": "Japanese Society of Hypertension",
-      "regions": "Japan, East Asia"
+      "fullName": "Japanese Society of Hypertension (Jepang)",
+      "regions": "Jepang, Asia Timur"
     },
     "who": {
       "name": "WHO",
-      "fullName": "World Health Organization",
-      "regions": "International"
+      "fullName": "Organisasi Kesehatan Dunia",
+      "regions": "Internasional"
     }
   },
   "measurementSettings": {
-    "location": "Measurement Location",
-    "posture": "Posture"
+    "location": "Lokasi Pengukuran",
+    "posture": "Postur Tubuh"
+  },
+  "derivedMetrics": {
+    "sections": {
+      "whatIsIt": "Apa itu?",
+      "formula": "Rumus",
+      "normalRanges": "Rentang Normal",
+      "clinicalSignificance": "Signifikansi Klinis"
+    },
+    "disclaimer": "Informasi ini hanya untuk tujuan edukasi. Selalu konsultasikan dengan dokter Anda untuk interpretasi medis dari hasil tekanan darah Anda.",
+    "pp": {
+      "title": "Tekanan Nadi (Pulse Pressure - PP)",
+      "abbr": "PP",
+      "definition": "Perbedaan antara tekanan darah sistolik dan diastolik.",
+      "formula": "PP = Sistolik − Diastolik",
+      "ranges": {
+        "low": "Rendah (Sempit): <40 mmHg",
+        "normal": "Normal: 40-60 mmHg",
+        "high": "Tinggi (Lebar): >60 mmHg"
+      },
+      "significance": "Tekanan nadi yang tinggi (>60 mmHg) dapat mengindikasikan kekakuan arteri dan peningkatan risiko kardiovaskular. Konsultasikan dengan dokter jika terus-menerus meningkat.",
+      "reference": "Berdasarkan panduan AHA/ACC"
+    },
+    "map": {
+      "title": "Tekanan Arteri Rata-rata (Mean Arterial Pressure - MAP)",
+      "abbr": "MAP",
+      "definition": "Tekanan arteri rata-rata selama satu siklus jantung.",
+      "formula": "MAP = (Sistolik + 2×Diastolik) / 3",
+      "ranges": {
+        "low": "Rendah: <70 mmHg",
+        "normal": "Normal: 70-100 mmHg",
+        "high": "Tinggi: >100 mmHg"
+      },
+      "significance": "MAP menunjukkan tekanan perfusi organ. Nilai di bawah 60 mmHg dapat mengganggu fungsi organ. Nilai di atas 100 mmHg mengindikasikan hipertensi.",
+      "reference": "Berdasarkan panduan AHA/ACC"
+    }
   }
 }

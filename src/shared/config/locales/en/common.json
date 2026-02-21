@@ -90,6 +90,29 @@
     "caffeine": "Caffeine",
     "poorSleep": "Poor Sleep"
   },
+  "weight": {
+    "label": "Weight",
+    "kg": "kg",
+    "lbs": "lbs",
+    "addWeight": "Add weight"
+  },
+  "height": {
+    "label": "Height",
+    "cm": "cm",
+    "ft": "ft"
+  },
+  "bmi": {
+    "label": "BMI",
+    "underweight": "Underweight",
+    "normal": "Normal",
+    "overweight": "Overweight",
+    "obese": "Obese"
+  },
+  "age": {
+    "label": "Age",
+    "years_one": "{{count}} year",
+    "years_other": "{{count}} years"
+  },
   "entryMode": {
     "title": "Log Blood Pressure",
     "message": "Choose your preferred entry method",

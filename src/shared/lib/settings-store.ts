@@ -5,6 +5,7 @@ import type { BPUnit, BPGuideline } from '../config/settings';
 import { BP_UNITS, BP_GUIDELINES } from '../config/settings';
 import type { MeasurementLocation, MeasurementPosture } from '../config';
 import { MEASUREMENT_LOCATIONS, MEASUREMENT_POSTURES } from '../config';
+import type { WeightUnit, HeightUnit, Gender } from '../config/profile-constants';
 import i18n from './i18n';
 
 export type Language = 'en' | 'id' | 'sr' | 'tr';
@@ -21,6 +22,14 @@ interface SettingsState {
   seniorMode: boolean;
   highContrast: boolean;
   preferredEntryMode: EntryMode;
+  // User profile
+  userName: string | null;
+  dateOfBirth: string | null;
+  gender: Gender | null;
+  height: number | null; // cm
+  defaultWeight: number | null; // kg
+  heightUnit: HeightUnit;
+  weightUnit: WeightUnit;
   setUnit: (unit: BPUnit) => void;
   setGuideline: (guideline: BPGuideline) => void;
   setDefaultLocation: (location: MeasurementLocation) => void;
@@ -30,6 +39,13 @@ interface SettingsState {
   setSeniorMode: (enabled: boolean) => void;
   setHighContrast: (enabled: boolean) => void;
   setPreferredEntryMode: (mode: EntryMode) => void;
+  setUserName: (name: string | null) => void;
+  setDateOfBirth: (dob: string | null) => void;
+  setHeight: (height: number | null) => void;
+  setDefaultWeight: (weight: number | null) => void;
+  setGender: (gender: Gender | null) => void;
+  setHeightUnit: (unit: HeightUnit) => void;
+  setWeightUnit: (unit: WeightUnit) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -44,6 +60,13 @@ export const useSettingsStore = create<SettingsState>()(
       seniorMode: false,
       highContrast: false,
       preferredEntryMode: null,
+      userName: null,
+      dateOfBirth: null,
+      gender: null,
+      height: null,
+      defaultWeight: null,
+      heightUnit: 'cm',
+      weightUnit: 'kg',
       setUnit: (unit) => set({ unit }),
       setGuideline: (guideline) => set({ guideline }),
       setDefaultLocation: (location) => set({ defaultLocation: location }),
@@ -56,6 +79,13 @@ export const useSettingsStore = create<SettingsState>()(
       setSeniorMode: (enabled) => set({ seniorMode: enabled }),
       setHighContrast: (enabled) => set({ highContrast: enabled }),
       setPreferredEntryMode: (mode) => set({ preferredEntryMode: mode }),
+      setUserName: (name) => set({ userName: name }),
+      setDateOfBirth: (dob) => set({ dateOfBirth: dob }),
+      setGender: (gender) => set({ gender }),
+      setHeight: (height) => set({ height }),
+      setDefaultWeight: (weight) => set({ defaultWeight: weight }),
+      setHeightUnit: (unit) => set({ heightUnit: unit }),
+      setWeightUnit: (unit) => set({ weightUnit: unit }),
     }),
     {
       name: 'medtracker-settings',

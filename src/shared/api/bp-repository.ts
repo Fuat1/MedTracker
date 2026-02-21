@@ -17,6 +17,7 @@ export interface BPRecordRow {
   location: string;
   posture: string;
   notes: string | null;
+  weight: number | null;
   created_at: number;
   updated_at: number;
   is_synced: number;
@@ -33,6 +34,7 @@ export interface BPRecord {
   location: MeasurementLocation;
   posture: MeasurementPosture;
   notes: string | null;
+  weight: number | null;
   createdAt: number;
   updatedAt: number;
   isSynced: boolean;
@@ -47,6 +49,7 @@ export interface BPRecordInput {
   location?: MeasurementLocation;
   posture?: MeasurementPosture;
   notes?: string | null;
+  weight?: number | null;
 }
 
 // Convert database row to domain object
@@ -61,6 +64,7 @@ function rowToRecord(row: BPRecordRow): BPRecord {
     location: row.location as MeasurementLocation,
     posture: row.posture as MeasurementPosture,
     notes: row.notes,
+    weight: row.weight ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     isSynced: row.is_synced === 1,
@@ -82,6 +86,7 @@ export async function insertBPRecord(input: BPRecordInput): Promise<BPRecord> {
     location: input.location ?? 'left_arm',
     posture: input.posture ?? 'sitting',
     notes: input.notes ?? null,
+    weight: input.weight ?? null,
     createdAt: now,
     updatedAt: now,
     isSynced: false,
@@ -90,8 +95,8 @@ export async function insertBPRecord(input: BPRecordInput): Promise<BPRecord> {
   await db.execute(
     `INSERT INTO bp_records (
       id, systolic, diastolic, pulse, timestamp, timezone_offset,
-      location, posture, notes, created_at, updated_at, is_synced
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      location, posture, notes, weight, created_at, updated_at, is_synced
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       record.id,
       record.systolic,
@@ -102,6 +107,7 @@ export async function insertBPRecord(input: BPRecordInput): Promise<BPRecord> {
       record.location,
       record.posture,
       record.notes,
+      record.weight,
       record.createdAt,
       record.updatedAt,
       record.isSynced ? 1 : 0,
@@ -178,6 +184,10 @@ export async function updateBPRecord(
   if (input.notes !== undefined) {
     updates.push('notes = ?');
     values.push(input.notes);
+  }
+  if (input.weight !== undefined) {
+    updates.push('weight = ?');
+    values.push(input.weight);
   }
 
   if (updates.length === 0) {

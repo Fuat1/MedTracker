@@ -52,6 +52,7 @@ const ESC_ESH: GuidelineThresholds = {
   crisis:   { systolic: 180, diastolic: 110 },
   stage_2:  { systolic: 160, diastolic: 100 },
   stage_1:  { systolic: 140, diastolic: 90 },
+  // Elevated systolic is implicitly bounded at 139 due to Stage 1 precedence in classifyBP()
   elevated: { systolicMin: 130, diastolicMin: 85, diastolicBelow: 90 } as RangeElevatedRule,
   normalBelow: { systolic: 130, diastolic: 85 },
 };
@@ -61,6 +62,7 @@ const JSH: GuidelineThresholds = {
   crisis:   { systolic: 180, diastolic: 110 },
   stage_2:  { systolic: 160, diastolic: 100 },
   stage_1:  { systolic: 140, diastolic: 90 },
+  // Elevated systolic is implicitly bounded at 139 due to Stage 1 precedence in classifyBP()
   elevated: { systolicMin: 130, diastolicMin: 80, diastolicBelow: 90 } as RangeElevatedRule,
   normalBelow: { systolic: 130, diastolic: 80 },
 };

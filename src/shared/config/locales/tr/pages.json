@@ -1,206 +1,469 @@
 {
   "home": {
     "title": "MedTracker",
-    "subtitle": "Blood Pressure Monitor",
-    "lastReading": "Last Reading",
+    "subtitle": "Kan Basıncı Takibi",
+    "lastReading": "Son Ölçüm",
     "greeting": {
-      "morning": "Good morning",
-      "afternoon": "Good afternoon",
-      "evening": "Good evening"
+      "morning": "Günaydın",
+      "afternoon": "Tünaydın",
+      "evening": "İyi akşamlar"
     },
-    "userName": "Alex",
-    "bpReadings": "Blood Pressure readings",
-    "last7Days": "Last 7 Days Trend",
-    "noReadingsYet": "No readings yet",
-    "addFirstReading": "Tap + to add your first reading",
-    "encryptedOffline": "Encrypted\n& Offline",
+    "userName": "Misafir",
+    "bpReadings": "Kan Basıncı ölçümleri",
+    "last7Days": "Son 7 Günlük Trend",
+    "noReadingsYet": "Henüz ölçüm yok",
+    "addFirstReading": "İlk ölçümünüzü eklemek için + simgesine dokunun",
+    "encryptedOffline": "Şifreli\nve Çevrimdışı",
     "stats": {
-      "bloodPressure": "Blood Pressure",
-      "avgPulse": "Avg Pulse",
-      "readings": "Readings"
+      "bloodPressure": "Kan Basıncı",
+      "avgPulse": "Ort. Nabız",
+      "readings": "Ölçümler"
     },
-    "sevenDayAverage": "7-Day Average",
+    "sevenDayAverage": "7 Günlük Ortalama",
+    "weeklyAvg": "7 Günlük Ortalama",
+    "morningVsEvening": "Sabah vs Akşam",
+    "noData": "Yetersiz veri",
+    "minMax": "Aralık",
     "actions": {
-      "viewTrends": "View Trends",
-      "exportData": "Export Data"
+      "viewTrends": "Trendleri Gör",
+      "exportData": "Verileri Dışa Aktar"
     }
   },
   "analytics": {
-    "title": "Analitik",
-    "bpTrends": "Tansiyon Trendleri",
+    "title": "Analizler",
+    "bpTrends": "Kan Basıncı Trendleri",
     "weeklyAverage": "Haftalık Ortalama",
-    "morningVsEvening": "Sabah ve Akşam",
+    "morningVsEvening": "Sabah vs. Akşam",
     "morning": "Sabah",
     "evening": "Akşam",
-    "exportPdf": "Doktor için PDF raporu dışa aktar",
+    "exportPdf": "Doktor için PDF raporu oluştur",
+    "generatingPdf": "PDF oluşturuluyor...",
+    "savePdf": "Cihaza Kaydet",
+    "savingPdf": "Kaydediliyor...",
     "exportComingSoon": "PDF dışa aktarma yakında!",
-    "noData": "Yeterli veri yok",
+    "noData": "Yetersiz veri",
     "noDataSubtitle": "Trendleri görmek için daha fazla ölçüm ekleyin",
+    "disclaimer": "Sadece bilgilendirme amaçlıdır. Profesyonel tıbbi tavsiye yerine geçmez.",
+    "toggles": {
+      "showPP": "PP Göster",
+      "showMAP": "MAP Göster"
+    },
+    "export": {
+      "includePPMAP": "PDF raporuna PP/MAP ekle"
+    },
     "legend": {
       "systolic": "Sistolik",
-      "diastolic": "Diastolik"
+      "diastolic": "Diyastolik"
     },
     "zones": {
       "normal": "Normal",
-      "elevated": "Yüksek",
-      "high": "Çok Yüksek"
+      "elevated": "Yüksekçe",
+      "high": "Yüksek"
+    },
+    "period": {
+      "title": "Rapor Dönemi",
+      "days7": "7 Gün",
+      "days14": "14 Gün",
+      "days30": "30 Gün",
+      "days90": "90 Gün",
+      "all": "Tüm Zamanlar",
+      "custom": "Özel Aralık"
+    },
+    "customRange": {
+      "from": "Başlangıç",
+      "to": "Bitiş"
+    },
+    "profile": {
+      "age": "{{age}} yaş"
+    },
+    "doctorNote": {
+      "label": "Doktor Notları (İsteğe Bağlı)",
+      "placeholder": "Doktorunuz için not ekleyin (örn. ilaçlar, semptomlar...)"
+    },
+    "report": {
+      "title": "Kan Basıncı Raporu",
+      "generatedBy": "MedTracker tarafından oluşturuldu",
+      "patient": "Hasta",
+      "period": "Dönem",
+      "guideline": "Kılavuz",
+      "summary": "Özet",
+      "totalReadings": "Toplam Ölçüm",
+      "average": "Ortalama",
+      "minMax": "Min / Maks",
+      "patientNotes": "Hasta Notları",
+      "categoryBreakdown": "Kategori Dağılımı",
+      "allReadings": "Tüm Ölçümler",
+      "generated": "Oluşturulma",
+      "readings": "ölçüm",
+      "averageBP": "Ort. Kan Basıncı",
+      "avgPulse": "Ort. Nabız",
+      "averagePP": "Ort. PP",
+      "averageMAP": "Ort. MAP",
+      "minSystolic": "Min Sistolik",
+      "maxSystolic": "Maks Sistolik",
+      "rangeDia": "Aralık (Diy)",
+      "avgWeight": "Ort. Kilo",
+      "weightRange": "Kilo Aralığı",
+      "profileAge": "Yaş",
+      "profileHeight": "Boy",
+      "profileGender": "Cinsiyet",
+      "bpTrend": "Kan Basıncı Trendi",
+      "columns": {
+        "dateTime": "Tarih ve Saat",
+        "systolic": "Sistolik",
+        "diastolic": "Diyastolik",
+        "pulse": "Nabız",
+        "pp": "PP",
+        "map": "MAP",
+        "category": "Kategori",
+        "range": "Aralık",
+        "count": "Adet",
+        "location": "Konum",
+        "notes": "Notlar",
+        "weight": "Kilo"
+      },
+      "disclaimer": "Bu rapor sadece bilgilendirme amaçlıdır; profesyonel tıbbi tavsiye, teşhis veya tedavi yerine geçmez.",
+      "guidelineNote": "Kan basıncı sınıflandırmaları {{guideline}} kılavuzlarına dayanmaktadır.",
+      "consultNote": "Bu ölçümleri genel sağlık durumunuz çerçevesinde yorumlamak için sağlık uzmanınıza danışın.",
+      "fullDisclaimer": "UYARI: Bu rapor sadece bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez. Sınıflandırmalar {{guideline}} kılavuzlarını temel alır. Ölçümleri geçmişiniz ve sağlık durumunuza göre değerlendirmek için doktorunuza başvurun.",
+      "fileName": "kb-raporu",
+      "noData": "Bu dönemde dışa aktarılacak ölçüm bulunamadı.",
+      "noDataTitle": "Veri Yok",
+      "noDataMessage": "Seçilen dönemde dışa aktarılacak ölçüm bulunmamaktadır.",
+      "exportFailedTitle": "Dışa Aktarma Başarısız",
+      "exportFailedMessage": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
+      "shareTitle": "Kan Basıncı Raporunu Paylaş",
+      "saveSuccessTitle": "PDF Kaydedildi",
+      "saveSuccessMessage": "{{fileName}} olarak kaydedildi",
+      "saveFailedTitle": "Kaydetme Başarısız",
+      "saveFailedMessage": "PDF kaydedilemedi. Lütfen depolama izinlerini kontrol edip tekrar deneyin."
+    },
+    "weightTrend": {
+      "title": "Kilo Trendi",
+      "avgWeight": "Ort. Kilo",
+      "weightRange": "Kilo Aralığı",
+      "bmiTrend": "BMI Trendi",
+      "noData": "Kayıtlı kilo verisi yok",
+      "correlation": "Kilo ve Kan Basıncı İlişkisi",
+      "correlationDisclaimer": "Korelasyon nedensellik anlamına gelmez. Tıbbi tavsiye için doktorunuza danışın."
+    },
+    "circadian": {
+      "title": "Sirkadiyen Desenler",
+      "timeInRange": "Aralık İçi Süre",
+      "morningSurge_one": "{{count}} gün sabah dalgalanması tespit edildi",
+      "morningSurge_other": "{{count}} gün sabah dalgalanması tespit edildi",
+      "noData": "Sirkadiyen analiz için yetersiz veri",
+      "windowAvg": "ort"
     }
   },
   "history": {
-    "title": "Ge\u00e7mi\u015f",
+    "title": "Geçmiş",
     "filters": {
       "all": "Hepsi",
       "morning": "Sabah",
-      "evening": "Ak\u015fam",
-      "highAlert": "Y\u00fcksek Uyar\u0131"
+      "evening": "Akşam",
+      "highAlert": "Yüksek Uyarı"
     },
     "sections": {
-      "today": "Bug\u00fcn",
-      "yesterday": "D\u00fcn",
-      "lastWeek": "Ge\u00e7en Hafta",
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "lastWeek": "Geçen Hafta",
       "older": "Daha Eski"
     },
     "empty": {
-      "title": "Hen\u00fcz \u00f6l\u00e7\u00fcm yok",
-      "subtitle": "\u0130lk \u00f6l\u00e7\u00fcm\u00fcn\u00fcz\u00fc ekleyerek tansiyon takibine ba\u015flay\u0131n"
+      "title": "Henüz ölçüm yok",
+      "subtitle": "İlk ölçümünüzü ekleyerek kan basıncınızı takip etmeye başlayın"
     },
-    "loading": "Kay\u0131tlar y\u00fckleniyor...",
+    "loading": "Kayıtlar yükleniyor...",
     "error": {
-      "title": "Kay\u0131tlar y\u00fcklenirken hata",
-      "subtitle": "Yeniden denemek i\u00e7in a\u015fa\u011f\u0131 \u00e7ekin"
+      "title": "Kayıtlar yüklenirken hata oluştu",
+      "subtitle": "Tekrar denemek için aşağı çekin"
     }
   },
   "settings": {
-    "title": "Settings",
-    "subtitle": "Configure your blood pressure monitoring preferences",
+    "title": "Ayarlar",
+    "subtitle": "Kan basıncı izleme tercihlerinizi yapılandırın",
     "theme": {
-      "title": "Theme",
-      "description": "Choose your preferred color theme",
+      "title": "Tema",
+      "description": "Tercih ettiğiniz renk temasını seçin",
       "light": {
-        "label": "Light Mode",
-        "description": "Light background with dark text"
+        "label": "Açık Mod",
+        "description": "Açık arka plan ve koyu metin"
       },
       "dark": {
-        "label": "Dark Mode",
-        "description": "Dark background with light text"
+        "label": "Koyu Mod",
+        "description": "Koyu arka plan ve açık metin"
       },
       "system": {
-        "label": "System Default",
-        "description": "Follow system theme settings"
+        "label": "Sistem Varsayılanı",
+        "description": "Sistem tema ayarlarını takip et"
       }
     },
+    "seniorMode": {
+      "label": "Erişilebilirlik Modu",
+      "description": "Kolay okuma için daha büyük düğmeler ve metinler"
+    },
+    "highContrast": {
+      "label": "Yüksek Kontrast",
+      "description": "Maksimum okunabilirlik için beyaz üzerine siyah metin",
+      "note": "⚠️ Etkinleştirildiğinde açık modu zorunlu kılar"
+    },
     "language": {
-      "title": "Language",
-      "description": "Choose your preferred language for the app"
+      "title": "Dil",
+      "description": "Uygulama için tercih ettiğiniz dili seçin"
     },
     "unit": {
-      "title": "Measurement Unit",
-      "description": "Choose your preferred unit for blood pressure values",
+      "title": "Ölçüm Birimi",
+      "description": "Kan basıncı değerleri için birim seçin",
       "mmhg": {
-        "label": "mmHg (Millimeters of Mercury)",
-        "description": "Standard worldwide"
+        "label": "mmHg (Milimetre Cıva)",
+        "description": "Dünya genelinde standart"
       },
       "kpa": {
-        "label": "kPa (Kilopascals)",
-        "description": "Used in some regions"
+        "label": "kPa (Kilopaskal)",
+        "description": "Bazı bölgelerde kullanılır"
       },
-      "note": "ℹ️ Note: 1 kPa ≈ 7.5 mmHg. All values are stored in mmHg and converted for display."
+      "note": "ℹ️ Not: 1 kPa ≈ 7.5 mmHg. Tüm değerler mmHg olarak saklanır ve gösterim için dönüştürülür."
     },
     "guideline": {
-      "title": "Classification Guidelines",
-      "description": "Select the regional guidelines for blood pressure categorization",
-      "note": "ℹ️ Different regions use different thresholds for categorizing blood pressure levels. Choose the guideline recommended by your healthcare provider."
+      "title": "Sınıflandırma Kılavuzları",
+      "description": "Kategorizasyon için bölgesel kılavuzları seçin",
+      "note": "ℹ️ Sınıflandırma kılavuzları resmi tıbbi kuruluşlardan (AHA/ACC, WHO, ESC/ESH, JSH) alınmıştır. Sağlık uzmanınız kişisel durumunuza göre farklı eşikler kullanabilir. Daima doktorunuzun tavsiyelerine uyun."
     },
     "defaultLocation": {
-      "title": "Default Measurement Location",
-      "description": "Choose your preferred default location for blood pressure measurements",
+      "title": "Varsayılan Ölçüm Konumu",
+      "description": "Ölçümleriniz için tercih edilen varsayılan konumu seçin",
       "leftArm": {
-        "label": "Left Arm",
-        "description": "Standard measurement location"
+        "label": "Sol Kol",
+        "description": "Standart ölçüm konumu"
       },
       "rightArm": {
-        "label": "Right Arm",
-        "description": "Alternative arm measurement"
+        "label": "Sağ Kol",
+        "description": "Alternatif kol ölçümü"
       },
       "leftWrist": {
-        "label": "Left Wrist",
-        "description": "Wrist measurement (less accurate)"
+        "label": "Sol Bilek",
+        "description": "Bilekten ölçüm (daha az hassas)"
       },
       "rightWrist": {
-        "label": "Right Wrist",
-        "description": "Wrist measurement (less accurate)"
+        "label": "Sağ Bilek",
+        "description": "Bilekten ölçüm (daha az hassas)"
       }
     },
     "defaultPosture": {
-      "title": "Default Posture",
-      "description": "Choose your preferred default posture for blood pressure measurements",
+      "title": "Varsayılan Duruş",
+      "description": "Ölçümler için varsayılan vücut duruşunu seçin",
       "sitting": {
-        "label": "Sitting",
-        "description": "Standard measurement posture"
+        "label": "Oturarak",
+        "description": "Standart ölçüm duruşu"
       },
       "standing": {
-        "label": "Standing",
-        "description": "Standing measurement"
+        "label": "Ayakta",
+        "description": "Ayakta ölçüm"
       },
       "lying": {
-        "label": "Lying Down",
-        "description": "Lying down measurement"
+        "label": "Yatarak",
+        "description": "Yatarak ölçüm"
       }
     },
     "guidelinesComparison": {
-      "title": "Guidelines Comparison",
+      "title": "Kılavuz Karşılaştırması",
       "table": {
-        "category": "Category",
+        "category": "Kategori",
         "normal": "Normal",
-        "elevated": "Elevated",
-        "stage1": "Stage 1",
-        "stage2": "Stage 2",
-        "crisis": "Crisis"
+        "elevated": "Yüksekçe",
+        "stage1": "Evre 1",
+        "stage2": "Evre 2",
+        "crisis": "Kriz"
       }
     },
     "toast": {
       "saved": "Ayarlar Kaydedildi",
-      "preferenceUpdated": "{{setting}} tercihi g\u00fcncellendi"
+      "preferenceUpdated": "{{setting}} tercihi güncellendi"
     },
     "profile": {
-      "defaultName": "Alex"
+      "defaultName": "Misafir",
+      "age": "Yaş: {{age}}",
+      "bmi": "BMI: {{bmi}} ({{category}})",
+      "noAge": "Yaş: --",
+      "noBmi": "BMI: --"
+    },
+    "appSettings": {
+      "title": "Uygulama Ayarları"
+    },
+    "personalization": {
+      "title": "Kişiselleştirme",
+      "personalInfo": "Kişisel Bilgiler",
+      "privacyNote": "Cihazınızda yerel olarak saklanır. Asla paylaşılmaz veya yüklenmez.",
+      "fullName": "Ad Soyad",
+      "fullNamePlaceholder": "Adınızı girin",
+      "dateOfBirth": "Doğum Tarihi",
+      "dateOfBirthPlaceholder": "Doğum tarihi seçin",
+      "height": "Boy",
+      "heightPlaceholder": "Boyunuzu girin",
+      "gender": "Cinsiyet",
+      "genderPlaceholder": "Cinsiyet seçin",
+      "genderMale": "Erkek",
+      "genderFemale": "Kadın",
+      "genderOther": "Diğer",
+      "defaultWeight": "Varsayılan Kilo",
+      "defaultWeightPlaceholder": "Kilo girin",
+      "defaultWeightHint": "Yeni ölçümlerde kiloyu otomatik doldurur",
+      "defaultLocation": "Varsayılan Konum",
+      "defaultPosture": "Varsayılan Duruş"
+    },
+    "entryMode": {
+      "label": "Varsayılan Giriş Modu",
+      "description": "+ düğmesinin nasıl çalışacağını seçin",
+      "alwaysAsk": "Her Seferinde Sor",
+      "quickLog": "Hızlı Kayıt",
+      "guided": "Rehberli Giriş"
     },
     "dataPrivacy": {
-      "title": "Veri Gizlili\u011fi",
-      "localEncrypted": "Yerel \u015eifrelenmis Depolama:",
+      "title": "Veri Gizliliği",
+      "localEncrypted": "Yerel Şifreli Depolama:",
       "active": "Aktif",
       "biometricLock": "Biyometrik Kilit\n(FaceID/TouchID)",
-      "comingSoon": "Yak\u0131nda",
-      "comingSoonMessage": "Biyometrik kilit gelecek bir g\u00fcncellemede kullan\u0131labilir olacak."
+      "comingSoon": "Yakında",
+      "comingSoonMessage": "Biyometrik kilit gelecek bir güncellemede sunulacaktır."
     },
     "cloudSync": {
       "title": "Bulut Senkronizasyonu",
       "lastBackup": "Son Yedekleme: {{time}}",
-      "neverSynced": "Hi\u00e7 senkronize edilmedi",
+      "neverSynced": "Hiç senkronize edilmedi",
       "googleDrive": "Google Drive",
-      "syncNow": "\u015eimdi Senkronize Et",
-      "comingSoon": "Yak\u0131nda",
-      "comingSoonMessage": "Bulut senkronizasyonu gelecek bir g\u00fcncellemede kullan\u0131labilir olacak.",
-      "privacyWarning": "Verileriniz Google sunucular\u0131na y\u00fcklenecektir. Senkronize edildikten sonra sa\u011fl\u0131k verileriniz tam olarak gizli olmayacak ve Google'un gizlilik politikas\u0131na tabi olacakt\u0131r."
+      "syncNow": "Şimdi Senkronize Et",
+      "comingSoon": "Yakında",
+      "comingSoonMessage": "Bulut senkronizasyonu gelecek bir güncellemede sunulacaktır.",
+      "privacyWarning": "Verileriniz Google sunucularına yüklenecektir. Senkronize edildikten sonra sağlık verileriniz artık tamamen gizli olmayacak ve Google'ın gizlilik politikasına tabi olacaktır."
     },
     "bpLegend": {
-      "title": "{{guideline}} Standart G\u00f6sterge",
-      "normal": "Normal (Ye\u015fil)",
-      "elevated": "Y\u00fcksek (Sar\u0131)",
+      "title": "{{guideline}} Standart Göstergesi",
+      "normal": "Normal (Yeşil)",
+      "elevated": "Yüksekçe (Sarı)",
       "stage1": "Evre 1 (Turuncu)",
-      "stage2": "Evre 2 (K\u0131rm\u0131z\u0131)"
+      "stage2": "Evre 2 (Kırmızı)"
     },
-    "darkMode": "Karanl\u0131k Mod",
-    "useSystemDefault": "Sistem Varsay\u0131lan\u0131n\u0131 Kullan"
+    "detectRegion": {
+      "button": "Bölgemi Tespit Et",
+      "updated": "Ayarlar bölgenize göre güncellendi",
+      "noChange": "Ayarlarınız zaten bölgenizle eşleşiyor"
+    },
+    "darkMode": "Koyu Mod",
+    "useSystemDefault": "Sistem Varsayılanını Kullan",
+    "about": {
+      "title": "MedTracker Hakkında",
+      "disclaimer": "MedTracker sadece bilgilendirme amaçlı bir kan basıncı kayıt aracıdır. Tıbbi bir cihaz DEĞİLDİR ve kan basıncı ölçümü YAPMAZ.\n\nBu uygulama tıbbi tavsiye, teşhis veya tedavi sağlamaz. Tüm veriler yayınlanmış kılavuzlara dayanır ancak profesyonel tıbbi değerlendirmenin yerini tutamaz.\n\nTıbbi kararlar için daima bir sağlık uzmanına danışın. Acil durumlarda hemen 112'yi veya yerel acil servisleri arayın.",
+      "version": "Versiyon {{version}}"
+    }
   },
-  "newReading": {
-    "title": "New Reading",
-    "saveMeasurement": "Save Measurement",
-    "saving": "Saving...",
+  "preMeasurement": {
+    "title": "Ölçüme Hazırlan",
+    "skip": "Hazırlığı Atla",
+    "startMeasurement": "Ölçümü Başlat",
+    "skipWarning": {
+      "title": "Hazırlık Atlansın mı?",
+      "message": "Doğru sonuçlar için AHA/ACC kılavuzları ölçümden önce 5 dakika dinlenmeyi önerir. Hazırlık adımlarını atlamak istediğinize emin misiniz?",
+      "confirm": "Yine de Atla"
+    },
+    "checklist": {
+      "title": "Ölçüm Kontrol Listesi",
+      "subtitle": "Doğru ölçümler için bu AHA/ACC kılavuzlarını izleyin. Bu adımlar güvenilirliği artırır ancak tıbbi değerlendirme yerine geçmez.",
+      "rest": "Ölçümden önce 5 dakika sessizce dinlenin",
+      "posture": "Sırtınız destekli, ayaklarınız yere düz basacak şekilde oturun",
+      "arm": "Kolunuzu kalp hizasında düz bir zemine koyun",
+      "feet": "Ayaklarınızı düz tutun, bacak bacak üstüne atmayın",
+      "quiet": "Ölçüm sırasında konuşmaktan kaçının"
+    },
+    "breathing": {
+      "title": "Gevşeme Egzersizi",
+      "subtitle": "Sakin nefes almak, kaygı kaynaklı tansiyon yükselmelerini azaltmaya yardımcı olur",
+      "inhale": "Nefes Al",
+      "hold": "Tut",
+      "exhale": "Nefes Ver",
+      "cycle": "Döngü {{current}} / {{total}}",
+      "complete": "Nefes egzersizi tamamlandı"
+    },
+    "timer": {
+      "title": "Dinlenme Süresi",
+      "subtitle": "Ölçümünüze hazırlanırken rahatlayın",
+      "hint": "Sessizce oturun ve doğal nefes alın"
+    },
+    "ready": {
+      "title": "Hazırsınız!",
+      "subtitle": "Vücudunuz rahatladı ve doğru bir ölçüm için hazır"
+    }
+  },
+  "quickLog": {
+    "title": "Hızlı Kayıt",
+    "subtitle": "Deneyimli kullanıcılar için hızlı giriş",
+    "saveReading": "Ölçümü Kaydet",
+    "saving": "Kaydediliyor...",
     "alerts": {
       "error": {
-        "title": "Error",
-        "message": "Failed to save reading. Please try again."
+        "title": "Hata",
+        "message": "Ölçüm kaydedilemedi. Lütfen tekrar deneyin."
+      }
+    }
+  },
+  "newReading": {
+    "title": "Yeni Ölçüm",
+    "saveMeasurement": "Ölçümü Kaydet",
+    "saving": "Kaydediliyor...",
+    "alerts": {
+      "error": {
+        "title": "Hata",
+        "message": "Ölçüm kaydedilemedi. Lütfen tekrar deneyin."
+      }
+    }
+  },
+  "editReading": {
+    "title": "Ölçüm Detayları",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "saving": "Kaydediliyor...",
+    "deleteReading": "Ölçümü Sil",
+    "noData": "Ölçüm bulunamadı",
+    "derived": {
+      "pp": "Nabız Basıncı",
+      "map": "Ortalama Arter Basıncı",
+      "timeWindow": "Zaman Dilimi",
+      "window": {
+        "morning": "Sabah",
+        "day": "Gün Boyu",
+        "evening": "Akşam",
+        "night": "Gece"
+      }
+    },
+    "section": {
+      "measurement": "Ölçüm",
+      "details": "Detaylar",
+      "location": "Konum",
+      "posture": "Duruş",
+      "notes": "Notlar",
+      "notesPlaceholder": "Bu ölçüm hakkında not ekleyin...",
+      "weight": "Kilo",
+      "weightPlaceholder": "Kilo girin",
+      "bmi": "BMI"
+    },
+    "numpad": {
+      "enterSystolic": "Sistolik Girin",
+      "enterDiastolic": "Diyastolik Girin",
+      "enterPulse": "Nabız Girin"
+    },
+    "deleteConfirm": {
+      "title": "Ölçüm Silinsin mi?",
+      "message": "Bu ölçüm kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+      "confirm": "Sil",
+      "cancel": "İptal"
+    },
+    "alerts": {
+      "saveError": {
+        "title": "Kaydetme Başarısız",
+        "message": "Değişiklikler kaydedilemedi. Lütfen tekrar deneyin."
+      },
+      "deleteError": {
+        "title": "Silme Başarısız",
+        "message": "Ölçüm silinemedi. Lütfen tekrar deneyin."
       }
     }
   }

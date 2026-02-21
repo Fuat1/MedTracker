@@ -64,7 +64,8 @@
       "Bash(java -version:*)",
       "Bash(npm outdated:*)",
       "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(printenv:*)"
     ]
   },
   "model": "sonnet",

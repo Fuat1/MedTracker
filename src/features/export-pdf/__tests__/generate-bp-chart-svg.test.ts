@@ -31,6 +31,7 @@ const makeRecord = (sys: number, dia: number, ts: number): BPRecord => ({
   location: 'left_arm',
   posture: 'sitting',
   notes: null,
+  weight: null,
   createdAt: ts,
   updatedAt: ts,
   isSynced: false,

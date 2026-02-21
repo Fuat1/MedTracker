@@ -1,14 +1,15 @@
 {
   "app": {
     "name": "MedTracker",
-    "subtitle": "Blood Pressure Monitor"
+    "subtitle": "Pemantau Tekanan Darah"
   },
   "buttons": {
-    "save": "Save Reading",
-    "done": "Done",
-    "cancel": "Cancel",
-    "saveAnyway": "Save Anyway",
-    "back": "Back"
+    "save": "Simpan Catatan",
+    "done": "Selesai",
+    "cancel": "Batal",
+    "saveAnyway": "Tetap Simpan",
+    "back": "Kembali",
+    "continue": "Lanjutkan"
   },
   "units": {
     "mmhg": "mmHg",
@@ -21,40 +22,105 @@
     "analytics": "Analitik",
     "settings": "Pengaturan"
   },
+  "initialization": {
+    "error": "Kesalahan Inisialisasi",
+    "loading": "Menginisialisasi..."
+  },
   "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "bloodPressure": "Blood Pressure",
-    "pulse": "Pulse",
-    "systolic": "Systolic",
-    "diastolic": "Diastolic",
-    "pulseOptional": "Pulse (optional)",
-    "moreInfo": "More Info",
-    "newReading": "New Reading"
+    "loading": "Memuat...",
+    "error": "Kesalahan",
+    "success": "Berhasil",
+    "bloodPressure": "Tekanan Darah",
+    "pulse": "Nadi",
+    "systolic": "Sistolik",
+    "diastolic": "Diastolik",
+    "pulseOptional": "Nadi (opsional)",
+    "moreInfo": "Info Lebih Lanjut",
+    "newReading": "Catatan Baru"
   },
   "location": {
-    "leftArm": "Left Arm",
-    "rightArm": "Right Arm",
-    "leftWrist": "Left Wrist",
-    "rightWrist": "Right Wrist"
+    "leftArm": "Lengan Kiri",
+    "rightArm": "Lengan Kanan",
+    "leftWrist": "Pergelangan Kiri",
+    "rightWrist": "Pergelangan Kanan"
   },
   "posture": {
-    "sitting": "Sitting",
-    "standing": "Standing",
-    "lying": "Lying"
+    "sitting": "Duduk",
+    "standing": "Berdiri",
+    "lying": "Berbaring"
   },
   "time": {
-    "justNow": "Just now",
-    "minute_one": "{{count}} minute ago",
-    "minute_other": "{{count}} minutes ago",
-    "hour_one": "{{count}} hour ago",
-    "hour_other": "{{count}} hours ago",
-    "day_one": "{{count}} day ago",
-    "day_other": "{{count}} days ago"
+    "justNow": "Baru saja",
+    "minute_one": "{{count}} menit yang lalu",
+    "minute_other": "{{count}} menit yang lalu",
+    "hour_one": "{{count}} jam yang lalu",
+    "hour_other": "{{count}} jam yang lalu",
+    "day_one": "{{count}} hari yang lalu",
+    "day_other": "{{count}} hari yang lalu"
   },
+  "timeWindow": {
+    "morning": "Pagi",
+    "day": "Siang",
+    "evening": "Sore",
+    "night": "Malam"
+  },
+  "morningSurge": "Lonjakan Pagi",
+  "morningSurgeAlert": "Lonjakan pagi terdeteksi: +{{delta}} mmHg di atas rata-rata tadi malam",
   "a11y": {
-    "backspace": "Backspace",
-    "clear": "Clear"
+    "backspace": "Hapus",
+    "clear": "Bersihkan"
+  },
+  "timePeriod": {
+    "am": "AM",
+    "pm": "PM"
+  },
+  "dateTime": {
+    "selectTime": "Pilih Tanggal & Waktu",
+    "day": "Hari",
+    "hour": "Jam",
+    "minute": "Menit",
+    "setToNow": "Atur ke Sekarang"
+  },
+  "tags": {
+    "salt": "Tinggi Garam",
+    "stress": "Stres",
+    "alcohol": "Alkohol",
+    "exercise": "Olahraga",
+    "medication": "Obat-obatan",
+    "caffeine": "Kafein",
+    "poorSleep": "Kurang Tidur"
+  },
+  "weight": {
+    "label": "Berat Badan",
+    "kg": "kg",
+    "lbs": "lbs",
+    "addWeight": "Tambah berat"
+  },
+  "height": {
+    "label": "Tinggi Badan",
+    "cm": "cm",
+    "ft": "ft"
+  },
+  "bmi": {
+    "label": "BMI",
+    "underweight": "Berat Kurang",
+    "normal": "Normal",
+    "overweight": "Berat Lebih",
+    "obese": "Obesitas"
+  },
+  "age": {
+    "label": "Usia",
+    "years_one": "{{count}} tahun",
+    "years_other": "{{count}} tahun"
+  },
+  "entryMode": {
+    "title": "Catat Tekanan Darah",
+    "message": "Pilih metode input yang Anda sukai",
+    "quickLog": "Log Cepat",
+    "guided": "Input Terpandu (Disarankan)",
+    "rememberTitle": "Ingat pilihan ini?",
+    "rememberMessage": "Anda dapat mengubahnya di Pengaturan, atau tekan lama tombol + untuk melihat menu ini lagi.",
+    "rememberYes": "Ya, ingat",
+    "rememberNo": "Tidak, tanya setiap kali"
   }
 }

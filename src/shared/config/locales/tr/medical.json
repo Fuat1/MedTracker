@@ -1,19 +1,40 @@
 {
   "categories": {
     "normal": "Normal",
-    "elevated": "Yüksek (Normal Üstü)",
-    "stage1": "1. Evre Yüksek Tansiyon",
-    "stage2": "2. Evre Yüksek Tansiyon",
-    "crisis": "Hipertansif Kriz"
+    "elevated": "Yüksekçe",
+    "stage1": "Yüksek Tansiyon Evre 1",
+    "stage2": "Yüksek Tansiyon Evre 2",
+    "crisis": "Hipertansif Kriz",
+    "unknown": "Bilinmiyor"
   },
   "crisis": {
     "title": "⚠️ Hipertansif Kriz",
-    "message": "Bu ölçüm hipertansif bir krizi işaret etmektedir. Göğüs ağrısı, nefes darlığı veya şiddetli baş ağrısı gibi belirtiler yaşıyorsanız lütfen derhal tıbbi yardım alın."
+    "subtitle": "{{systolic}}/{{diastolic}} mmHg ölçümünüz normal sınırları önemli ölçüde aşmaktadır.",
+    "symptomsQuestion": "Aşağıdaki belirtilerden herhangi birini yaşıyor musunuz?",
+    "symptoms": {
+      "chestPain": "Şiddetli göğüs ağrısı",
+      "headache": "Şiddetli baş ağrısı",
+      "breathShortness": "Nefes darlığı",
+      "visionChanges": "Görme değişiklikleri veya bulanıklık",
+      "difficultySpeak": "Konuşma zorluğu",
+      "backPain": "Sırt ağrısı",
+      "numbness": "Uyuşma veya karıncalanma",
+      "weakness": "Halsizlik/Güç kaybı (özellikle vücudun tek tarafında)"
+    },
+    "emergency": {
+      "title": "112 ACİL SERVİSİ ARAYIN",
+      "message": "Tıbbi bir acil duruma işaret edebilecek belirtiler bildirdiniz. Derhal acil servisleri arayın."
+    },
+    "urgency": {
+      "title": "Sağlık Uzmanınızla İletişime Geçin",
+      "message": "Herhangi bir belirti bildirilmedi. Aynı gün içinde değerlendirme için derhal sağlık kuruluşunuzla iletişime geçin. Randevu gününüzü beklemeyin."
+    },
+    "disclaimer": "Bu uygulama tıbbi bir cihaz değildir. Bu uyarı, yayınlanmış tıbbi kılavuzlara dayalı otomatik bir uyarıdır ve tıbbi tavsiye niteliği taşımaz."
   },
   "guidelines": {
     "ahaAcc": {
       "name": "AHA/ACC",
-      "fullName": "Amerikan Kalp Derneği (ABD)",
+      "fullName": "Amerikan Kalp Cemiyeti (ABD)",
       "regions": "Amerika, Uluslararası"
     },
     "escEsh": {
@@ -23,17 +44,52 @@
     },
     "jsh": {
       "name": "JSH",
-      "fullName": "Japonya Hipertansiyon Derneği",
+      "fullName": "Japon Hipertansiyon Derneği",
       "regions": "Japonya, Doğu Asya"
     },
     "who": {
-      "name": "DSÖ (WHO)",
+      "name": "WHO (DSÖ)",
       "fullName": "Dünya Sağlık Örgütü",
       "regions": "Uluslararası"
     }
   },
   "measurementSettings": {
-    "location": "Ölçüm Yeri",
-    "posture": "Duruş"
+    "location": "Ölçüm Konumu",
+    "posture": "Vücut Duruşu"
+  },
+  "derivedMetrics": {
+    "sections": {
+      "whatIsIt": "Nedir?",
+      "formula": "Formül",
+      "normalRanges": "Normal Aralıklar",
+      "clinicalSignificance": "Klinik Önem"
+    },
+    "disclaimer": "Bu bilgiler sadece eğitim amaçlıdır. Kan basıncı ölçümlerinizin tıbbi yorumu için daima sağlık uzmanınıza danışın.",
+    "pp": {
+      "title": "Nabız Basıncı (PP)",
+      "abbr": "PP",
+      "definition": "Sistolik ve diyastolik kan basıncı arasındaki farktır.",
+      "formula": "PP = Sistolik − Diyastolik",
+      "ranges": {
+        "low": "Düşük (Dar): <40 mmHg",
+        "normal": "Normal: 40-60 mmHg",
+        "high": "Yüksek (Geniş): >60 mmHg"
+      },
+      "significance": "Yüksek nabız basıncı (>60 mmHg) arteriyel sertliğe ve artmış kardiyovasküler riske işaret edebilir. Sürekli yüksek seyretmesi durumunda doktorunuza danışın.",
+      "reference": "AHA/ACC kılavuzlarına dayanmaktadır"
+    },
+    "map": {
+      "title": "Ortalama Arter Basıncı (MAP)",
+      "abbr": "MAP",
+      "definition": "Tek bir kardiyak döngü sırasındaki ortalama arteriyel basınçtır.",
+      "formula": "MAP = (Sistolik + 2×Diyastolik) / 3",
+      "ranges": {
+        "low": "Düşük: <70 mmHg",
+        "normal": "Normal: 70-100 mmHg",
+        "high": "Yüksek: >100 mmHg"
+      },
+      "significance": "MAP, organ perfüzyon basıncını gösterir. 60 mmHg'nin altındaki değerler organ fonksiyonlarını tehlikeye atabilir. 100 mmHg'nin üzerindeki değerler hipertansiyonu gösterir.",
+      "reference": "AHA/ACC kılavuzlarına dayanmaktadır"
+    }
   }
 }

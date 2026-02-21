@@ -7,6 +7,7 @@ import { generateBPChartSvg } from './generate-bp-chart-svg';
 import { generateReportHtml } from './generate-report-html';
 import { convertHtmlToPdf } from '../../../shared/api';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
+import { calculateAge, formatHeight } from '../../../entities/user-profile';
 import i18n from '../../../shared/lib/i18n';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 import type { ReportOptions } from './generate-report-html';
@@ -21,7 +22,7 @@ export interface ExportPdfOptions {
 export function useExportPdf() {
   const [activeAction, setActiveAction] = useState<'share' | 'save' | null>(null);
   const isExporting = activeAction !== null;
-  const { guideline } = useSettingsStore();
+  const { guideline, userName: storedUserName, dateOfBirth, gender, height: userHeight, heightUnit, weightUnit } = useSettingsStore();
 
   const buildPdf = useCallback(
     async (records: BPRecord[], options: ExportPdfOptions): Promise<string> => {
@@ -29,7 +30,7 @@ export function useExportPdf() {
       const chartSvg = generateBPChartSvg(records);
       const reportOptions: ReportOptions = {
         period: options.period,
-        userName: options.userName ?? 'Patient',
+        userName: options.userName ?? storedUserName ?? 'Patient',
         generatedDate: new Date().toLocaleDateString('en-US', {
           month: 'long',
           day: 'numeric',
@@ -39,6 +40,10 @@ export function useExportPdf() {
         doctorNote: options.doctorNote,
         guideline,
         includePPMAP: options.includePPMAP ?? false,
+        age: calculateAge(dateOfBirth),
+        height: userHeight != null ? formatHeight(userHeight, heightUnit) : null,
+        weightUnit,
+        gender,
       };
       const html = generateReportHtml(records, stats, chartSvg, reportOptions);
       const fileName = `bp-report-${Date.now()}`;
@@ -48,7 +53,7 @@ export function useExportPdf() {
       }
       return filePath;
     },
-    [guideline],
+    [guideline, storedUserName, dateOfBirth, gender, userHeight, heightUnit, weightUnit],
   );
 
   const exportPdf = useCallback(

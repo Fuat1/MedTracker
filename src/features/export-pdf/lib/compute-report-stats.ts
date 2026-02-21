@@ -26,6 +26,10 @@ export interface ReportStats {
   minDiastolic: number;
   maxDiastolic: number;
   categoryBreakdown: CategoryStat[];
+  avgWeight: number | null;
+  minWeight: number | null;
+  maxWeight: number | null;
+  recordsWithWeight: number;
 }
 
 /** Range description per guideline + category */
@@ -97,6 +101,10 @@ export function computeReportStats(
       minDiastolic: 0,
       maxDiastolic: 0,
       categoryBreakdown: [],
+      avgWeight: null,
+      minWeight: null,
+      maxWeight: null,
+      recordsWithWeight: 0,
     };
   }
 
@@ -128,6 +136,10 @@ export function computeReportStats(
     color: CATEGORY_COLORS[key],
   }));
 
+  const weights = records
+    .map(r => r.weight)
+    .filter((w): w is number => w !== null);
+
   return {
     total: records.length,
     avgSystolic: round(sum(systolics) / systolics.length),
@@ -140,5 +152,9 @@ export function computeReportStats(
     minDiastolic: Math.min(...diastolics),
     maxDiastolic: Math.max(...diastolics),
     categoryBreakdown,
+    avgWeight: weights.length > 0 ? Math.round((sum(weights) / weights.length) * 10) / 10 : null,
+    minWeight: weights.length > 0 ? Math.min(...weights) : null,
+    maxWeight: weights.length > 0 ? Math.max(...weights) : null,
+    recordsWithWeight: weights.length,
   };
 }

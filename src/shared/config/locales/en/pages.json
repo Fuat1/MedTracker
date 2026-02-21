@@ -8,7 +8,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening"
     },
-    "userName": "Alex",
+    "userName": "Guest",
     "bpReadings": "Blood Pressure readings",
     "last7Days": "Last 7 Days Trend",
     "noReadingsYet": "No readings yet",
@@ -73,6 +73,9 @@
       "from": "From",
       "to": "To"
     },
+    "profile": {
+      "age": "{{age}} yrs"
+    },
     "doctorNote": {
       "label": "Doctor Notes (Optional)",
       "placeholder": "Add notes for your doctor (e.g., medications, symptoms...)"
@@ -99,6 +102,11 @@
       "minSystolic": "Min Systolic",
       "maxSystolic": "Max Systolic",
       "rangeDia": "Range (Dia)",
+      "avgWeight": "Avg Weight",
+      "weightRange": "Weight Range",
+      "profileAge": "Age",
+      "profileHeight": "Height",
+      "profileGender": "Gender",
       "bpTrend": "Blood Pressure Trend",
       "columns": {
         "dateTime": "Date & Time",
@@ -111,11 +119,13 @@
         "range": "Range",
         "count": "Count",
         "location": "Location",
-        "notes": "Notes"
+        "notes": "Notes",
+        "weight": "Weight"
       },
       "disclaimer": "This report is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.",
       "guidelineNote": "Blood pressure classifications are based on {{guideline}} guidelines.",
       "consultNote": "Consult your healthcare provider to interpret these readings in the context of your overall health.",
+      "fullDisclaimer": "DISCLAIMER: This report is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Blood pressure classifications are based on {{guideline}} guidelines. Consult your healthcare provider to interpret these readings in the context of your overall health status and medical history.",
       "fileName": "bp-report",
       "noData": "No readings in this period to export.",
       "noDataTitle": "No Data",
@@ -127,6 +137,15 @@
       "saveSuccessMessage": "Saved as {{fileName}}",
       "saveFailedTitle": "Save Failed",
       "saveFailedMessage": "Could not save the PDF. Please check storage permissions and try again."
+    },
+    "weightTrend": {
+      "title": "Weight Trend",
+      "avgWeight": "Avg Weight",
+      "weightRange": "Weight Range",
+      "bmiTrend": "BMI Trend",
+      "noData": "No weight data recorded",
+      "correlation": "Weight & BP Correlation",
+      "correlationDisclaimer": "Correlation does not imply causation. Consult your healthcare provider for medical advice."
     },
     "circadian": {
       "title": "Circadian Patterns",
@@ -209,7 +228,7 @@
     "guideline": {
       "title": "Classification Guidelines",
       "description": "Select the regional guidelines for blood pressure categorization",
-      "note": "ℹ️ Different regions use different thresholds for categorizing blood pressure levels. Choose the guideline recommended by your healthcare provider."
+      "note": "ℹ️ Classification guidelines are from official medical organizations (AHA/ACC, WHO, ESC/ESH, JSH). Your healthcare provider may use different thresholds based on your individual health status, age, and risk factors. Always follow your provider's recommendations."
     },
     "defaultLocation": {
       "title": "Default Measurement Location",
@@ -263,7 +282,35 @@
       "preferenceUpdated": "{{setting}} preference updated"
     },
     "profile": {
-      "defaultName": "Alex"
+      "defaultName": "Guest",
+      "age": "Age: {{age}}",
+      "bmi": "BMI: {{bmi}} ({{category}})",
+      "noAge": "Age: --",
+      "noBmi": "BMI: --"
+    },
+    "appSettings": {
+      "title": "App Settings"
+    },
+    "personalization": {
+      "title": "Personalization",
+      "personalInfo": "Personal Information",
+      "privacyNote": "Stored locally on your device. Never shared or uploaded.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your name",
+      "dateOfBirth": "Date of Birth",
+      "dateOfBirthPlaceholder": "Select date of birth",
+      "height": "Height",
+      "heightPlaceholder": "Enter height",
+      "gender": "Gender",
+      "genderPlaceholder": "Select gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderOther": "Other",
+      "defaultWeight": "Default Weight",
+      "defaultWeightPlaceholder": "Enter weight",
+      "defaultWeightHint": "Pre-fills weight on new readings",
+      "defaultLocation": "Default Location",
+      "defaultPosture": "Default Posture"
     },
     "entryMode": {
       "label": "Default Entry Mode",
@@ -303,7 +350,12 @@
       "noChange": "Your settings already match your region"
     },
     "darkMode": "Dark Mode",
-    "useSystemDefault": "Use System Default"
+    "useSystemDefault": "Use System Default",
+    "about": {
+      "title": "About MedTracker",
+      "disclaimer": "MedTracker is a blood pressure logging and tracking tool for informational purposes only. It is NOT a medical device and does NOT measure blood pressure.\n\nThis app does not provide medical advice, diagnosis, or treatment. All health data and classifications are based on published medical guidelines but should not replace professional medical evaluation.\n\nAlways consult a qualified healthcare provider for medical advice, diagnosis, and treatment decisions. In case of emergency, call 911 or your local emergency services immediately.",
+      "version": "Version {{version}}"
+    }
   },
   "preMeasurement": {
     "title": "Prepare for Measurement",
@@ -316,7 +368,7 @@
     },
     "checklist": {
       "title": "Measurement Checklist",
-      "subtitle": "Follow these AHA/ACC guidelines for accurate readings",
+      "subtitle": "Follow these AHA/ACC guidelines for accurate readings. These steps improve measurement reliability but do not replace proper medical evaluation.",
       "rest": "Rest quietly for 5 minutes before measuring",
       "posture": "Sit with back supported and feet flat on floor",
       "arm": "Rest arm at heart level on a flat surface",
@@ -388,7 +440,10 @@
       "location": "Location",
       "posture": "Posture",
       "notes": "Notes",
-      "notesPlaceholder": "Add notes about this reading..."
+      "notesPlaceholder": "Add notes about this reading...",
+      "weight": "Weight",
+      "weightPlaceholder": "Enter weight",
+      "bmi": "BMI"
     },
     "numpad": {
       "enterSystolic": "Enter Systolic",

@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { getGreetingKey } from '../../../shared/lib/greeting-utils';
 import { FONTS } from '../../../shared/config/theme';
 
@@ -15,6 +16,7 @@ interface PageHeaderProps {
 export function PageHeader({ variant, title }: PageHeaderProps) {
   const { t } = useTranslation('pages');
   const { colors, typography } = useTheme();
+  const { userName } = useSettingsStore();
 
   return (
     <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
@@ -24,7 +26,7 @@ export function PageHeader({ variant, title }: PageHeaderProps) {
             {t(getGreetingKey())},
           </Text>
           <Text style={[styles.userName, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
-            {t('home.userName')}
+            {userName ?? t('home.userName')}
           </Text>
         </View>
       ) : (

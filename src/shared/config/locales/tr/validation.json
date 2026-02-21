@@ -2,10 +2,10 @@
   "errors": {
     "systolicRequired": "Sistolik değer gereklidir",
     "diastolicRequired": "Diyastolik değer gereklidir",
-    "systolicRange": "Sistolik {{min}} ile {{max}} arasında olmalıdır",
-    "diastolicRange": "Diyastolik {{min}} ile {{max}} arasında olmalıdır",
+    "systolicRange": "Sistolik değer {{min}} ile {{max}} arasında olmalıdır",
+    "diastolicRange": "Diyastolik değer {{min}} ile {{max}} arasında olmalıdır",
     "pulseRange": "Nabız {{min}} ile {{max}} arasında olmalıdır",
-    "systolicGreater": "Sistolik, diyastolik değerden büyük olmalıdır",
+    "systolicGreater": "Sistolik değer diyastolik değerden büyük olmalıdır",
     "validationError": "Doğrulama Hatası",
     "failedToSave": "Ölçüm kaydedilemedi"
   }

@@ -1,14 +1,15 @@
 {
   "app": {
     "name": "MedTracker",
-    "subtitle": "Tansiyon Takipçisi"
+    "subtitle": "Kan Basıncı Takibi"
   },
   "buttons": {
     "save": "Ölçümü Kaydet",
     "done": "Bitti",
     "cancel": "İptal",
     "saveAnyway": "Yine de Kaydet",
-    "back": "Geri"
+    "back": "Geri",
+    "continue": "Devam Et"
   },
   "units": {
     "mmhg": "mmHg",
@@ -16,16 +17,20 @@
     "bpm": "BPM"
   },
   "navigation": {
-    "home": "Ana Sayfa",
+    "home": "Anasayfa",
     "history": "Geçmiş",
-    "analytics": "Analitik",
+    "analytics": "Analizler",
     "settings": "Ayarlar"
+  },
+  "initialization": {
+    "error": "Başlatma Hatası",
+    "loading": "Başlatılıyor..."
   },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
     "success": "Başarılı",
-    "bloodPressure": "Tansiyon",
+    "bloodPressure": "Kan Basıncı",
     "pulse": "Nabız",
     "systolic": "Sistolik",
     "diastolic": "Diyastolik",
@@ -53,8 +58,69 @@
     "day_one": "{{count}} gün önce",
     "day_other": "{{count}} gün önce"
   },
+  "timeWindow": {
+    "morning": "Sabah",
+    "day": "Gündüz",
+    "evening": "Akşam",
+    "night": "Gece"
+  },
+  "morningSurge": "Sabah Dalgası",
+  "morningSurgeAlert": "Sabah dalgası tespit edildi: Dün geceki ortalamanın +{{delta}} mmHg üzerinde",
   "a11y": {
-    "backspace": "Silme",
+    "backspace": "Geri Sil",
     "clear": "Temizle"
+  },
+  "timePeriod": {
+    "am": "ÖÖ",
+    "pm": "ÖS"
+  },
+  "dateTime": {
+    "selectTime": "Tarih ve Saat Seç",
+    "day": "Gün",
+    "hour": "Saat",
+    "minute": "Dakika",
+    "setToNow": "Şimdiye Ayarla"
+  },
+  "tags": {
+    "salt": "Yüksek Tuz",
+    "stress": "Stres",
+    "alcohol": "Alkol",
+    "exercise": "Egzersiz",
+    "medication": "İlaç",
+    "caffeine": "Kafein",
+    "poorSleep": "Kötü Uyku"
+  },
+  "weight": {
+    "label": "Kilo",
+    "kg": "kg",
+    "lbs": "lbs",
+    "addWeight": "Kilo ekle"
+  },
+  "height": {
+    "label": "Boy",
+    "cm": "cm",
+    "ft": "ft"
+  },
+  "bmi": {
+    "label": "BMI (VKİ)",
+    "underweight": "Zayıf",
+    "normal": "Normal",
+    "overweight": "Fazla Kilolu",
+    "obese": "Obez"
+  },
+  "age": {
+    "label": "Yaş",
+    "years_one": "{{count}} yaş",
+    "years_other": "{{count}} yaş"
+  },
+  "entryMode": {
+    "title": "Kan Basıncı Kaydı",
+    "message": "Tercih ettiğiniz giriş yöntemini seçin",
+    "quickLog": "Hızlı Kayıt",
+    "guided": "Rehberli Giriş (Önerilen)",
+    "rememberTitle": "Bu seçim hatırlansın mı?",
+    "rememberMessage": "Bunu Ayarlar'dan değiştirebilir veya bu menüyü tekrar görmek için + düğmesine uzun basabilirsiniz.",
+    "rememberYes": "Evet, hatırla",
+    "rememberNo": "Hayır, her seferinde sor"
   }
 }

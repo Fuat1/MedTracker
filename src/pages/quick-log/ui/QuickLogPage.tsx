@@ -22,6 +22,7 @@ import type { BPRecord } from '../../../shared/api/bp-repository';
 import { detectMorningSurge } from '../../../shared/lib';
 import { TagPickerModal } from '../../../widgets/tag-selector';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
+import { getWeightDisplayValue, parseWeightToKg } from '../../../entities/user-profile';
 
 export function QuickLogPage() {
   const { t } = useTranslation('pages');
@@ -30,7 +31,7 @@ export function QuickLogPage() {
   const { t: tWidgets } = useTranslation('widgets');
   const { colors, fontScale, typography } = useTheme();
   const navigation = useNavigation();
-  const { guideline, defaultLocation, defaultPosture } = useSettingsStore();
+  const { guideline, defaultLocation, defaultPosture, defaultWeight, weightUnit } = useSettingsStore();
   const recordBP = useRecordBP();
   const queryClient = useQueryClient();
 
@@ -43,6 +44,11 @@ export function QuickLogPage() {
   const [crisisVisible, setCrisisVisible] = useState(false);
   const [selectedTags, setSelectedTags] = useState<TagKey[]>([]);
   const [tagPickerVisible, setTagPickerVisible] = useState(false);
+  const [weightText, setWeightText] = useState(() => {
+    if (defaultWeight == null) return '';
+    return String(getWeightDisplayValue(defaultWeight, weightUnit));
+  });
+  const [weightFocused, setWeightFocused] = useState(false);
 
   const handleSubmit = async () => {
     if (!validation.isValid || !systolicNum || !diastolicNum) {
@@ -58,6 +64,9 @@ export function QuickLogPage() {
 
   const saveRecord = async () => {
     try {
+      const parsedWeight = weightText.trim() ? parseFloat(weightText) : NaN;
+      const weightKg = !isNaN(parsedWeight) ? parseWeightToKg(parsedWeight, weightUnit) : null;
+
       await recordBP.mutateAsync({
         systolic: systolicNum!,
         diastolic: diastolicNum!,
@@ -65,6 +74,7 @@ export function QuickLogPage() {
         timestamp: Math.floor(measurementTime.getTime() / 1000),
         location: defaultLocation,
         posture: defaultPosture,
+        weight: weightKg,
         tags: selectedTags.length > 0 ? selectedTags : undefined,
       });
 
@@ -99,6 +109,10 @@ export function QuickLogPage() {
   const tagPillBg = hasTags ? colors.accent + '15' : 'transparent';
   const tagPillBorder = hasTags ? colors.accent : colors.border;
   const tagPillColor = hasTags ? colors.accent : colors.textSecondary;
+  const hasWeight = weightText.trim().length > 0;
+  const weightPillBg = weightFocused ? colors.accent + '10' : hasWeight ? colors.accent + '15' : 'transparent';
+  const weightPillBorder = weightFocused || hasWeight ? colors.accent : colors.border;
+  const weightPillColor = weightFocused || hasWeight ? colors.accent : colors.textSecondary;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -142,20 +156,37 @@ export function QuickLogPage() {
               onChange={setMeasurementTime}
               disabled={recordBP.isPending}
             />
-            <Pressable
-              style={[styles.tagPill, { backgroundColor: tagPillBg, borderColor: tagPillBorder }]}
-              onPress={() => setTagPickerVisible(true)}
-              disabled={recordBP.isPending}
-              accessibilityRole="button"
-              accessibilityLabel={tWidgets('tagSelector.title')}
-            >
-              <Icon name="pricetags-outline" size={13} color={tagPillColor} />
-              <Text style={[styles.tagPillText, { color: tagPillColor, fontSize: 12 * fontScale }]}>
-                {hasTags
-                  ? tWidgets('tagSelector.tagCount', { count: selectedTags.length })
-                  : tWidgets('tagSelector.addTags')}
-              </Text>
-            </Pressable>
+            <View style={styles.pillsRow}>
+              <Pressable
+                style={[styles.weightPill, { backgroundColor: weightPillBg, borderColor: weightPillBorder }]}
+                onPress={() => setWeightFocused(true)}
+                disabled={recordBP.isPending}
+                accessibilityRole="button"
+                accessibilityLabel={tCommon('weight.label')}
+              >
+                <Icon name="scale-outline" size={13} color={weightPillColor} />
+                <Text style={[styles.weightInput, { color: weightText ? weightPillColor : colors.textTertiary, fontSize: 12 * fontScale }]}>
+                  {weightText || '--'}
+                </Text>
+                <Text style={[styles.weightUnitText, { color: weightPillColor, fontSize: 12 * fontScale }]}>
+                  {tCommon(`weight.${weightUnit}`)}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.tagPill, { backgroundColor: tagPillBg, borderColor: tagPillBorder }]}
+                onPress={() => setTagPickerVisible(true)}
+                disabled={recordBP.isPending}
+                accessibilityRole="button"
+                accessibilityLabel={tWidgets('tagSelector.title')}
+              >
+                <Icon name="pricetags-outline" size={13} color={tagPillColor} />
+                <Text style={[styles.tagPillText, { color: tagPillColor, fontSize: 12 * fontScale }]}>
+                  {hasTags
+                    ? tWidgets('tagSelector.tagCount', { count: selectedTags.length })
+                    : tWidgets('tagSelector.addTags')}
+                </Text>
+              </Pressable>
+            </View>
           </View>
 
           {/* Value cards row */}
@@ -173,7 +204,7 @@ export function QuickLogPage() {
                   shadowOpacity: colors.shadowOpacity,
                 },
               ]}
-              onPress={() => setActiveField('systolic')}
+              onPress={() => { setWeightFocused(false); setActiveField('systolic'); }}
               activeOpacity={0.85}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
@@ -215,7 +246,7 @@ export function QuickLogPage() {
                   shadowOpacity: colors.shadowOpacity,
                 },
               ]}
-              onPress={() => setActiveField('diastolic')}
+              onPress={() => { setWeightFocused(false); setActiveField('diastolic'); }}
               activeOpacity={0.85}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
@@ -252,7 +283,7 @@ export function QuickLogPage() {
                   shadowOpacity: colors.shadowOpacity,
                 },
               ]}
-              onPress={() => setActiveField('pulse')}
+              onPress={() => { setWeightFocused(false); setActiveField('pulse'); }}
               activeOpacity={0.85}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
@@ -299,9 +330,10 @@ export function QuickLogPage() {
         {/* ── Bottom section: numpad + save ── */}
         <View style={styles.bottomSection}>
           <Numpad
-            value={getCurrentValue()}
-            onValueChange={handleNumpadChange}
-            maxLength={3}
+            value={weightFocused ? weightText : getCurrentValue()}
+            onValueChange={weightFocused ? setWeightText : handleNumpadChange}
+            maxLength={weightFocused ? 6 : 3}
+            allowDecimal={weightFocused}
             disabled={recordBP.isPending}
             compact={hasCategory}
           />
@@ -434,6 +466,32 @@ const styles = StyleSheet.create({
   valueUnit: {
     fontFamily: FONTS.regular,
     marginTop: 2,
+  },
+
+  // ── Pills row ──
+  pillsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  weightPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  weightInput: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    minWidth: 24,
+    textAlign: 'center',
+  },
+  weightUnitText: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
   },
 
   // ── Category badge ──

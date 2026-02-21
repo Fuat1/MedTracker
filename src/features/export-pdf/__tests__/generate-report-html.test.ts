@@ -51,6 +51,10 @@ const stubStats: ReportStats = {
     { key: 'normal', label: 'Normal', range: '<120/<80', count: 3, percent: 60, color: '#22c55e' },
     { key: 'stage_1', label: 'Stage 1', range: '130-139', count: 2, percent: 40, color: '#f97316' },
   ],
+  avgWeight: null,
+  minWeight: null,
+  maxWeight: null,
+  recordsWithWeight: 0,
 };
 
 const stubRecords: BPRecord[] = [
@@ -64,6 +68,7 @@ const stubRecords: BPRecord[] = [
     location: 'left_arm',
     posture: 'sitting',
     notes: null,
+    weight: null,
     createdAt: 0,
     updatedAt: 0,
     isSynced: false,
