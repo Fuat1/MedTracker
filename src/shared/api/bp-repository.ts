@@ -50,6 +50,7 @@ export interface BPRecordInput {
   posture?: MeasurementPosture;
   notes?: string | null;
   weight?: number | null;
+  isSynced?: boolean;
 }
 
 // Convert database row to domain object
@@ -89,7 +90,7 @@ export async function insertBPRecord(input: BPRecordInput): Promise<BPRecord> {
     weight: input.weight ?? null,
     createdAt: now,
     updatedAt: now,
-    isSynced: false,
+    isSynced: input.isSynced ?? false,
   };
 
   await db.execute(
@@ -188,6 +189,10 @@ export async function updateBPRecord(
   if (input.weight !== undefined) {
     updates.push('weight = ?');
     values.push(input.weight);
+  }
+  if (input.isSynced !== undefined) {
+    updates.push('is_synced = ?');
+    values.push(input.isSynced ? 1 : 0);
   }
 
   if (updates.length === 0) {

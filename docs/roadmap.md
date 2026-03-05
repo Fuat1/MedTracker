@@ -63,7 +63,7 @@ src/features/delete-bp/            ← useDeleteBP mutation ✅
 src/pages/edit-reading/ui/EditReadingPage.tsx ← Detail/edit/delete modal page ✅
 ```
 
-## Phase 2: Advanced Analytics (Q2 2026)
+## Phase 2: Advanced Analytics (Q2 2026) ✅
 
 ### 2.1 Circadian Analysis ✅
 
@@ -109,7 +109,7 @@ src/widgets/correlation-card/ui/CorrelationCard.tsx ← Analytics insights displ
 src/features/manage-tags/                      ← TanStack Query hooks (built-in + custom) ✅
 ```
 
-### 2.4 Personalization & Per-Reading Weight Tracking
+### 2.4 Personalization & Per-Reading Weight Tracking ✅
 
 - Unified **Personalization** section at top of Settings page, grouping profile + measurement defaults + classification guidelines + unit + BP legend
 - **App Settings** section below Personalization, grouping entry mode + theme + senior mode + high contrast + language
@@ -199,7 +199,7 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete — Personalization & weight tracking in progress, Platform sync remaining
+**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete, ✅ Personalization & weight tracking complete — Platform sync remaining
 **Tier 3 (Nice-to-Have)**: Medication tracking, Voice logging
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 

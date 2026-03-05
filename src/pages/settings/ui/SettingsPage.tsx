@@ -23,6 +23,8 @@ import { getLocales } from 'react-native-localize';
 import { getSettingsForRegion } from '../../../shared/lib/region-settings';
 import { useQuery } from '@tanstack/react-query';
 import { getBPRecords } from '../../../shared/api/bp-repository';
+import { useSyncHealthPlatform } from '../../../features/health-sync/useSyncHealthPlatform';
+import { Platform } from 'react-native';
 
 export function SettingsPage() {
   const { t } = useTranslation('pages');
@@ -82,6 +84,9 @@ export function SettingsPage() {
   const bmi = calculateBMI(latestWeight, height);
   const bmiCategory = bmi != null ? getBMICategory(bmi) : null;
   const age = calculateAge(dateOfBirth);
+
+  const { mutate: syncHealth, isPending: isSyncingHealth } = useSyncHealthPlatform();
+  const platformName = Platform.select({ ios: 'Apple Health', android: 'Health Connect', default: 'Health' });
 
   const showSavedToast = useCallback((setting: string) => {
     Toast.show({
@@ -899,6 +904,47 @@ export function SettingsPage() {
         </Animated.View>
 
         {/* ═══════════════════ DATA & PRIVACY SECTION ═══════════════════ */}
+
+        {/* Health Integration Card */}
+        <Animated.View
+          entering={FadeInUp.delay(525).duration(500)}
+          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+        >
+          <View style={styles.cardHeaderRow}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+              <Icon name="fitness-outline" size={20} color={colors.accent} />
+            </View>
+            <View style={styles.cardHeaderTextCol}>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                {platformName}
+              </Text>
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                {t('settings.healthSync.description', { defaultValue: `${platformName} Sync`, platform: platformName })}
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={[
+                styles.filledButton, 
+                { backgroundColor: colors.accent },
+                isSyncingHealth && { opacity: 0.7 }
+              ]}
+              onPress={() => syncHealth()}
+              disabled={isSyncingHealth}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.healthSync.syncNow', { defaultValue: 'Sync Health Data' })}
+            >
+              <Text style={[styles.filledButtonText, { color: colors.surface, fontSize: typography.sm }]}>
+                {isSyncingHealth 
+                  ? t('settings.healthSync.syncing', { defaultValue: 'Syncing...' }) 
+                  : t('settings.healthSync.syncNow', { defaultValue: 'Sync Health Data' })
+                }
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.View>
 
         {/* Data Privacy Card */}
         <Animated.View
