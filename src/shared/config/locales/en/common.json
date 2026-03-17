@@ -124,6 +124,15 @@
       "syncFailed": "Sync Failed"
     }
   },
+  "shared": {
+    "statCard": {
+      "a11y": "{{label}} {{value}} {{unit}}",
+      "a11yWithTrend": "{{label}} {{value}} {{unit}}, trend {{trend}} {{trendValue}}"
+    },
+    "collapsibleCard": {
+      "hint": "Double tap to expand or collapse"
+    }
+  },
   "entryMode": {
     "title": "Log Blood Pressure",
     "message": "Choose your preferred entry method",
