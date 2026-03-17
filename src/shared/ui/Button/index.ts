@@ -1,5 +1,5 @@
 export { Button, ButtonText, ButtonIcon, ButtonSpinner } from './Button';
-// export { ButtonGroup } from './ButtonGroup'; // Uncomment in Task 3
+export { ButtonGroup } from './ButtonGroup';
 export { usePressScale, useFabEntry } from './button-animations';
 export type {
   ButtonProps,
