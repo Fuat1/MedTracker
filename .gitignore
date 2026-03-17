@@ -66,6 +66,12 @@ yarn-error.log
 # testing
 /coverage
 
+# Worktrees
+.worktrees/
+
+# Superpowers
+.superpowers/
+
 # Yarn
 .yarn/*
 !.yarn/patches
