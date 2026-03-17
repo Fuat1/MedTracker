@@ -1,0 +1,38 @@
+{
+    "title": "Lekovi",
+    "subtitle": "Praćenje adherencije & podsetnici",
+    "todayTitle": "Lekovi za danas",
+    "emptyTitle": "Nema lekova",
+    "emptyState": "Dodajte svoje lekove za praćenje adherencije i postavljanje dnevnih podsetnika.",
+    "add": "Dodaj lek",
+    "edit": "Izmeni lek",
+    "name": "NAZIV LEKA",
+    "namePlaceholder": "npr. Amlodipin",
+    "dosage": "DOZA",
+    "dosagePlaceholder": "npr. 5mg, 1 tableta",
+    "frequency": "UČESTALOST",
+    "reminders": "DNEVNI PODSETNICI",
+    "reminderHint": "Dodirnite chip vremena da biste ga uklonili",
+    "reminderFormat": "Koristite format SS:MM (npr. 08:00)",
+    "noReminders": "Nema podsetnika",
+    "doseLogged": "Doza zabeležena ✓",
+    "doseLogError": "Neuspešno beleženje doze",
+    "deleteTitle": "Obriši lek",
+    "deleteConfirm": "Da li ste sigurni da želite da obrišete {{name}}?",
+    "freq": {
+        "daily": "Jednom dnevno",
+        "twiceDaily": "Dva puta dnevno",
+        "threeTimesDaily": "3× dnevno",
+        "asNeeded": "Po potrebi"
+    },
+    "success": {
+        "added": "Lek uspešno dodat",
+        "updated": "Lek uspešno ažuriran",
+        "deleted": "Lek obrisan"
+    },
+    "error": {
+        "addFailed": "Neuspešno dodavanje leka",
+        "updateFailed": "Neuspešno ažuriranje leka",
+        "deleteFailed": "Neuspešno brisanje leka"
+    }
+}

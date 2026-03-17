@@ -20,6 +20,7 @@
     "home": "Anasayfa",
     "history": "Geçmiş",
     "analytics": "Analizler",
+    "medications": "İlaçlar",
     "settings": "Ayarlar"
   },
   "initialization": {
@@ -112,6 +113,16 @@
     "label": "Yaş",
     "years_one": "{{count}} yaş",
     "years_other": "{{count}} yaş"
+  },
+  "errors": {
+    "healthPlatformNotAvailable": "Sağlık Platformu bu cihazda kullanılamıyor.",
+    "healthPlatformPermissionDenied": "Sağlık verilerini okuma/yazma izni reddedildi."
+  },
+  "settings": {
+    "cloudSync": {
+      "syncSuccess": "Senkronizasyon Tamamlandı",
+      "syncFailed": "Senkronizasyon Başarısız"
+    }
   },
   "entryMode": {
     "title": "Kan Basıncı Kaydı",

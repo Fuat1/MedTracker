@@ -19,6 +19,7 @@
     "home": "Početna",
     "history": "Istorija",
     "analytics": "Analitika",
+    "medications": "Лекови",
     "settings": "Podešavanja"
   },
   "common": {
@@ -56,5 +57,15 @@
   "a11y": {
     "backspace": "Backspace",
     "clear": "Clear"
+  },
+  "errors": {
+    "healthPlatformNotAvailable": "Здравствена платформа није доступна на овом уређају.",
+    "healthPlatformPermissionDenied": "Дозвола за читање/писање здравствених података је одбијена."
+  },
+  "settings": {
+    "cloudSync": {
+      "syncSuccess": "Синхронизација завршена",
+      "syncFailed": "Синхронизација није успела"
+    }
   }
 }

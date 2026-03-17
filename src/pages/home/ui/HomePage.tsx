@@ -19,6 +19,7 @@ import { useTheme } from '../../../shared/lib/use-theme';
 import { DerivedMetricsModal, BPTrendChart } from '../../../shared/ui';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
+import TodayScheduleCard from '../../../widgets/medication-adherence/TodayScheduleCard';
 
 function getBPCardGradient(
   category: string | null,
@@ -324,6 +325,9 @@ export function HomePage() {
             )}
           </View>
         </Animated.View>
+
+        {/* Today's Medication Schedule */}
+        <TodayScheduleCard />
       </ScrollView>
 
       {/* Derived Metrics Info Modal */}

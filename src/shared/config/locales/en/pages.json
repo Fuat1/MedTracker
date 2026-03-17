@@ -158,6 +158,10 @@
   },
   "history": {
     "title": "History",
+    "tabs": {
+      "records": "Records",
+      "analytics": "Analytics"
+    },
     "filters": {
       "all": "All",
       "morning": "Morning",
@@ -227,6 +231,7 @@
     },
     "guideline": {
       "title": "Classification Guidelines",
+      "menuSubtitle": "Guidelines, units & BP legend",
       "description": "Select the regional guidelines for blood pressure categorization",
       "note": "ℹ️ Classification guidelines are from official medical organizations (AHA/ACC, WHO, ESC/ESH, JSH). Your healthcare provider may use different thresholds based on your individual health status, age, and risk factors. Always follow your provider's recommendations."
     },
@@ -289,11 +294,13 @@
       "noBmi": "BMI: --"
     },
     "appSettings": {
-      "title": "App Settings"
+      "title": "App Settings",
+      "menuSubtitle": "Theme, language & accessibility"
     },
     "personalization": {
       "title": "Personalization",
       "personalInfo": "Personal Information",
+      "menuSubtitle": "Name, date of birth, body metrics",
       "privacyNote": "Stored locally on your device. Never shared or uploaded.",
       "fullName": "Full Name",
       "fullNamePlaceholder": "Enter your name",
@@ -336,6 +343,17 @@
       "comingSoon": "Coming Soon",
       "comingSoonMessage": "Cloud sync will be available in a future update.",
       "privacyWarning": "Your data will be uploaded to Google servers. Once synced, your health data will no longer be fully private and will be subject to Google's privacy policy."
+    },
+    "healthSync": {
+      "title": "Data & Sync",
+      "menuSubtitle": "Health sync, privacy & cloud backup",
+      "description": "Read & write blood pressure data from {{platform}}",
+      "syncNow": "Sync Health Data",
+      "syncing": "Syncing...",
+      "lastSynced": "Last synced: {{time}}",
+      "neverSynced": "Never synced",
+      "permissionRequired": "Permission required to access health data.",
+      "notAvailable": "Health platform is not available on this device."
     },
     "bpLegend": {
       "title": "{{guideline}} Standard Legend",

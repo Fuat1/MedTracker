@@ -20,6 +20,7 @@
     "home": "Beranda",
     "history": "Riwayat",
     "analytics": "Analitik",
+    "medications": "Obat-obatan",
     "settings": "Pengaturan"
   },
   "initialization": {
@@ -112,6 +113,16 @@
     "label": "Usia",
     "years_one": "{{count}} tahun",
     "years_other": "{{count}} tahun"
+  },
+  "errors": {
+    "healthPlatformNotAvailable": "Platform Kesehatan tidak tersedia di perangkat ini.",
+    "healthPlatformPermissionDenied": "Izin untuk membaca/menulis data kesehatan ditolak."
+  },
+  "settings": {
+    "cloudSync": {
+      "syncSuccess": "Sinkronisasi Selesai",
+      "syncFailed": "Sinkronisasi Gagal"
+    }
   },
   "entryMode": {
     "title": "Catat Tekanan Darah",

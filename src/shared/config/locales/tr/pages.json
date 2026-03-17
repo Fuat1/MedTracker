@@ -337,6 +337,15 @@
       "comingSoonMessage": "Bulut senkronizasyonu gelecek bir güncellemede sunulacaktır.",
       "privacyWarning": "Verileriniz Google sunucularına yüklenecektir. Senkronize edildikten sonra sağlık verileriniz artık tamamen gizli olmayacak ve Google'ın gizlilik politikasına tabi olacaktır."
     },
+    "healthSync": {
+      "description": "{{platform}} üzerinden kan basıncı verilerini oku ve yaz",
+      "syncNow": "Sağlık Verilerini Senkronize Et",
+      "syncing": "Senkronize ediliyor...",
+      "lastSynced": "Son senkronizasyon: {{time}}",
+      "neverSynced": "Hiç senkronize edilmedi",
+      "permissionRequired": "Sağlık verilerine erişim izni gereklidir.",
+      "notAvailable": "Sağlık platformu bu cihazda kullanılamıyor."
+    },
     "bpLegend": {
       "title": "{{guideline}} Standart Göstergesi",
       "normal": "Normal (Yeşil)",

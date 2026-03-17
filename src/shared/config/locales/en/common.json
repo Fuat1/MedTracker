@@ -20,6 +20,7 @@
     "home": "Home",
     "history": "History",
     "analytics": "Analytics",
+    "medications": "Medications",
     "settings": "Settings"
   },
   "initialization": {
@@ -112,6 +113,16 @@
     "label": "Age",
     "years_one": "{{count}} year",
     "years_other": "{{count}} years"
+  },
+  "errors": {
+    "healthPlatformNotAvailable": "Health Platform is not available on this device.",
+    "healthPlatformPermissionDenied": "Permission to read/write health data was denied."
+  },
+  "settings": {
+    "cloudSync": {
+      "syncSuccess": "Sync Complete",
+      "syncFailed": "Sync Failed"
+    }
   },
   "entryMode": {
     "title": "Log Blood Pressure",

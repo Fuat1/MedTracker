@@ -1,0 +1,38 @@
+{
+    "title": "İlaçlar",
+    "subtitle": "Uyum takibi & hatırlatıcı ayarla",
+    "todayTitle": "Bugünün İlaçları",
+    "emptyTitle": "Henüz ilaç yok",
+    "emptyState": "Uyum takibi ve günlük hatırlatıcılar için ilaçlarınızı ekleyin.",
+    "add": "İlaç Ekle",
+    "edit": "İlaç Düzenle",
+    "name": "İLAÇ ADI",
+    "namePlaceholder": "ör. Amlodipin",
+    "dosage": "DOZ",
+    "dosagePlaceholder": "ör. 5mg, 1 tablet",
+    "frequency": "SIKLIK",
+    "reminders": "GÜNLÜK HATIRLATICILLAR",
+    "reminderHint": "Kaldırmak için zaman çibine dokunun",
+    "reminderFormat": "SS:DD formatı kullanın (ör. 08:00)",
+    "noReminders": "Hatırlatıcı ayarlanmadı",
+    "doseLogged": "Doz kaydedildi ✓",
+    "doseLogError": "Doz kaydedilemedi",
+    "deleteTitle": "İlacı Sil",
+    "deleteConfirm": "{{name}} adlı ilacı silmek istediğinizden emin misiniz?",
+    "freq": {
+        "daily": "Günde bir kez",
+        "twiceDaily": "Günde iki kez",
+        "threeTimesDaily": "Günde 3×",
+        "asNeeded": "Gerektiğinde"
+    },
+    "success": {
+        "added": "İlaç başarıyla eklendi",
+        "updated": "İlaç başarıyla güncellendi",
+        "deleted": "İlaç silindi"
+    },
+    "error": {
+        "addFailed": "İlaç eklenemedi",
+        "updateFailed": "İlaç güncellenemedi",
+        "deleteFailed": "İlaç silinemedi"
+    }
+}

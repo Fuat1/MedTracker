@@ -54,6 +54,37 @@ const CREATE_CUSTOM_TAGS_TABLE_SQL = `
   );
 `;
 
+const CREATE_MEDICATIONS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS medications (
+    id TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    dosage TEXT NOT NULL,
+    frequency TEXT NOT NULL,
+    reminder_times TEXT,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+`;
+
+const CREATE_MEDICATION_LOGS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS medication_logs (
+    id TEXT PRIMARY KEY NOT NULL,
+    medication_id TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (medication_id) REFERENCES medications(id) ON DELETE CASCADE
+  );
+`;
+
+const CREATE_MEDICATION_LOGS_IDX_TIMESTAMP_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_medication_logs_timestamp ON medication_logs(timestamp DESC);
+`;
+
+const CREATE_MEDICATION_LOGS_IDX_MED_ID_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_medication_logs_med_id ON medication_logs(medication_id);
+`;
+
 export async function initDatabase(): Promise<DB> {
   if (db) {
     return db;
@@ -64,12 +95,16 @@ export async function initDatabase(): Promise<DB> {
     db = open({ name: DB_CONFIG.name, encryptionKey });
 
     // Create tables
-    db.execute(CREATE_TABLE_SQL);
-    db.execute(CREATE_INDEX_SQL);
-    db.execute(CREATE_BP_TAGS_TABLE_SQL);
-    db.execute(CREATE_BP_TAGS_IDX_RECORD_SQL);
-    db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
-    db.execute(CREATE_CUSTOM_TAGS_TABLE_SQL);
+    await db.execute(CREATE_TABLE_SQL);
+    await db.execute(CREATE_INDEX_SQL);
+    await db.execute(CREATE_BP_TAGS_TABLE_SQL);
+    await db.execute(CREATE_BP_TAGS_IDX_RECORD_SQL);
+    await db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
+    await db.execute(CREATE_CUSTOM_TAGS_TABLE_SQL);
+    await db.execute(CREATE_MEDICATIONS_TABLE_SQL);
+    await db.execute(CREATE_MEDICATION_LOGS_TABLE_SQL);
+    await db.execute(CREATE_MEDICATION_LOGS_IDX_TIMESTAMP_SQL);
+    await db.execute(CREATE_MEDICATION_LOGS_IDX_MED_ID_SQL);
 
     // Migrations — use PRAGMA + executeSync so errors are caught synchronously
     const tableInfo = db.executeSync('PRAGMA table_info(bp_records)');

@@ -135,7 +135,7 @@ src/shared/config/profile-constants.ts  ← WEIGHT_LIMITS, HEIGHT_LIMITS, BMI_TH
 
 ## Phase 3: Platform Integration (Q3 2026)
 
-### 3.1 Apple Health / Health Connect Sync
+### 3.1 Apple Health / Health Connect Sync ✅
 - **Read**: Import BP readings from connected devices (Omron, Withings)
 - **Write**: Export MedTracker readings to platform health stores
 - **Bidirectional sync**: Merge data without duplicates (timestamp-based)
@@ -147,18 +147,22 @@ src/shared/config/profile-constants.ts  ← WEIGHT_LIMITS, HEIGHT_LIMITS, BMI_TH
 - Conflict resolution: Latest timestamp wins
 - Native modules: `react-native-health` or custom bridge
 
-### 3.2 Medication Tracking
-- Medication inventory (name, dosage, schedule)
-- Adherence reminders (local notifications)
-- Correlate BP readings with medication timing
-- Flag missed doses coinciding with elevated readings
+### 3.2 Medication Tracking ✅
+- Medication inventory (name, dosage, schedule) — stored in `medications` table (op-sqlite)
+- Adherence reminders — daily local notifications via `@notifee/react-native` (exact alarms, survives device restart)
+- **Today's Schedule card** — visible on Home screen, quick-log dose with one tap
+- Adherence logging — `medication_logs` table tracks taken/skipped/missed per dose
+- **BP correlation engine** — flags elevated BP readings (≥130/80) occurring within 4 hours of a missed dose
+- Unit tested: 11 tests for correlation logic covering all edge cases
 
 **FSD Structure**:
 ```
-src/entities/medication/                       ← Medication types, schedules
-src/features/track-medication/                 ← Add/edit/delete medications
-src/widgets/medication-adherence/              ← Adherence calendar view
-src/pages/medications/                         ← Medication management page
+src/entities/medication/correlations.ts         ← Pure BP-missed-dose correlation logic ✅
+src/features/track-medication/                  ← useManageMedications, useMedicationReminders, useTodayMedicationSchedule ✅
+src/widgets/medication-adherence/               ← TodayScheduleCard widget ✅
+src/pages/medications/ui/MedicationPage.tsx     ← Medication inventory page ✅
+src/pages/medications/ui/MedicationModal.tsx    ← Add/edit medication modal ✅
+src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries ✅
 ```
 
 ## Phase 4: Next-Generation Features (2027+)
@@ -199,9 +203,9 @@ src/pages/medications/                         ← Medication management page
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete, ✅ Personalization & weight tracking complete — Platform sync remaining
-**Tier 3 (Nice-to-Have)**: Medication tracking, Voice logging
+**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete, ✅ Personalization & weight tracking complete, ✅ Platform sync complete
+**Tier 3 (Nice-to-Have)**: ✅ Medication tracking complete — Voice logging remaining
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-02-20
+**Last Updated**: 2026-03-06
 

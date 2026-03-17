@@ -1,0 +1,38 @@
+{
+    "title": "Medications",
+    "subtitle": "Track adherence & set reminders",
+    "todayTitle": "Today's Medications",
+    "emptyTitle": "No medications yet",
+    "emptyState": "Add your medications to track adherence and set daily reminders.",
+    "add": "Add Medication",
+    "edit": "Edit Medication",
+    "name": "MEDICATION NAME",
+    "namePlaceholder": "e.g. Amlodipine",
+    "dosage": "DOSAGE",
+    "dosagePlaceholder": "e.g. 5mg, 1 tablet",
+    "frequency": "FREQUENCY",
+    "reminders": "DAILY REMINDERS",
+    "reminderHint": "Tap a time chip to remove it",
+    "reminderFormat": "Use HH:MM format (e.g. 08:00)",
+    "noReminders": "No reminders set",
+    "doseLogged": "Dose logged ✓",
+    "doseLogError": "Failed to log dose",
+    "deleteTitle": "Delete Medication",
+    "deleteConfirm": "Are you sure you want to delete {{name}}?",
+    "freq": {
+        "daily": "Once daily",
+        "twiceDaily": "Twice daily",
+        "threeTimesDaily": "3× daily",
+        "asNeeded": "As needed"
+    },
+    "success": {
+        "added": "Medication added successfully",
+        "updated": "Medication updated successfully",
+        "deleted": "Medication deleted"
+    },
+    "error": {
+        "addFailed": "Failed to add medication",
+        "updateFailed": "Failed to update medication",
+        "deleteFailed": "Failed to delete medication"
+    }
+}

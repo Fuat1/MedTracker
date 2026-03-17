@@ -1,60 +1,62 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission
+    android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    android:maxSdkVersion="28" />
+  <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
+  <uses-permission android:name="android.permission.health.WRITE_BLOOD_PRESSURE" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission
-      android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-      android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-    <uses-permission android:name="android.permission.health.WRITE_BLOOD_PRESSURE" />
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <application
-      android:name=".MainApplication"
+  <application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="${usesCleartextTraffic}"
+    android:supportsRtl="true">
+    <activity
+      android:name=".MainActivity"
       android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
-      android:allowBackup="false"
-      android:theme="@style/AppTheme"
-      android:usesCleartextTraffic="${usesCleartextTraffic}"
-      android:supportsRtl="true">
-      <activity
-        android:name=".MainActivity"
-        android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-        android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        <!-- Health Connect permissions rationale -->
-        <intent-filter>
-            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-        </intent-filter>
-      </activity>
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+      android:launchMode="singleTask"
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true"
+      android:theme="@style/BootTheme">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
 
-      <!-- FileProvider for sharing files (PDF reports, backups) -->
-      <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.fileprovider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-          android:name="android.support.FILE_PROVIDER_PATHS"
-          android:resource="@xml/file_paths" />
-      </provider>
+      <intent-filter>
+        <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+      </intent-filter>
+    </activity>
 
-      <!-- Health Connect view permission usage -->
-      <activity-alias
-          android:name="ViewPermissionUsageActivity"
-          android:exported="true"
-          android:targetActivity=".MainActivity"
-          android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
-          <intent-filter>
-              <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
-              <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
-          </intent-filter>
-      </activity-alias>
-    </application>
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+    </provider>
+
+    <activity-alias
+      android:name="ViewPermissionUsageActivity"
+      android:exported="true"
+      android:targetActivity=".MainActivity"
+      android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+        <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+      </intent-filter>
+    </activity-alias>
+  </application>
 </manifest>

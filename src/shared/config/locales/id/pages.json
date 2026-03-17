@@ -337,6 +337,15 @@
       "comingSoonMessage": "Sinkronisasi cloud akan tersedia di pembaruan mendatang.",
       "privacyWarning": "Data Anda akan diunggah ke server Google. Setelah disinkronkan, data kesehatan Anda tidak lagi sepenuhnya pribadi dan akan tunduk pada kebijakan privasi Google."
     },
+    "healthSync": {
+      "description": "Baca & tulis data tekanan darah dari {{platform}}",
+      "syncNow": "Sinkronkan Data Kesehatan",
+      "syncing": "Menyinkronkan...",
+      "lastSynced": "Terakhir disinkronkan: {{time}}",
+      "neverSynced": "Belum pernah disinkronkan",
+      "permissionRequired": "Izin diperlukan untuk mengakses data kesehatan.",
+      "notAvailable": "Platform kesehatan tidak tersedia di perangkat ini."
+    },
     "bpLegend": {
       "title": "Legenda Standar {{guideline}}",
       "normal": "Normal (Hijau)",

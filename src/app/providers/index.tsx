@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import BootSplash from 'react-native-bootsplash';
 import { initDatabase, closeDatabase } from '../../shared/api';
 import '../../shared/lib/i18n'; // Initialize i18n
 import '../../shared/lib/i18n-types'; // Import type definitions
@@ -40,6 +41,8 @@ export function Providers({ children }: ProvidersProps) {
       } catch (e) {
         console.error('Failed to initialize database:', e);
         setError(e instanceof Error ? e.message : 'Failed to initialize');
+        // Hide splash so error screen is visible
+        BootSplash.hide({ fade: true });
       }
     }
 

@@ -1,0 +1,38 @@
+{
+    "title": "Obat",
+    "subtitle": "Lacak kepatuhan & atur pengingat",
+    "todayTitle": "Obat Hari Ini",
+    "emptyTitle": "Belum ada obat",
+    "emptyState": "Tambahkan obat Anda untuk melacak kepatuhan dan mengatur pengingat harian.",
+    "add": "Tambah Obat",
+    "edit": "Edit Obat",
+    "name": "NAMA OBAT",
+    "namePlaceholder": "mis. Amlodipin",
+    "dosage": "DOSIS",
+    "dosagePlaceholder": "mis. 5mg, 1 tablet",
+    "frequency": "FREKUENSI",
+    "reminders": "PENGINGAT HARIAN",
+    "reminderHint": "Ketuk chip waktu untuk menghapusnya",
+    "reminderFormat": "Gunakan format JJ:MM (mis. 08:00)",
+    "noReminders": "Tidak ada pengingat",
+    "doseLogged": "Dosis dicatat ✓",
+    "doseLogError": "Gagal mencatat dosis",
+    "deleteTitle": "Hapus Obat",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus {{name}}?",
+    "freq": {
+        "daily": "Sekali sehari",
+        "twiceDaily": "Dua kali sehari",
+        "threeTimesDaily": "3× sehari",
+        "asNeeded": "Sesuai kebutuhan"
+    },
+    "success": {
+        "added": "Obat berhasil ditambahkan",
+        "updated": "Obat berhasil diperbarui",
+        "deleted": "Obat dihapus"
+    },
+    "error": {
+        "addFailed": "Gagal menambahkan obat",
+        "updateFailed": "Gagal memperbarui obat",
+        "deleteFailed": "Gagal menghapus obat"
+    }
+}

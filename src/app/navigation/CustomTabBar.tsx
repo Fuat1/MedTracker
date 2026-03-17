@@ -21,14 +21,14 @@ import type { RootStackParamList } from './index';
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
   Home: { active: 'home', inactive: 'home-outline' },
   History: { active: 'time', inactive: 'time-outline' },
-  Analytics: { active: 'bar-chart', inactive: 'bar-chart-outline' },
+  Medications: { active: 'medical', inactive: 'medical-outline' },
   Settings: { active: 'settings', inactive: 'settings-outline' },
 };
 
 const TAB_LABEL_KEYS = {
   Home: 'navigation.home',
   History: 'navigation.history',
-  Analytics: 'navigation.analytics',
+  Medications: 'navigation.medications',
   Settings: 'navigation.settings',
 } as const;
 
@@ -39,6 +39,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const stackNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { preferredEntryMode, setPreferredEntryMode } = useSettingsStore();
 
+  // Split: 2 left | FAB | 2 right
   const leftTabs = state.routes.slice(0, 2);
   const rightTabs = state.routes.slice(2, 4);
 

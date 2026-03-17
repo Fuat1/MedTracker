@@ -47,13 +47,16 @@ export class AppleHealthService implements IHealthPlatform {
         value2: record.diastolic,
         date: new Date(record.timestamp).toISOString(),
       };
-      
-      AppleHealthKit.saveBloodPressure(options, (err: string, res: HealthValue) => {
+
+      // react-native-health ships saveBloodPressure natively but omits it from .d.ts.
+      // Using (AppleHealthKit as any) as a safe workaround until upstream adds the type.
+      (AppleHealthKit as any).saveBloodPressure(options, (err: string, res: HealthValue) => {
         if (err) resolve(null);
-        resolve(res ? res.id || 'apple_health_id' : null);
+        resolve(res ? (res as any).id || 'apple_health_id' : null);
       });
     });
   }
+
 
   async getBloodPressureRecords(startDate: Date, endDate: Date): Promise<BPRecord[]> {
     return new Promise((resolve) => {
