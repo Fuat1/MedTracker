@@ -98,7 +98,6 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
       visible={visible}
       animationType="slide"
       transparent
-      presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>

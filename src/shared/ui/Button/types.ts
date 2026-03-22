@@ -30,7 +30,7 @@ export interface ButtonTextProps {
 }
 
 export interface ButtonIconProps {
-  as: React.ComponentType<{name: string; size: number; color: string}>;
+  as: React.ComponentType<{name: string; size?: number; color?: string}>;
   name: string;
 }
 

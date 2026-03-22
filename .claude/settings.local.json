@@ -65,7 +65,22 @@
       "Bash(npm outdated:*)",
       "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
       "WebFetch(domain:github.com)",
-      "Bash(printenv:*)"
+      "Bash(printenv:*)",
+      "Bash(bash \"C:\\\\Users\\\\fuats\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.0.4\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"c:\\\\Users\\\\fuats\\\\Desktop\\\\Workdir\\\\MedTracker\")",
+      "WebFetch(domain:gluestack.io)",
+      "Bash(git check-ignore:*)",
+      "Bash(git worktree:*)",
+      "Bash(npx gluestack-ui@latest init --no-interactive)",
+      "Bash(timeout 30 npx gluestack-ui@latest --help)",
+      "Bash(timeout 60 npx gluestack-ui@latest init --help)",
+      "Bash(timeout 120 npx gluestack-ui@latest init --projectType react-native --path src/shared/ui/gluestack --use-npm)",
+      "Bash(timeout 120 npx gluestack-ui@latest init --projectType react-native --path src/shared/ui/gluestack --use-npm --template-only)",
+      "Bash(timeout 30 npx gluestack-ui@latest add button --use-npm)",
+      "Bash(grep -r \"from ''react-native-gesture-handler''\" src/shared/ui/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash($ANDROID_HOME/emulator/emulator -list-avds)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/emulator/emulator\" -list-avds)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb\" devices:*)",
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb\" shell:*)"
     ]
   },
   "model": "sonnet",

@@ -46,8 +46,12 @@
     "disclaimer": "For informational purposes only. Not a substitute for professional medical advice.",
     "toggles": {
       "showPP": "Show PP",
-      "showMAP": "Show MAP"
+      "showMAP": "Show MAP",
+      "ppHint": "Pulse Pressure — difference between systolic and diastolic. Normal: 40–60 mmHg.",
+      "mapHint": "Mean Arterial Pressure — average pressure during one heartbeat cycle. Normal: 70–100 mmHg."
     },
+    "avgPP": "Avg PP",
+    "avgMAP": "Avg MAP",
     "export": {
       "includePPMAP": "Include PP/MAP in PDF export"
     },

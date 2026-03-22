@@ -31,6 +31,14 @@ import {
   BPTrendChart,
   OptionChip,
   DateTimePicker,
+  Button,
+  ButtonText,
+  ButtonIcon,
+  ButtonGroup,
+  Card,
+  CardHeader,
+  CardBody,
+  StatCard,
 } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
@@ -122,6 +130,17 @@ export function AnalyticsPage() {
     [records, tagMap],
   );
 
+  const ppMapAvg = useMemo(() => {
+    if (!records || records.length === 0) return { pp: 0, map: 0, hasData: false };
+    const sumPP = records.reduce((s, r) => s + calculatePulsePressure(r.systolic, r.diastolic), 0);
+    const sumMAP = records.reduce((s, r) => s + calculateMAP(r.systolic, r.diastolic), 0);
+    return {
+      pp: Math.round(sumPP / records.length),
+      map: Math.round(sumMAP / records.length),
+      hasData: true,
+    };
+  }, [records]);
+
   const chartWidth = screenWidth - 80; // 20px margin + 20px card padding on each side
 
   const profileAge = useMemo(() => calculateAge(dateOfBirth), [dateOfBirth]);
@@ -179,171 +198,202 @@ export function AnalyticsPage() {
         {/* Period Selector */}
         <Animated.View
           entering={FadeInUp.delay(50).duration(500)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+          style={styles.cardWrapper}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-            {t('analytics.period.title')}
-          </Text>
-          <View style={styles.chipsRow}>
-            {(['7d', '14d', '30d', '90d', 'all', 'custom'] as PeriodKey[]).map(p => (
-              <OptionChip
-                key={p}
-                label={
-                  p === '7d' ? t('analytics.period.days7') :
-                  p === '14d' ? t('analytics.period.days14') :
-                  p === '30d' ? t('analytics.period.days30') :
-                  p === '90d' ? t('analytics.period.days90') :
-                  p === 'all' ? t('analytics.period.all') :
-                  t('analytics.period.custom')
-                }
-                selected={period === p}
-                onPress={() => setPeriod(p)}
-              />
-            ))}
-          </View>
-          {period === 'custom' && (
-            <View style={styles.customRangeRow}>
-              <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                {t('analytics.customRange.from')}
-              </Text>
-              <DateTimePicker value={customStart} onChange={setCustomStart} />
-              <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                {t('analytics.customRange.to')}
-              </Text>
-              <DateTimePicker value={customEnd} onChange={setCustomEnd} />
-            </View>
-          )}
+          <Card variant="elevated" size="lg">
+            <CardHeader title={t('analytics.period.title')} />
+            <CardBody>
+              <View style={styles.chipsRow}>
+                {(['7d', '14d', '30d', '90d', 'all', 'custom'] as PeriodKey[]).map(p => (
+                  <OptionChip
+                    key={p}
+                    label={
+                      p === '7d' ? t('analytics.period.days7') :
+                      p === '14d' ? t('analytics.period.days14') :
+                      p === '30d' ? t('analytics.period.days30') :
+                      p === '90d' ? t('analytics.period.days90') :
+                      p === 'all' ? t('analytics.period.all') :
+                      t('analytics.period.custom')
+                    }
+                    selected={period === p}
+                    onPress={() => setPeriod(p)}
+                  />
+                ))}
+              </View>
+              {period === 'custom' && (
+                <View style={styles.customRangeRow}>
+                  <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.customRange.from')}
+                  </Text>
+                  <DateTimePicker value={customStart} onChange={setCustomStart} />
+                  <Text style={[styles.rangeLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.customRange.to')}
+                  </Text>
+                  <DateTimePicker value={customEnd} onChange={setCustomEnd} />
+                </View>
+              )}
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* BP Trends Card */}
         <Animated.View
           entering={FadeInUp.delay(100).duration(500)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+          style={styles.cardWrapper}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-            {t('analytics.bpTrends')}
-          </Text>
+          <Card variant="elevated" size="lg">
+            <CardHeader title={t('analytics.bpTrends')} />
+            <CardBody>
+              {/* PP/MAP Toggles */}
+              <View style={styles.togglesRow}>
+                <View style={styles.toggleItem}>
+                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.toggles.showPP')}
+                  </Text>
+                  <Switch
+                    value={showPP}
+                    onValueChange={setShowPP}
+                    trackColor={{ false: colors.toggleTrackInactive, true: colors.ppColor }}
+                    thumbColor={colors.toggleThumb}
+                    accessibilityRole="switch"
+                    accessibilityLabel={t('analytics.toggles.showPP')}
+                  />
+                </View>
+                <View style={styles.toggleItem}>
+                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.toggles.showMAP')}
+                  </Text>
+                  <Switch
+                    value={showMAP}
+                    onValueChange={setShowMAP}
+                    trackColor={{ false: colors.toggleTrackInactive, true: colors.mapColor }}
+                    thumbColor={colors.toggleThumb}
+                    accessibilityRole="switch"
+                    accessibilityLabel={t('analytics.toggles.showMAP')}
+                  />
+                </View>
+              </View>
 
-          {/* PP/MAP Toggles */}
-          <View style={styles.togglesRow}>
-            <View style={styles.toggleItem}>
-              <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                {t('analytics.toggles.showPP')}
-              </Text>
-              <Switch
-                value={showPP}
-                onValueChange={setShowPP}
-                trackColor={{ false: colors.toggleTrackInactive, true: colors.ppColor }}
-                thumbColor={colors.toggleThumb}
-                accessibilityRole="switch"
-                accessibilityLabel={t('analytics.toggles.showPP')}
-              />
-            </View>
-            <View style={styles.toggleItem}>
-              <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                {t('analytics.toggles.showMAP')}
-              </Text>
-              <Switch
-                value={showMAP}
-                onValueChange={setShowMAP}
-                trackColor={{ false: colors.toggleTrackInactive, true: colors.mapColor }}
-                thumbColor={colors.toggleThumb}
-                accessibilityRole="switch"
-                accessibilityLabel={t('analytics.toggles.showMAP')}
-              />
-            </View>
-          </View>
+              {/* PP/MAP Info Hints */}
+              {(showPP || showMAP) && (
+                <View style={styles.ppMapHints}>
+                  {showPP && (
+                    <View style={[styles.ppMapHintRow, { backgroundColor: colors.ppColor + '12' }]}>
+                      <Icon name="pulse" size={14} color={colors.ppColor} />
+                      <Text style={[styles.ppMapHintText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                        {t('analytics.toggles.ppHint')}
+                      </Text>
+                    </View>
+                  )}
+                  {showMAP && (
+                    <View style={[styles.ppMapHintRow, { backgroundColor: colors.mapColor + '12' }]}>
+                      <Icon name="analytics" size={14} color={colors.mapColor} />
+                      <Text style={[styles.ppMapHintText, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                        {t('analytics.toggles.mapHint')}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
 
-          <BPTrendChart
-            data={chartData}
-            width={chartWidth}
-            height={220}
-            emptyText={t('analytics.noData')}
-            showPP={showPP}
-            showMAP={showMAP}
-            zoneLabels={{
-              normal: t('analytics.zones.normal'),
-              elevated: t('analytics.zones.elevated'),
-              high: t('analytics.zones.high'),
-            }}
-            legendLabels={{
-              systolic: t('analytics.legend.systolic'),
-              diastolic: t('analytics.legend.diastolic'),
-              pp: 'PP',
-              map: 'MAP',
-            }}
-          />
+              <BPTrendChart
+                data={chartData}
+                width={chartWidth}
+                height={220}
+                emptyText={t('analytics.noData')}
+                showPP={showPP}
+                showMAP={showMAP}
+                zoneLabels={{
+                  normal: t('analytics.zones.normal'),
+                  elevated: t('analytics.zones.elevated'),
+                  high: t('analytics.zones.high'),
+                }}
+                legendLabels={{
+                  systolic: t('analytics.legend.systolic'),
+                  diastolic: t('analytics.legend.diastolic'),
+                  pp: 'PP',
+                  map: 'MAP',
+                }}
+              />
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Stats Row */}
         <Animated.View entering={FadeInUp.delay(200).duration(500)} style={styles.statsRow}>
           {/* Weekly Average */}
-          <View style={[styles.statCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-            <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
-              <Icon name="trending-up" size={20} color={colors.accent} />
-            </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-              {t('analytics.weeklyAverage')}
-            </Text>
-            {weeklyAvg.hasData ? (
-              <>
-                <Text
-                  style={[styles.statValue, { color: colors.textPrimary, fontSize: typography['2xl'] }]}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {weeklyAvg.systolic}/{weeklyAvg.diastolic}
-                </Text>
-                <Text style={[styles.statUnit, { color: colors.textTertiary, fontSize: typography.xs }]}>
-                  {tCommon('units.mmhg')}
-                </Text>
-              </>
-            ) : (
-              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
-                {t('analytics.noData')}
-              </Text>
-            )}
+          <View style={styles.statCardWrapper}>
+            <StatCard
+              value={weeklyAvg.hasData ? `${weeklyAvg.systolic}/${weeklyAvg.diastolic}` : '---'}
+              unit={weeklyAvg.hasData ? tCommon('units.mmhg') : undefined}
+              label={t('analytics.weeklyAverage')}
+            />
           </View>
 
           {/* Morning vs Evening */}
-          <View style={[styles.statCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-            <View style={[styles.statIconCircle, { backgroundColor: colors.accent + '15' }]}>
-              <Icon name="sunny" size={20} color={colors.accent} />
-            </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-              {t('analytics.morningVsEvening')}
-            </Text>
-            {amPm.hasAmData || amPm.hasPmData ? (
-              <View style={styles.amPmContainer}>
-                <View style={styles.amPmRow}>
-                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>AM</Text>
-                  <Text
-                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                  >
-                    {amPm.hasAmData ? `${amPm.am.systolic}/${amPm.am.diastolic}` : '---'}
+          <View style={styles.statCardWrapper}>
+            <Card>
+              <CardBody>
+                <Text style={[styles.amPmCardLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                  {t('analytics.morningVsEvening')}
+                </Text>
+                {amPm.hasAmData || amPm.hasPmData ? (
+                  <View style={styles.amPmContainer}>
+                    <View style={styles.amPmRow}>
+                      <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>AM</Text>
+                      <Text
+                        style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                      >
+                        {amPm.hasAmData ? `${amPm.am.systolic}/${amPm.am.diastolic}` : '---'}
+                      </Text>
+                    </View>
+                    <View style={[styles.amPmDivider, { backgroundColor: colors.border }]} />
+                    <View style={styles.amPmRow}>
+                      <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>PM</Text>
+                      <Text
+                        style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                      >
+                        {amPm.hasPmData ? `${amPm.pm.systolic}/${amPm.pm.diastolic}` : '---'}
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
+                    {t('analytics.noData')}
                   </Text>
-                </View>
-                <View style={[styles.amPmDivider, { backgroundColor: colors.border }]} />
-                <View style={styles.amPmRow}>
-                  <Text style={[styles.amPmLabel, { color: colors.textTertiary, fontSize: typography.xs }]}>PM</Text>
-                  <Text
-                    style={[styles.amPmValue, { color: colors.textPrimary, fontSize: typography.md }]}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                  >
-                    {amPm.hasPmData ? `${amPm.pm.systolic}/${amPm.pm.diastolic}` : '---'}
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              <Text style={[styles.statNoData, { color: colors.textTertiary, fontSize: typography.sm }]}>
-                {t('analytics.noData')}
-              </Text>
-            )}
+                )}
+              </CardBody>
+            </Card>
           </View>
         </Animated.View>
+
+        {/* PP/MAP Stats Row */}
+        {(showPP || showMAP) && ppMapAvg.hasData && (
+          <Animated.View entering={FadeInUp.delay(230).duration(500)} style={styles.statsRow}>
+            {showPP && (
+              <View style={styles.statCardWrapper}>
+                <StatCard
+                  value={String(ppMapAvg.pp)}
+                  unit={tCommon('units.mmhg')}
+                  label={t('analytics.avgPP')}
+                />
+              </View>
+            )}
+            {showMAP && (
+              <View style={styles.statCardWrapper}>
+                <StatCard
+                  value={String(ppMapAvg.map)}
+                  unit={tCommon('units.mmhg')}
+                  label={t('analytics.avgMAP')}
+                />
+              </View>
+            )}
+          </Animated.View>
+        )}
 
         {/* Circadian Patterns Card */}
         <CircadianCard records={records} allRecords={allRecords ?? []} />
@@ -352,87 +402,85 @@ export function AnalyticsPage() {
         {weightTrend.hasData && (
           <Animated.View
             entering={FadeInUp.delay(270).duration(500)}
-            style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+            style={styles.cardWrapper}
           >
-            <View style={styles.weightTitleRow}>
-              <Icon name="scale-outline" size={20} color={colors.accent} />
-              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 0 }]}>
-                {t('analytics.weightTrend.title')}
-              </Text>
-            </View>
-
-            {/* Weight Stats Grid */}
-            <View style={styles.weightStatsGrid}>
-              <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-                <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t('analytics.weightTrend.avgWeight')}
-                </Text>
-                <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                  {formatWeight(weightTrend.avgWeight!, weightUnit)}
-                </Text>
-              </View>
-              <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-                <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t('analytics.weightTrend.weightRange')}
-                </Text>
-                <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                  {formatWeight(weightTrend.minWeight!, weightUnit)} – {formatWeight(weightTrend.maxWeight!, weightUnit)}
-                </Text>
-              </View>
-            </View>
-
-            {/* BMI from average weight */}
-            {userHeight != null && weightTrend.avgWeight != null && (() => {
-              const avgBmi = calculateBMI(weightTrend.avgWeight, userHeight);
-              if (avgBmi == null) return null;
-              const cat = getBMICategory(avgBmi);
-              return (
-                <View style={[styles.bmiTrendRow, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-                  <Icon name="body-outline" size={16} color={colors.textSecondary} />
-                  <Text style={[styles.bmiTrendLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                    {t('analytics.weightTrend.bmiTrend')}
-                  </Text>
-                  <Text style={[styles.bmiTrendValue, { color: colors.textPrimary, fontSize: typography.md }]}>
-                    {avgBmi}
-                  </Text>
-                  <View style={[styles.bmiCategoryChip, { backgroundColor: colors.accent + '15' }]}>
-                    <Text style={[styles.bmiCategoryText, { color: colors.accent, fontSize: typography.xs }]}>
-                      {tCommon(`bmi.${cat}` as any)}
+            <Card variant="elevated" size="lg">
+              <CardHeader icon="scale-outline" title={t('analytics.weightTrend.title')} />
+              <CardBody>
+                {/* Weight Stats Grid */}
+                <View style={styles.weightStatsGrid}>
+                  <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                    <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                      {t('analytics.weightTrend.avgWeight')}
+                    </Text>
+                    <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                      {formatWeight(weightTrend.avgWeight!, weightUnit)}
+                    </Text>
+                  </View>
+                  <View style={[styles.weightStatItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                    <Text style={[styles.weightStatLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                      {t('analytics.weightTrend.weightRange')}
+                    </Text>
+                    <Text style={[styles.weightStatValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                      {formatWeight(weightTrend.minWeight!, weightUnit)} – {formatWeight(weightTrend.maxWeight!, weightUnit)}
                     </Text>
                   </View>
                 </View>
-              );
-            })()}
 
-            {/* Weight-BP Correlation */}
-            {weightCorrelation.hasData && (
-              <View style={styles.correlationSection}>
-                <Text style={[styles.correlationTitle, { color: colors.textPrimary, fontSize: typography.md }]}>
-                  {t('analytics.weightTrend.correlation')}
-                </Text>
-                <View style={styles.correlationRow}>
-                  <View style={styles.correlationItem}>
-                    <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                      {tCommon('common.systolic')}
+                {/* BMI from average weight */}
+                {userHeight != null && weightTrend.avgWeight != null && (() => {
+                  const avgBmi = calculateBMI(weightTrend.avgWeight, userHeight);
+                  if (avgBmi == null) return null;
+                  const cat = getBMICategory(avgBmi);
+                  return (
+                    <View style={[styles.bmiTrendRow, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                      <Icon name="body-outline" size={16} color={colors.textSecondary} />
+                      <Text style={[styles.bmiTrendLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                        {t('analytics.weightTrend.bmiTrend')}
+                      </Text>
+                      <Text style={[styles.bmiTrendValue, { color: colors.textPrimary, fontSize: typography.md }]}>
+                        {avgBmi}
+                      </Text>
+                      <View style={[styles.bmiCategoryChip, { backgroundColor: colors.accent + '15' }]}>
+                        <Text style={[styles.bmiCategoryText, { color: colors.accent, fontSize: typography.xs }]}>
+                          {tCommon(`bmi.${cat}` as any)}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })()}
+
+                {/* Weight-BP Correlation */}
+                {weightCorrelation.hasData && (
+                  <View style={styles.correlationSection}>
+                    <Text style={[styles.correlationTitle, { color: colors.textPrimary, fontSize: typography.md }]}>
+                      {t('analytics.weightTrend.correlation')}
                     </Text>
-                    <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                      {weightCorrelation.systolicCorrelation?.toFixed(2) ?? '—'}
+                    <View style={styles.correlationRow}>
+                      <View style={styles.correlationItem}>
+                        <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                          {tCommon('common.systolic')}
+                        </Text>
+                        <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                          {weightCorrelation.systolicCorrelation?.toFixed(2) ?? '—'}
+                        </Text>
+                      </View>
+                      <View style={styles.correlationItem}>
+                        <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                          {tCommon('common.diastolic')}
+                        </Text>
+                        <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                          {weightCorrelation.diastolicCorrelation?.toFixed(2) ?? '—'}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={[styles.correlationDisclaimer, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                      {t('analytics.weightTrend.correlationDisclaimer')}
                     </Text>
                   </View>
-                  <View style={styles.correlationItem}>
-                    <Text style={[styles.correlationLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                      {tCommon('common.diastolic')}
-                    </Text>
-                    <Text style={[styles.correlationValue, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                      {weightCorrelation.diastolicCorrelation?.toFixed(2) ?? '—'}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={[styles.correlationDisclaimer, { color: colors.textTertiary, fontSize: typography.xs }]}>
-                  {t('analytics.weightTrend.correlationDisclaimer')}
-                </Text>
-              </View>
-            )}
+                )}
+              </CardBody>
+            </Card>
           </Animated.View>
         )}
 
@@ -444,28 +492,30 @@ export function AnalyticsPage() {
         {/* Doctor Notes */}
         <Animated.View
           entering={FadeInUp.delay(280).duration(500)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+          style={styles.cardWrapper}
         >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-            {t('analytics.doctorNote.label')}
-          </Text>
-          <TextInput
-            value={doctorNote}
-            onChangeText={setDoctorNote}
-            placeholder={t('analytics.doctorNote.placeholder')}
-            placeholderTextColor={colors.textSecondary}
-            multiline
-            maxLength={500}
-            style={[
-              styles.notesInput,
-              {
-                color: colors.textPrimary,
-                backgroundColor: colors.surfaceSecondary,
-                borderColor: colors.border,
-                fontSize: typography.sm,
-              },
-            ]}
-          />
+          <Card variant="elevated" size="lg">
+            <CardHeader title={t('analytics.doctorNote.label')} />
+            <CardBody>
+              <TextInput
+                value={doctorNote}
+                onChangeText={setDoctorNote}
+                placeholder={t('analytics.doctorNote.placeholder')}
+                placeholderTextColor={colors.textSecondary}
+                multiline
+                maxLength={500}
+                style={[
+                  styles.notesInput,
+                  {
+                    color: colors.textPrimary,
+                    backgroundColor: colors.surfaceSecondary,
+                    borderColor: colors.border,
+                    fontSize: typography.sm,
+                  },
+                ]}
+              />
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Medical Disclaimer */}
@@ -493,17 +543,11 @@ export function AnalyticsPage() {
             </Text>
           </Pressable>
 
-          <View style={styles.exportButtonsRow}>
+          <ButtonGroup direction="row" spacing="lg">
             {/* Save to Device */}
-            <Pressable
-              style={[
-                styles.exportButton,
-                styles.exportButtonSecondary,
-                {
-                  backgroundColor: isExporting ? colors.border : colors.surfaceSecondary,
-                  borderColor: isExporting ? colors.border : colors.accent,
-                },
-              ]}
+            <Button
+              variant="secondary"
+              size="lg"
               onPress={() =>
                 downloadPdf(records, {
                   period: getPeriodLabel(),
@@ -511,32 +555,21 @@ export function AnalyticsPage() {
                   includePPMAP: includePPMAPInExport,
                 })
               }
-              disabled={isExporting}
-              accessibilityRole="button"
+              isDisabled={isExporting}
+              isLoading={activeAction === 'save'}
               accessibilityLabel={t('analytics.savePdf')}
-              accessibilityState={{ disabled: isExporting }}
+              style={styles.exportBtn}
             >
-              <Icon
-                name="download-outline"
-                size={22}
-                color={isExporting ? colors.textTertiary : colors.accent}
-              />
-              <Text
-                style={[
-                  styles.exportButtonText,
-                  { color: isExporting ? colors.textTertiary : colors.accent, fontSize: typography.md },
-                ]}
-              >
+              <ButtonIcon as={Icon} name="download-outline" />
+              <ButtonText>
                 {activeAction === 'save' ? t('analytics.savingPdf') : t('analytics.savePdf')}
-              </Text>
-            </Pressable>
+              </ButtonText>
+            </Button>
 
             {/* Share PDF */}
-            <Pressable
-              style={[
-                styles.exportButton,
-                { backgroundColor: isExporting ? colors.border : colors.accent },
-              ]}
+            <Button
+              variant="primary"
+              size="lg"
               onPress={() =>
                 exportPdf(records, {
                   period: getPeriodLabel(),
@@ -544,17 +577,17 @@ export function AnalyticsPage() {
                   includePPMAP: includePPMAPInExport,
                 })
               }
-              disabled={isExporting}
-              accessibilityRole="button"
+              isDisabled={isExporting}
+              isLoading={activeAction === 'share'}
               accessibilityLabel={t('analytics.exportPdf')}
-              accessibilityState={{ disabled: isExporting }}
+              style={styles.exportBtn}
             >
-              <Icon name="share-outline" size={22} color={colors.surface} />
-              <Text style={[styles.exportButtonText, { color: colors.surface, fontSize: typography.md }]}>
+              <ButtonIcon as={Icon} name="share-outline" />
+              <ButtonText>
                 {activeAction === 'share' ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
-              </Text>
-            </Pressable>
-          </View>
+              </ButtonText>
+            </Button>
+          </ButtonGroup>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -569,21 +602,10 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // Chart card / generic card
-  card: {
+  // Card wrapper for horizontal margins
+  cardWrapper: {
     marginHorizontal: 20,
-    borderRadius: 20,
-    padding: 20,
     marginBottom: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
-    marginBottom: 12,
   },
 
   // Period selector chips
@@ -623,38 +645,15 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 16,
   },
-  statCard: {
+  statCardWrapper: {
     flexGrow: 1,
     flexShrink: 0,
     flexBasis: '46%',
-    borderRadius: 20,
-    padding: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
   },
-  statIconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  statLabel: {
+  amPmCardLabel: {
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginBottom: 8,
-  },
-  statValue: {
-    fontFamily: FONTS.extraBold,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
-  statUnit: {
-    fontFamily: FONTS.regular,
-    marginTop: 2,
   },
   statNoData: {
     fontFamily: FONTS.regular,
@@ -682,12 +681,6 @@ const styles = StyleSheet.create({
   },
 
   // Weight Trend
-  weightTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 14,
-  },
   weightStatsGrid: {
     flexDirection: 'row',
     gap: 10,
@@ -784,6 +777,24 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
+  ppMapHints: {
+    gap: 8,
+    marginBottom: 12,
+  },
+  ppMapHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  ppMapHintText: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    flex: 1,
+    lineHeight: 18,
+  },
 
   // Disclaimer
   disclaimerText: {
@@ -818,25 +829,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     fontWeight: '500',
   },
-  exportButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  exportButton: {
+  exportBtn: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 18,
-    borderRadius: 16,
-    gap: 10,
-  },
-  exportButtonSecondary: {
-    borderWidth: 1.5,
-  },
-  exportButtonText: {
-    fontFamily: FONTS.bold,
-    fontWeight: '700',
   },
 
   // Profile context row

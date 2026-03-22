@@ -50,8 +50,9 @@ export function BPTrendChart({
   const normalThreshold = guideline.normalBelow.systolic;
   const highThreshold = guideline.stage_2.systolic;
 
-  // Y-axis range: extend down to 20 when PP is shown (PP values can be 20–80)
-  const yAxisMin = showPP ? 20 : 60;
+  // Y-axis range: extend down when derived metrics are shown
+  // PP values ~20–80, MAP values ~55–110
+  const yAxisMin = showPP ? 20 : showMAP ? 40 : 60;
   const yAxisMax = 180;
   const yAxisStep = 20;
   const noOfSections = (yAxisMax - yAxisMin) / yAxisStep;
@@ -141,8 +142,8 @@ export function BPTrendChart({
   // Tooltip renderer
   const renderTooltip = useMemo(() => {
     return (items: Array<{ value: number }>) => {
-      const sysVal = items[0]?.value;
-      const diaVal = items[1]?.value;
+      const sysVal = items[0] ? items[0].value + yAxisMin : undefined;
+      const diaVal = items[1] ? items[1].value + yAxisMin : undefined;
 
       let ppIdx = -1;
       let mapIdx = -1;
@@ -177,7 +178,7 @@ export function BPTrendChart({
                 {legendLabels.pp}
               </Text>
               <Text style={[tooltipStyles.value, { color: colors.ppColor }]}>
-                {items[ppIdx].value}
+                {items[ppIdx].value + yAxisMin}
               </Text>
             </View>
           )}
@@ -188,14 +189,14 @@ export function BPTrendChart({
                 {legendLabels.map}
               </Text>
               <Text style={[tooltipStyles.value, { color: colors.mapColor }]}>
-                {items[mapIdx].value}
+                {items[mapIdx].value + yAxisMin}
               </Text>
             </View>
           )}
         </View>
       );
     };
-  }, [showPP, showMAP, colors, legendLabels]);
+  }, [showPP, showMAP, colors, legendLabels, yAxisMin]);
 
   // Early return AFTER all hooks
   if (!data || data.length === 0) {
