@@ -122,3 +122,15 @@ export {
   type TimeInRangeWindow,
   type TimeInRangeResult,
 } from './circadian-utils';
+
+// Notification service
+export {
+  initialize as initNotifications,
+  scheduleReminder,
+  cancelReminders,
+  handleNotificationPress,
+  consumePendingNavigation,
+  navigationRef,
+  NotificationType,
+  type ScheduleReminderParams,
+} from './notification-service';
