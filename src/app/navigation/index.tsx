@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { NavigatorScreenParams } from '@react-navigation/native';
+import BootSplash from 'react-native-bootsplash';
+import notifee, { EventType } from '@notifee/react-native';
 import { HomePage, HistoryPage, SettingsPage, NewReadingPage, EditReadingPage, MedicationPage } from '../../pages';
 import { PersonalInfoPage } from '../../pages/settings/ui/PersonalInfoPage';
 import { ClassificationPage } from '../../pages/settings/ui/ClassificationPage';
@@ -11,6 +14,11 @@ import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
 import { ErrorBoundary } from '../providers/ErrorBoundary';
+import {
+  navigationRef,
+  consumePendingNavigation,
+  handleNotificationPress,
+} from '../../shared/lib/notification-service';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export type SettingsStackParamList = {
@@ -29,7 +37,7 @@ export type RootTabParamList = {
 };
 
 export type RootStackParamList = {
-  Main: undefined;
+  Main: NavigatorScreenParams<RootTabParamList>;
   QuickLog: undefined;
   PreMeasurement: undefined;
   NewReading: undefined;
@@ -78,52 +86,67 @@ function TabNavigator() {
   );
 }
 
-import BootSplash from 'react-native-bootsplash';
-
 export function Navigation() {
+  useEffect(() => {
+    return notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS && detail.notification) {
+        handleNotificationPress(detail.notification);
+      }
+    });
+  }, []);
+
   return (
     <ErrorBoundary>
-      <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          BootSplash.hide({ fade: true });
+          const pending = consumePendingNavigation();
+          if (pending) {
+            navigationRef.navigate('Main', { screen: pending as keyof RootTabParamList });
+          }
+        }}
+      >
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
           }}
         >
-        <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen
-          name="QuickLog"
-          component={QuickLogPage}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="PreMeasurement"
-          component={PreMeasurementPage}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="NewReading"
-          component={NewReadingPage}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-        <Stack.Screen
-          name="EditReading"
-          component={EditReadingPage}
-          options={{
-            presentation: 'modal',
-            animation: 'slide_from_bottom',
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen name="Main" component={TabNavigator} />
+          <Stack.Screen
+            name="QuickLog"
+            component={QuickLogPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="PreMeasurement"
+            component={PreMeasurementPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="NewReading"
+            component={NewReadingPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="EditReading"
+            component={EditReadingPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </ErrorBoundary>
   );
 }
