@@ -10,6 +10,7 @@ import { useSettingsStore } from '../../shared/lib/settings-store';
 import { useTheme } from '../../shared/lib/use-theme';
 import { FONTS } from '../../shared/config/theme';
 import i18n from '../../shared/lib/i18n';
+import { initialize as initNotifications } from '../../shared/lib/notification-service';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +38,7 @@ export function Providers({ children }: ProvidersProps) {
         // Sync i18n with persisted language preference
         await i18n.changeLanguage(language);
         await initDatabase();
+        await initNotifications();
         setIsReady(true);
       } catch (e) {
         console.error('Failed to initialize database:', e);
