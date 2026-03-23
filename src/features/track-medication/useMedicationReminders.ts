@@ -1,25 +1,19 @@
-import notifee, { TriggerType, RepeatFrequency, TimestampTrigger, AndroidImportance } from '@notifee/react-native';
+import i18n from '../../shared/lib/i18n';
 import { Medication } from '../../shared/api/medication-repository';
-import { Platform } from 'react-native';
-
-const CHANNEL_ID = 'medication-reminders';
-
-export async function setupNotificationChannel() {
-  if (Platform.OS === 'android') {
-    await notifee.createChannel({
-      id: CHANNEL_ID,
-      name: 'Medication Reminders',
-      importance: AndroidImportance.HIGH,
-      sound: 'default'
-    });
-  }
-}
+import {
+  scheduleReminder,
+  cancelReminders,
+  NotificationType,
+  RepeatFrequency,
+} from '../../shared/lib/notification-service';
 
 /**
  * Syncs a medication's parsed reminder_times to scheduled local notifications.
+ * Title and body use t() from i18n. Note: Notifee bakes strings at schedule-time —
+ * if the user changes language after scheduling, existing notifications retain
+ * the old language until the medication is re-synced.
  */
-export async function syncMedicationReminders(medication: Medication) {
-  // First, cancel any existing triggers for this specific medication
+export async function syncMedicationReminders(medication: Medication): Promise<void> {
   await cancelMedicationReminders(medication.id);
 
   try {
@@ -38,43 +32,24 @@ export async function syncMedicationReminders(medication: Medication) {
         triggerDate.setDate(triggerDate.getDate() + 1);
       }
 
-      const trigger: TimestampTrigger = {
-        type: TriggerType.TIMESTAMP,
-        timestamp: triggerDate.getTime(),
+      await scheduleReminder({
+        id: `${medication.id}-${i}`,
+        type: NotificationType.MEDICATION,
+        title: i18n.t('medication:notification.title'),
+        body: i18n.t('medication:notification.body', {
+          dosage: medication.dosage,
+          name: medication.name,
+        }),
+        targetScreen: 'Medications',
+        triggerTimestamp: triggerDate.getTime(),
         repeatFrequency: RepeatFrequency.DAILY,
-      };
-
-      await notifee.createTriggerNotification(
-        {
-          id: `${medication.id}-${i}`,
-          title: 'Medication Reminder',
-          body: `It's time to take ${medication.dosage} of ${medication.name}`,
-          android: {
-            channelId: CHANNEL_ID,
-            pressAction: {
-              id: 'default',
-            },
-          },
-        },
-        trigger,
-      );
+      });
     }
   } catch (error) {
     console.error('Failed to sync medication reminders:', error);
   }
 }
 
-export async function cancelMedicationReminders(medicationId: string) {
-  // We prefixed the notification ID with medicationId
-  const triggerIds = await notifee.getTriggerNotificationIds();
-  const idsToCancel = triggerIds.filter(id => id.startsWith(medicationId));
-  
-  if (idsToCancel.length > 0) {
-    await notifee.cancelTriggerNotifications(idsToCancel);
-  }
-}
-
-export async function requestNotificationPermissions() {
-  const settings = await notifee.requestPermission();
-  return settings.authorizationStatus;
+export async function cancelMedicationReminders(medicationId: string): Promise<void> {
+  await cancelReminders(medicationId);
 }

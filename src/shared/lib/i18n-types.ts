@@ -10,6 +10,7 @@ import type validation from '../config/locales/en/validation.json';
 import type medical from '../config/locales/en/medical.json';
 import type pages from '../config/locales/en/pages.json';
 import type widgets from '../config/locales/en/widgets.json';
+import type medication from '../config/locales/en/medication.json';
 
 export interface TranslationResources {
   common: typeof common;
@@ -17,6 +18,7 @@ export interface TranslationResources {
   medical: typeof medical;
   pages: typeof pages;
   widgets: typeof widgets;
+  medication: typeof medication;
 }
 
 declare module 'i18next' {
