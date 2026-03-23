@@ -38,7 +38,6 @@ export { RepeatFrequency };
 // We use `any` for the param list here because the full RootStackParamList
 // lives in app/navigation (upper layer). The navigation component passes
 // the concrete-typed ref via <NavigationContainer ref={navigationRef}>.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const navigationRef = createNavigationContainerRef<any>();
 
 let pendingNavigation: string | null = null;
