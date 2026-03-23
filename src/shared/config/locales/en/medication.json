@@ -34,5 +34,9 @@
         "addFailed": "Failed to add medication",
         "updateFailed": "Failed to update medication",
         "deleteFailed": "Failed to delete medication"
+    },
+    "notification": {
+        "title": "Medication Reminder",
+        "body": "It's time to take {{dosage}} of {{name}}"
     }
 }
