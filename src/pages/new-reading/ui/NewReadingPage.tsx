@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   Pressable,
   StyleSheet,
 } from 'react-native';
@@ -91,7 +90,7 @@ export function NewReadingPage() {
           await new Promise<void>(resolve => setTimeout(() => resolve(), 300));
         }
       } catch (surgeError) {
-        console.warn('Surge detection failed:', surgeError);
+        if (__DEV__) console.warn('Surge detection failed:', surgeError);
         // Continue to navigation even if surge detection fails
       }
 
@@ -122,13 +121,14 @@ export function NewReadingPage() {
         <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.xl }]}>
           {t('newReading.title')}
         </Text>
-        <TouchableOpacity
+        <Pressable
           style={[styles.closeButton, { backgroundColor: colors.surfaceSecondary }]}
           onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={tCommon('buttons.close' as any)}
         >
           <Icon name="close" size={22} color={colors.textSecondary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* ── Content ── */}
@@ -188,7 +188,7 @@ export function NewReadingPage() {
           <View style={styles.valuesRow}>
 
             {/* Systolic */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 {
@@ -200,7 +200,8 @@ export function NewReadingPage() {
                 },
               ]}
               onPress={() => { setWeightFocused(false); setActiveField('systolic'); }}
-              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('common.systolic')}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.systolic')}
@@ -222,7 +223,7 @@ export function NewReadingPage() {
                 {systolic || '---'}
               </Text>
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* "/" divider */}
             <View style={styles.divider}>
@@ -230,7 +231,7 @@ export function NewReadingPage() {
             </View>
 
             {/* Diastolic */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 {
@@ -242,7 +243,8 @@ export function NewReadingPage() {
                 },
               ]}
               onPress={() => { setWeightFocused(false); setActiveField('diastolic'); }}
-              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('common.diastolic')}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.diastolic')}
@@ -264,10 +266,10 @@ export function NewReadingPage() {
                 {diastolic || '---'}
               </Text>
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Pulse */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBoxPulse,
                 {
@@ -279,7 +281,8 @@ export function NewReadingPage() {
                 },
               ]}
               onPress={() => { setWeightFocused(false); setActiveField('pulse'); }}
-              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={tCommon('common.pulse')}
             >
               <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
                 {tCommon('common.pulse')}
@@ -298,7 +301,7 @@ export function NewReadingPage() {
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>
                 {tCommon('units.bpm')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Category badge row */}

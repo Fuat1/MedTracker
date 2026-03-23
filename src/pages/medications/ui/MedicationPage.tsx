@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/lib/use-theme';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Button, ButtonIcon } from '../../../shared/ui';
 import { useManageMedications } from '../../../features/track-medication/useManageMedications';
 import { Medication } from '../../../shared/api/medication-repository';
 import MedicationModal from './MedicationModal';
@@ -44,10 +46,11 @@ export default function MedicationPage() {
     try { times = JSON.parse(item.reminder_times || '[]'); } catch {}
 
     return (
-      <TouchableOpacity
+      <Pressable
         style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={() => handleOpenEdit(item)}
-        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t('medication:editMedication', {defaultValue: 'Edit medication {{name}}', name: item.name})}
       >
         <View style={styles.cardHeader}>
           <View style={styles.cardLeft}>
@@ -59,13 +62,15 @@ export default function MedicationPage() {
               <Text style={[styles.medDosage, { color: colors.textSecondary }]}>{item.dosage}</Text>
             </View>
           </View>
-          <TouchableOpacity
+          <Pressable
             onPress={() => handleDelete(item.id, item.name)}
             style={styles.deleteButton}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={t('medication:deleteMedication', {defaultValue: 'Delete medication {{name}}', name: item.name})}
           >
             <Icon name="trash-outline" size={20} color={colors.error} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View style={[styles.reminderRow, { borderTopColor: colors.border }]}>
@@ -76,7 +81,7 @@ export default function MedicationPage() {
               : t('medication:noReminders', 'No reminders set')}
           </Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -106,21 +111,23 @@ export default function MedicationPage() {
           </Text>
         </View>
       ) : (
-        <FlatList
+        <FlashList
           data={medications}
           keyExtractor={(item) => item.id}
           renderItem={renderMedicationCard}
-          contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 100 }]}
+          contentContainerStyle={{ ...styles.list, paddingBottom: insets.bottom + 100 }}
         />
       )}
 
-      <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.accent }]}
+      <Button
+        variant="fab"
+        size="lg"
         onPress={handleOpenAdd}
-        activeOpacity={0.85}
+        accessibilityLabel={t('medication:addMedication', {defaultValue: 'Add medication'})}
+        style={styles.fab}
       >
-        <Icon name="add" size={28} color="#FFF" />
-      </TouchableOpacity>
+        <ButtonIcon as={Icon} name="add" />
+      </Button>
 
       <MedicationModal
         visible={modalVisible}
@@ -235,13 +242,5 @@ const styles = StyleSheet.create({
     right: 24,
     width: 60,
     height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
   },
 });

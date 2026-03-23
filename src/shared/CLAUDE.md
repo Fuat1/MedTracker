@@ -11,6 +11,18 @@ Shared layer contains **reusable infrastructure** with NO business logic. This i
 ```
 src/shared/
 ├── ui/                          ← Reusable UI components
+│   ├── Card/                    ← Card component system (6 variants + specialized)
+│   │   ├── Card.tsx             ← Base Card + CardHeader/Body/Footer/Divider
+│   │   ├── StatCard.tsx         ← Value + trend display
+│   │   ├── ListCard.tsx         ← Header + repeating rows
+│   │   ├── CollapsibleCard.tsx  ← Expand/collapse body
+│   │   ├── types.ts             ← Card type definitions + CARD_SIZE_MAP
+│   │   └── index.ts
+│   ├── Button/                  ← Button component system (7 variants)
+│   │   ├── Button.tsx           ← Button + ButtonText/Icon/Spinner
+│   │   ├── ButtonGroup.tsx      ← Layout container for button groups
+│   │   ├── types.ts             ← Button type definitions + BUTTON_SIZE_MAP
+│   │   └── index.ts
 │   ├── Numpad.tsx
 │   ├── SaveButton.tsx
 │   ├── CrisisModal.tsx
@@ -330,9 +342,89 @@ export const useSettingsStore = create<SettingsStore>()(
 );
 ```
 
+## Card & Button Components (MUST USE)
+
+**NEVER** build card containers manually with `View` + inline shadow/elevation/borderRadius. Use `<Card>` from `shared/ui`.
+
+**NEVER** build action buttons manually with `Pressable` + inline styling. Use `<Button>` from `shared/ui`.
+
+### Card Variants
+
+| Variant | Use Case |
+|---|---|
+| `elevated` | Default card container (settings cards, analytics cards) |
+| `outline` | Bordered cards without shadow (medication schedule) |
+| `ghost` | Lightweight grouping, no border/shadow |
+| `filled` | Highlighted info sections (tinted background) |
+| `pressable` | Tappable cards with press animation |
+| `gradient` | Summary/premium cards |
+
+### Card Usage Pattern
+
+```tsx
+import { Card, CardBody, CardHeader, CardDivider } from '@/shared/ui';
+
+// Standard card with entrance animation
+<Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
+  <Card variant="elevated" size="lg" style={styles.cardRadius}>
+    <CardBody>
+      {/* Card content */}
+    </CardBody>
+  </Card>
+</Animated.View>
+```
+
+**Key points:**
+- Card handles its own padding, background, and shadow — don't duplicate these
+- Wrap Card in `Animated.View` for entrance animations (Card doesn't support `entering` prop)
+- Use `style` override for custom borderRadius (Card size="lg" gives 16, settings cards use 20)
+- Sizes: `sm` (padding:8, radius:8), `md` (padding:16, radius:12), `lg` (padding:20, radius:16)
+
+### Button Variants
+
+| Variant | Use Case |
+|---|---|
+| `primary` | Main CTAs (Save, Sync, Continue) |
+| `secondary` | Secondary actions (Skip, Detect Region) |
+| `ghost` | Tertiary/dismissive actions |
+| `destructive` | Delete actions |
+| `icon` | Icon-only circular buttons |
+| `fab` | Floating action button |
+| `link` | Inline navigation links |
+
+### Button Usage Pattern
+
+```tsx
+import { Button, ButtonText, ButtonIcon, ButtonGroup } from '@/shared/ui';
+
+// Standard button with icon
+<Button variant="primary" size="md" onPress={handleSave} isLoading={saving}>
+  <ButtonIcon as={Icon} name="checkmark" />
+  <ButtonText>{t('common.save')}</ButtonText>
+</Button>
+
+// Button group
+<ButtonGroup direction="row" spacing="lg">
+  <Button variant="secondary" style={{ flex: 1 }}>
+    <ButtonText>{t('cancel')}</ButtonText>
+  </Button>
+  <Button variant="primary" style={{ flex: 1 }}>
+    <ButtonText>{t('confirm')}</ButtonText>
+  </Button>
+</ButtonGroup>
+
+// FAB
+<Button variant="fab" size="lg" onPress={onAdd} style={styles.fabPosition}>
+  <ButtonIcon as={Icon} name="add" />
+</Button>
+```
+
 ## Common Mistakes (MUST AVOID)
 
 ❌ **Importing from any upper layer** → shared/ is the foundation, imports NOTHING from app/pages/widgets/features/entities
 ❌ **Business logic in UI components** → Extract to entities/ or features/
 ❌ **Data fetching in shared/** → Use React Query in entities/ or features/
 ❌ **BP classification in shared/lib** → Move to entities/blood-pressure/lib.ts
+❌ **Manual card containers** → Use `<Card>` component instead of View + shadow/elevation/borderRadius
+❌ **Manual button styling** → Use `<Button>` component instead of Pressable + inline styles
+❌ **Using TouchableOpacity** → Use `Pressable` from react-native-gesture-handler or `<Button>` from shared/ui

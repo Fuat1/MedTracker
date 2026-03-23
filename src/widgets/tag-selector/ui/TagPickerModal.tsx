@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   Pressable,
   StyleSheet,
-  Animated,
   BackHandler,
   TextInput,
   ScrollView,
   Alert,
 } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
@@ -47,8 +47,16 @@ export function TagPickerModal({
   const deleteCustomTag = useDeleteCustomTag();
 
   // Sheet animation
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(400)).current;
+  const backdropOpacity = useSharedValue(0);
+  const slideAnim = useSharedValue(400);
+
+  const backdropAnimStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const sheetAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: slideAnim.value }],
+  }));
 
   // Create form state
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -57,32 +65,11 @@ export function TagPickerModal({
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(slideAnim, {
-          toValue: 0,
-          useNativeDriver: true,
-          damping: 22,
-          stiffness: 320,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(1, { duration: 200 });
+      slideAnim.value = withSpring(0, { damping: 22, stiffness: 320 });
     } else {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 160,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 400,
-          duration: 180,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(0, { duration: 160 });
+      slideAnim.value = withTiming(400, { duration: 180 });
       // Reset create form when closing
       setShowCreateForm(false);
       setNewLabel('');
@@ -154,7 +141,7 @@ export function TagPickerModal({
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {/* Backdrop */}
       <Animated.View
-        style={[styles.backdrop, { opacity: backdropOpacity }]}
+        style={[styles.backdrop, backdropAnimStyle]}
         pointerEvents="auto"
       >
         <Pressable style={StyleSheet.absoluteFillObject} onPress={onClose} />
@@ -167,8 +154,8 @@ export function TagPickerModal({
           {
             backgroundColor: colors.surface,
             paddingBottom: insets.bottom + 12,
-            transform: [{ translateY: slideAnim }],
           },
+          sheetAnimStyle,
         ]}
         pointerEvents="box-none"
       >

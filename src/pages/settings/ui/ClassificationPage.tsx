@@ -7,7 +7,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
-import { OptionChip } from '../../../shared/ui';
+import { OptionChip, Card, CardBody, Button, ButtonText, ButtonIcon } from '../../../shared/ui';
 import { BP_UNITS, BP_GUIDELINES } from '../../../shared/config/settings';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
 import { getLocales } from 'react-native-localize';
@@ -109,111 +109,113 @@ export function ClassificationPage({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Guideline Card */}
-        <Animated.View
-          entering={FadeInUp.duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.cardHeaderRow}>
-            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-              <Icon name="medical-outline" size={20} color={colors.accent} />
-            </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-              {t('settings.guideline.title')}
-            </Text>
-          </View>
-          <Pressable
-            style={[styles.detectRegionButton, { borderColor: colors.accent }]}
-            onPress={handleDetectRegion}
-            accessibilityRole="button"
-            accessibilityLabel={t('settings.detectRegion.button')}
-          >
-            <Icon name="earth-outline" size={18} color={colors.accent} />
-            <Text style={[styles.detectRegionText, { color: colors.accent, fontSize: typography.sm }]}>
-              {t('settings.detectRegion.button')}
-            </Text>
-          </Pressable>
-          <View style={styles.chipRow}>
-            {([
-              { value: BP_GUIDELINES.AHA_ACC, label: tMedical('guidelines.ahaAcc.name') },
-              { value: BP_GUIDELINES.ESC_ESH, label: tMedical('guidelines.escEsh.name') },
-              { value: BP_GUIDELINES.JSH, label: tMedical('guidelines.jsh.name') },
-            ]).map((opt) => (
-              <OptionChip
-                key={opt.value}
-                label={opt.label}
-                selected={guideline === opt.value}
-                onPress={() => handleGuidelineChange(opt.value)}
-              />
-            ))}
-          </View>
-          <Text style={[styles.guidelineNote, { color: colors.textTertiary, fontSize: typography.xs }]}>
-            {t('settings.guideline.note')}
-          </Text>
+        <Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="medical-outline" size={20} color={colors.accent} />
+                </View>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                  {t('settings.guideline.title')}
+                </Text>
+              </View>
+              <Button
+                variant="secondary"
+                size="md"
+                onPress={handleDetectRegion}
+                accessibilityLabel={t('settings.detectRegion.button')}
+                style={styles.detectRegionBtn}
+              >
+                <ButtonIcon as={Icon} name="earth-outline" />
+                <ButtonText>{t('settings.detectRegion.button')}</ButtonText>
+              </Button>
+              <View style={styles.chipRow}>
+                {([
+                  { value: BP_GUIDELINES.AHA_ACC, label: tMedical('guidelines.ahaAcc.name') },
+                  { value: BP_GUIDELINES.ESC_ESH, label: tMedical('guidelines.escEsh.name') },
+                  { value: BP_GUIDELINES.JSH, label: tMedical('guidelines.jsh.name') },
+                ]).map((opt) => (
+                  <OptionChip
+                    key={opt.value}
+                    label={opt.label}
+                    selected={guideline === opt.value}
+                    onPress={() => handleGuidelineChange(opt.value)}
+                  />
+                ))}
+              </View>
+              <Text style={[styles.guidelineNote, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                {t('settings.guideline.note')}
+              </Text>
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Unit Card */}
-        <Animated.View
-          entering={FadeInUp.delay(100).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.cardHeaderRow}>
-            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-              <Icon name="speedometer-outline" size={20} color={colors.accent} />
-            </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-              {t('settings.unit.title')}
-            </Text>
-          </View>
-          <View style={styles.chipRow}>
-            {([
-              { value: BP_UNITS.MMHG, label: 'mmHg' },
-              { value: BP_UNITS.KPA, label: 'kPa' },
-            ]).map((opt) => (
-              <OptionChip
-                key={opt.value}
-                label={opt.label}
-                selected={unit === opt.value}
-                onPress={() => handleUnitChange(opt.value)}
-              />
-            ))}
-          </View>
+        <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="speedometer-outline" size={20} color={colors.accent} />
+                </View>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                  {t('settings.unit.title')}
+                </Text>
+              </View>
+              <View style={styles.chipRow}>
+                {([
+                  { value: BP_UNITS.MMHG, label: 'mmHg' },
+                  { value: BP_UNITS.KPA, label: 'kPa' },
+                ]).map((opt) => (
+                  <OptionChip
+                    key={opt.value}
+                    label={opt.label}
+                    selected={unit === opt.value}
+                    onPress={() => handleUnitChange(opt.value)}
+                  />
+                ))}
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* BP Legend Card */}
-        <Animated.View
-          entering={FadeInUp.delay(200).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 }]}>
-            {t('settings.bpLegend.title', { guideline: guidelineName })}
-          </Text>
+        <Animated.View entering={FadeInUp.delay(200).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 }]}>
+                {t('settings.bpLegend.title', { guideline: guidelineName })}
+              </Text>
 
-          <View style={styles.legendGrid}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: bpColors.normal }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.bpLegend.normal')}
-              </Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: bpColors.elevated }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.bpLegend.elevated')}
-              </Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: bpColors.stage_1 }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.bpLegend.stage1')}
-              </Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: bpColors.stage_2 }]} />
-              <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.bpLegend.stage2')}
-              </Text>
-            </View>
-          </View>
+              <View style={styles.legendGrid}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: bpColors.normal }]} />
+                  <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.bpLegend.normal')}
+                  </Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: bpColors.elevated }]} />
+                  <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.bpLegend.elevated')}
+                  </Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: bpColors.stage_1 }]} />
+                  <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.bpLegend.stage1')}
+                  </Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, { backgroundColor: bpColors.stage_2 }]} />
+                  <Text style={[styles.legendText, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.bpLegend.stage2')}
+                  </Text>
+                </View>
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
       </ScrollView>
     </View>
@@ -249,14 +251,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
-  card: {
-    borderRadius: 20,
-    padding: 20,
+  cardMargin: {
     marginBottom: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+  },
+  cardRadius: {
+    borderRadius: 20,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -285,20 +284,8 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 12,
   },
-  detectRegionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingVertical: 10,
+  detectRegionBtn: {
     marginBottom: 12,
-    minHeight: 48,
-  },
-  detectRegionText: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
   },
   legendGrid: {
     flexDirection: 'row',

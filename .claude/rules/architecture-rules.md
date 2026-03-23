@@ -48,6 +48,36 @@ When creating similar features (e.g., NewReadingPage and QuickLogPage):
 3. Extract shared UI to `shared/ui` (e.g., `<Numpad />`, `<SaveButton />`)
 4. Pages focus ONLY on layout and user flow
 
+## Card & Button Components (MUST)
+
+**All card containers MUST use `<Card>` from `shared/ui`** — never build manually with View + shadow/elevation/borderRadius.
+
+**All action buttons MUST use `<Button>` from `shared/ui`** — never build manually with Pressable + inline styling.
+
+```tsx
+// Card pattern — wrap in Animated.View for entrance animations
+<Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
+  <Card variant="elevated" size="lg">
+    <CardBody>{/* content */}</CardBody>
+  </Card>
+</Animated.View>
+
+// Button pattern — use sub-components for text and icons
+<Button variant="primary" size="md" onPress={handleSave} isLoading={saving}>
+  <ButtonIcon as={Icon} name="checkmark" />
+  <ButtonText>{t('common.save')}</ButtonText>
+</Button>
+
+// FAB pattern — position with style, Button handles appearance
+<Button variant="fab" size="lg" onPress={onAdd} style={styles.fabPosition}>
+  <ButtonIcon as={Icon} name="add" />
+</Button>
+```
+
+Card variants: `elevated` | `outline` | `ghost` | `filled` | `pressable` | `gradient`
+Button variants: `primary` | `secondary` | `ghost` | `destructive` | `icon` | `fab` | `link`
+See `docs/card-button-usage.md` for full reference.
+
 ## Navigation Structure (MUST)
 
 ```typescript

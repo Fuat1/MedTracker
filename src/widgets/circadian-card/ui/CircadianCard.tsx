@@ -7,7 +7,7 @@ import { computeCircadianBreakdown, detectMorningSurge, useTheme } from '../../.
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { computeTimeInRange } from '../../../entities/blood-pressure';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
-import { DonutChart, CircadianBreakdownBars } from '../../../shared/ui';
+import { DonutChart, CircadianBreakdownBars, Card, CardBody } from '../../../shared/ui';
 import type { DonutSegment, CircadianWindowData } from '../../../shared/ui';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 
@@ -58,57 +58,58 @@ export function CircadianCard({ records, allRecords }: CircadianCardProps) {
   return (
     <Animated.View
       entering={FadeInUp.delay(250).duration(500)}
-      style={[styles.container, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+      style={styles.cardMargin}
     >
-      <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-        {t('analytics.circadian.title')}
-      </Text>
-
-      {records.length < 4 ? (
-        <Text style={[styles.noDataText, { color: colors.textSecondary, fontSize: typography.sm }]}>
-          {t('analytics.circadian.noData')}
-        </Text>
-      ) : (
-        <>
-          {/* Donut Chart — time in range */}
-          <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
-            {t('analytics.circadian.timeInRange')}
+      <Card variant="elevated" size="lg" style={styles.cardRadius}>
+        <CardBody>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+            {t('analytics.circadian.title')}
           </Text>
-          <DonutChart
-            segments={donutSegments}
-            size={140}
-            centerLabel={`${timeInRange.overall.normal}%`}
-            centerSubLabel={tMedical('categories.normal')}
-          />
 
-          {/* Per-window breakdown bars */}
-          <CircadianBreakdownBars windows={circadianWindows} />
-
-          {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
-          {surgeResult.hasSurge && (
-            <View style={[styles.surgeRow, { backgroundColor: colors.surgeBg }]}>
-              <Icon name="trending-up-outline" size={14} color={colors.surgeColor} />
-              <Text style={[styles.surgeText, { color: colors.surgeColor, fontSize: typography.sm }]}>
-                {t('analytics.circadian.morningSurge', { count: 1 })}
+          {records.length < 4 ? (
+            <Text style={[styles.noDataText, { color: colors.textSecondary, fontSize: typography.sm }]}>
+              {t('analytics.circadian.noData')}
+            </Text>
+          ) : (
+            <>
+              {/* Donut Chart — time in range */}
+              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.md }]}>
+                {t('analytics.circadian.timeInRange')}
               </Text>
-            </View>
+              <DonutChart
+                segments={donutSegments}
+                size={140}
+                centerLabel={`${timeInRange.overall.normal}%`}
+                centerSubLabel={tMedical('categories.normal')}
+              />
+
+              {/* Per-window breakdown bars */}
+              <CircadianBreakdownBars windows={circadianWindows} />
+
+              {/* Morning surge alert badge (count: 1 since detectMorningSurge only tracks single event) */}
+              {surgeResult.hasSurge && (
+                <View style={[styles.surgeRow, { backgroundColor: colors.surgeBg }]}>
+                  <Icon name="trending-up-outline" size={14} color={colors.surgeColor} />
+                  <Text style={[styles.surgeText, { color: colors.surgeColor, fontSize: typography.sm }]}>
+                    {t('analytics.circadian.morningSurge', { count: 1 })}
+                  </Text>
+                </View>
+              )}
+            </>
           )}
-        </>
-      )}
+        </CardBody>
+      </Card>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  cardMargin: {
     marginHorizontal: 20,
-    borderRadius: 20,
-    padding: 20,
     marginBottom: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+  },
+  cardRadius: {
+    borderRadius: 20,
   },
   cardTitle: {
     fontFamily: FONTS.semiBold,

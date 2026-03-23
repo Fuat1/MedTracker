@@ -1,13 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   Pressable,
   StyleSheet,
-  Animated,
   ScrollView,
   BackHandler,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
@@ -36,43 +41,27 @@ export function DerivedMetricsModal({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const cardScale = useRef(new Animated.Value(0.88)).current;
-  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const backdropOpacity = useSharedValue(0);
+  const cardScale = useSharedValue(0.88);
+  const cardOpacity = useSharedValue(0);
+
+  const backdropAnimStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const cardAnimStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    transform: [{ scale: cardScale.value }],
+  }));
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 220,
-          useNativeDriver: true,
-        }),
-        Animated.spring(cardScale, {
-          toValue: 1,
-          useNativeDriver: true,
-          damping: 18,
-          stiffness: 240,
-        }),
-        Animated.timing(cardOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(1, { duration: 220 });
+      cardScale.value = withSpring(1, { damping: 18, stiffness: 240 });
+      cardOpacity.value = withTiming(1, { duration: 200 });
     } else {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 160,
-          useNativeDriver: true,
-        }),
-        Animated.timing(cardOpacity, {
-          toValue: 0,
-          duration: 160,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(0, { duration: 160 });
+      cardOpacity.value = withTiming(0, { duration: 160 });
     }
   }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
@@ -100,7 +89,7 @@ export function DerivedMetricsModal({
     <View style={[styles.overlay, { paddingBottom: bottomPad }]} pointerEvents="box-none">
       {/* Backdrop */}
       <Animated.View
-        style={[styles.backdrop, { opacity: backdropOpacity }]}
+        style={[styles.backdrop, backdropAnimStyle]}
         pointerEvents="auto"
       >
         <Pressable
@@ -114,7 +103,7 @@ export function DerivedMetricsModal({
         pointerEvents="box-none"
         style={[
           styles.cardWrapper,
-          { opacity: cardOpacity, transform: [{ scale: cardScale }] },
+          cardAnimStyle,
         ]}
       >
         <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>

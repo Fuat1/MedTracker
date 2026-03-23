@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../../shared/lib/use-theme';
+import { Card, CardBody } from '../../shared/ui';
 import { useTodayMedicationSchedule } from '../../features/track-medication/useTodayMedicationSchedule';
 import { Medication } from '../../shared/api/medication-repository';
 
@@ -28,48 +29,58 @@ export default function TodayScheduleCard() {
   };
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <View style={styles.header}>
-        <Icon name="medical" size={18} color={colors.accent} />
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
-          {t('medication:todayTitle', 'Today\'s Medications')}
-        </Text>
-      </View>
-
-      {pendingMeds.map((med: Medication) => {
-        let times: string[] = [];
-        try { times = JSON.parse(med.reminder_times || '[]'); } catch {}
-
-        return (
-          <View key={med.id} style={[styles.row, { borderTopColor: colors.border }]}>
-            <View style={styles.info}>
-              <Text style={[styles.name, { color: colors.textPrimary }]}>{med.name}</Text>
-              <Text style={[styles.detail, { color: colors.textSecondary }]}>
-                {med.dosage}{times.length > 0 ? ` · ${times.join(', ')}` : ''}
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={[styles.markBtn, { backgroundColor: colors.iconCircleBg, borderColor: colors.accent }]}
-              onPress={() => handleTaken(med)}
-              disabled={isLogging}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Icon name="checkmark" size={18} color={colors.accent} />
-            </TouchableOpacity>
+    <View style={styles.cardMargin}>
+      <Card variant="outline" size="md" style={styles.cardRadius}>
+        <CardBody style={styles.cardBodyNoPadding}>
+          <View style={styles.header}>
+            <Icon name="medical" size={18} color={colors.accent} />
+            <Text style={[styles.title, { color: colors.textPrimary }]}>
+              {t('medication:todayTitle', 'Today\'s Medications')}
+            </Text>
           </View>
-        );
-      })}
+
+          {pendingMeds.map((med: Medication) => {
+            let times: string[] = [];
+            try { times = JSON.parse(med.reminder_times || '[]'); } catch {}
+
+            return (
+              <View key={med.id} style={[styles.row, { borderTopColor: colors.border }]}>
+                <View style={styles.info}>
+                  <Text style={[styles.name, { color: colors.textPrimary }]}>{med.name}</Text>
+                  <Text style={[styles.detail, { color: colors.textSecondary }]}>
+                    {med.dosage}{times.length > 0 ? ` · ${times.join(', ')}` : ''}
+                  </Text>
+                </View>
+                <Pressable
+                  style={[styles.markBtn, { backgroundColor: colors.iconCircleBg, borderColor: colors.accent }]}
+                  onPress={() => handleTaken(med)}
+                  disabled={isLogging}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('medication:markTaken', {defaultValue: 'Mark {{name}} as taken', name: med.name})}
+                >
+                  <Icon name="checkmark" size={18} color={colors.accent} />
+                </Pressable>
+              </View>
+            );
+          })}
+        </CardBody>
+      </Card>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
+  cardMargin: {
     marginHorizontal: 20,
     marginBottom: 12,
+  },
+  cardRadius: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  cardBodyNoPadding: {
+    padding: 0,
   },
   header: {
     flexDirection: 'row',

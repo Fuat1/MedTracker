@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ScrollView,
   Alert,
@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { Button, ButtonText, ButtonIcon } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import {
   MEASUREMENT_CHECKLIST,
@@ -220,13 +221,13 @@ export function PreMeasurementPage() {
         <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.xl }]}>
           {t('preMeasurement.title')}
         </Text>
-        <TouchableOpacity
+        <Pressable
           style={[styles.closeButton, { backgroundColor: colors.surfaceSecondary }]}
           onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
+          accessibilityRole="button"
         >
           <Icon name="close" size={24} color={colors.textSecondary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Progress Indicator */}
@@ -271,32 +272,29 @@ export function PreMeasurementPage() {
 
       {/* Action Buttons */}
       <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
-        <TouchableOpacity
-          style={[styles.skipButton, { backgroundColor: colors.surfaceSecondary }]}
+        <Button
+          variant="secondary"
+          size="lg"
           onPress={handleSkipToMeasurement}
-          activeOpacity={0.7}
+          style={styles.skipButton}
+          accessibilityLabel={t('preMeasurement.skip')}
         >
-          <Text style={[styles.skipButtonText, { color: colors.textSecondary, fontSize: typography.md }]}>
-            {t('preMeasurement.skip')}
-          </Text>
-        </TouchableOpacity>
+          <ButtonText>{t('preMeasurement.skip')}</ButtonText>
+        </Button>
 
-        <TouchableOpacity
-          style={[
-            styles.continueButton,
-            {
-              backgroundColor: canContinue() ? colors.accent : colors.border,
-            },
-          ]}
+        <Button
+          variant="primary"
+          size="lg"
           onPress={handleContinue}
-          disabled={!canContinue()}
-          activeOpacity={0.85}
+          isDisabled={!canContinue()}
+          style={styles.continueButton}
+          accessibilityLabel={currentStep === 'ready' ? t('preMeasurement.startMeasurement') : tCommon('buttons.continue')}
         >
-          <Text style={[styles.continueButtonText, { fontSize: typography.md }]}>
+          <ButtonText>
             {currentStep === 'ready' ? t('preMeasurement.startMeasurement') : tCommon('buttons.continue')}
-          </Text>
-          <Icon name="arrow-forward" size={20} color="#ffffff" />
-        </TouchableOpacity>
+          </ButtonText>
+          <ButtonIcon as={Icon} name="arrow-forward" />
+        </Button>
       </View>
     </SafeAreaView>
   );
@@ -427,27 +425,8 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  skipButtonText: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
   },
   continueButton: {
     flex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 14,
-    gap: 8,
-  },
-  continueButtonText: {
-    color: '#ffffff',
-    fontFamily: FONTS.bold,
-    fontWeight: '700',
   },
 });

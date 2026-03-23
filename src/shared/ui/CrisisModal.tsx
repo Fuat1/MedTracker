@@ -1,15 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
   Pressable,
   StyleSheet,
-  Animated,
   BackHandler,
   ScrollView,
   Linking,
   Platform,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/use-theme';
@@ -50,9 +55,18 @@ export function CrisisModal({
   const [step, setStep] = useState<Step>('symptoms');
   const [checkedSymptoms, setCheckedSymptoms] = useState<Set<string>>(new Set());
 
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const cardScale = useRef(new Animated.Value(0.88)).current;
-  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const backdropOpacity = useSharedValue(0);
+  const cardScale = useSharedValue(0.88);
+  const cardOpacity = useSharedValue(0);
+
+  const backdropAnimStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const cardAnimStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    transform: [{ scale: cardScale.value }],
+  }));
 
   // Reset state when modal opens
   useEffect(() => {
@@ -64,37 +78,12 @@ export function CrisisModal({
 
   useEffect(() => {
     if (visible) {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 220,
-          useNativeDriver: true,
-        }),
-        Animated.spring(cardScale, {
-          toValue: 1,
-          useNativeDriver: true,
-          damping: 18,
-          stiffness: 240,
-        }),
-        Animated.timing(cardOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(1, { duration: 220 });
+      cardScale.value = withSpring(1, { damping: 18, stiffness: 240 });
+      cardOpacity.value = withTiming(1, { duration: 200 });
     } else {
-      Animated.parallel([
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 160,
-          useNativeDriver: true,
-        }),
-        Animated.timing(cardOpacity, {
-          toValue: 0,
-          duration: 160,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      backdropOpacity.value = withTiming(0, { duration: 160 });
+      cardOpacity.value = withTiming(0, { duration: 160 });
     }
   }, [visible, backdropOpacity, cardScale, cardOpacity]);
 
@@ -137,7 +126,7 @@ export function CrisisModal({
     <View style={styles.overlay} pointerEvents="box-none" accessibilityRole="alert" accessibilityLiveRegion="assertive">
       {/* Backdrop — not dismissible; user must use Cancel button */}
       <Animated.View
-        style={[styles.backdrop, { opacity: backdropOpacity }]}
+        style={[styles.backdrop, backdropAnimStyle]}
         pointerEvents="auto"
       />
 
@@ -146,7 +135,7 @@ export function CrisisModal({
         pointerEvents="box-none"
         style={[
           styles.cardWrapper,
-          { opacity: cardOpacity, transform: [{ scale: cardScale }] },
+          cardAnimStyle,
         ]}
       >
         <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>

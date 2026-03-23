@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   Pressable,
   ScrollView,
   TextInput,
@@ -244,12 +243,13 @@ export function EditReadingPage() {
           <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.xl }]}>
             {t('editReading.title')}
           </Text>
-          <TouchableOpacity
+          <Pressable
             style={[styles.closeButton, { backgroundColor: colors.surfaceSecondary }]}
             onPress={() => navigation.goBack()}
+            accessibilityRole="button"
           >
             <Icon name="close" size={22} color={colors.textSecondary} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <View style={styles.centered}>
           <Text style={[styles.noDataText, { color: colors.textSecondary, fontSize: typography.md }]}>
@@ -272,14 +272,14 @@ export function EditReadingPage() {
             {formatDateTime(record.timestamp)}
           </Text>
         </View>
-        <TouchableOpacity
+        <Pressable
           style={[styles.closeButton, { backgroundColor: colors.surfaceSecondary }]}
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
           accessibilityLabel={tCommon('buttons.cancel')}
         >
           <Icon name="close" size={22} color={colors.textSecondary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* ── Toast ── */}
@@ -384,7 +384,7 @@ export function EditReadingPage() {
           {/* BP Value cards */}
           <View style={styles.valuesRow}>
             {/* Systolic */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 {
@@ -405,14 +405,14 @@ export function EditReadingPage() {
                 {systolic || '---'}
               </Text>
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             <View style={styles.divider}>
               <Text style={[styles.dividerText, { color: colors.textTertiary, fontSize: typography.xl }]}>/</Text>
             </View>
 
             {/* Diastolic */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBox,
                 {
@@ -433,10 +433,10 @@ export function EditReadingPage() {
                 {diastolic || '---'}
               </Text>
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Pulse */}
-            <TouchableOpacity
+            <Pressable
               style={[
                 styles.valueBoxPulse,
                 {
@@ -459,7 +459,7 @@ export function EditReadingPage() {
               <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>
                 {tCommon('units.bpm')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* ── Details section ── */}

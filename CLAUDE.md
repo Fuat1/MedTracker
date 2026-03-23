@@ -70,6 +70,8 @@ npx react-native run-ios            # Build iOS
 - **ALWAYS return cleanup functions** from `useEffect` with subscriptions/timers/listeners
 - **Use `useSafeAreaInsets` hook** from `react-native-safe-area-context` — not built-in SafeAreaView
 - **Minimum 44×44pt touch targets** on all interactive elements
+- **ALWAYS use `<Card>` from `shared/ui`** for card containers — never build cards manually with View + inline shadow/elevation/borderRadius styles. See `docs/card-button-usage.md` for variants and patterns.
+- **ALWAYS use `<Button>` from `shared/ui`** for action buttons — never build buttons manually with Pressable + inline styling. Variants: `primary`, `secondary`, `ghost`, `destructive`, `icon`, `fab`, `link`. Use sub-components `ButtonText`, `ButtonIcon`, `ButtonSpinner`.
 
 ## i18n Rules (MUST)
 
@@ -92,6 +94,7 @@ npx react-native run-ios            # Build iOS
 - **Platform & Performance**: `docs/docs-react-native-best-practices.md` (comprehensive guide)
 - **Platform Rules**: See `.claude/rules/platform-rules.md` (always loaded)
 - **Design Plans**: `docs/plans/` (feature design & implementation plans)
+- **Card & Button Usage**: `docs/card-button-usage.md` (variants, patterns, examples)
 - **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
 
 ## Known Violations (Tech Debt)
@@ -115,4 +118,4 @@ npx react-native run-ios            # Build iOS
 
 If you violate a rule or make an error, update the relevant CLAUDE.md file (root or subdirectory) with a specific instruction to prevent recurrence. Keep instructions concise and actionable.
 
-**Last Updated**: 2026-02-15
+**Last Updated**: 2026-03-23

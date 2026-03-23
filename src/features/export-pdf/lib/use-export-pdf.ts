@@ -73,7 +73,7 @@ export function useExportPdf() {
           try {
             const filePath = await buildPdf(records, options);
 
-            console.log('[useExportPdf] Generated PDF at:', filePath);
+            if (__DEV__) console.log('[useExportPdf] Generated PDF at:', filePath);
 
             // Platform-specific file handling due to Android FileProvider requirements
             if (Platform.OS === 'android') {
@@ -100,12 +100,12 @@ export function useExportPdf() {
               i18n.t('pages:analytics.report.exportFailedTitle'),
               i18n.t('pages:analytics.report.exportFailedMessage'),
             );
-            console.error('[useExportPdf] exportPdf error:', error);
+            if (__DEV__) console.error('[useExportPdf] exportPdf error:', error);
           } finally {
             setActiveAction(null);
           }
         };
-        run().catch(console.error);
+        run().catch(e => { if (__DEV__) console.error(e); });
       });
     },
     [buildPdf],
@@ -161,12 +161,12 @@ export function useExportPdf() {
               i18n.t('pages:analytics.report.saveFailedTitle'),
               i18n.t('pages:analytics.report.saveFailedMessage'),
             );
-            console.error('[useExportPdf] downloadPdf error:', error);
+            if (__DEV__) console.error('[useExportPdf] downloadPdf error:', error);
           } finally {
             setActiveAction(null);
           }
         };
-        run().catch(console.error);
+        run().catch(e => { if (__DEV__) console.error(e); });
       });
     },
     [buildPdf],

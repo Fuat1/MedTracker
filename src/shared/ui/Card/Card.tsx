@@ -114,8 +114,8 @@ export function CardHeader({icon, title, action}: CardHeaderProps) {
   );
 }
 
-export function CardBody({children}: CardBodyProps) {
-  return <View>{children}</View>;
+export function CardBody({children, style}: CardBodyProps) {
+  return <View style={style}>{children}</View>;
 }
 
 export function CardFooter({children}: CardFooterProps) {

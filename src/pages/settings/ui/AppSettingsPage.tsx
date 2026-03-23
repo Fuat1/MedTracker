@@ -7,7 +7,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore, type Language, type EntryMode } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
-import { OptionChip } from '../../../shared/ui';
+import { OptionChip, Card, CardBody } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SettingsStackParamList } from '../../../app/navigation/index';
@@ -99,171 +99,176 @@ export function AppSettingsPage({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Entry Mode Card */}
-        <Animated.View
-          entering={FadeInUp.duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.cardHeaderRow}>
-            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-              <Icon name="add-circle-outline" size={20} color={colors.accent} />
-            </View>
-            <View style={styles.cardHeaderTextCol}>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                {t('settings.entryMode.label')}
-              </Text>
-              <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                {t('settings.entryMode.description')}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.chipRow}>
-            {([
-              { value: null as EntryMode, label: t('settings.entryMode.alwaysAsk') },
-              { value: 'quickLog' as EntryMode, label: t('settings.entryMode.quickLog') },
-              { value: 'guided' as EntryMode, label: t('settings.entryMode.guided') },
-            ]).map((opt) => (
-              <OptionChip
-                key={String(opt.value)}
-                label={opt.label}
-                selected={preferredEntryMode === opt.value}
-                onPress={() => handleEntryModeChange(opt.value)}
-              />
-            ))}
-          </View>
+        <Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="add-circle-outline" size={20} color={colors.accent} />
+                </View>
+                <View style={styles.cardHeaderTextCol}>
+                  <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                    {t('settings.entryMode.label')}
+                  </Text>
+                  <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                    {t('settings.entryMode.description')}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.chipRow}>
+                {([
+                  { value: null as EntryMode, label: t('settings.entryMode.alwaysAsk') },
+                  { value: 'quickLog' as EntryMode, label: t('settings.entryMode.quickLog') },
+                  { value: 'guided' as EntryMode, label: t('settings.entryMode.guided') },
+                ]).map((opt) => (
+                  <OptionChip
+                    key={String(opt.value)}
+                    label={opt.label}
+                    selected={preferredEntryMode === opt.value}
+                    onPress={() => handleEntryModeChange(opt.value)}
+                  />
+                ))}
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Theme Card */}
-        <Animated.View
-          entering={FadeInUp.delay(100).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 }]}>
-            {t('settings.theme.title')}
-          </Text>
+        <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 }]}>
+                {t('settings.theme.title')}
+              </Text>
 
-          <View style={styles.settingRow}>
-            <View style={styles.settingLabelRow}>
-              <Icon name="moon" size={20} color={colors.textSecondary} />
-              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.darkMode')}
-              </Text>
-            </View>
-            <Switch
-              value={isDarkToggled}
-              onValueChange={handleThemeToggle}
-              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.toggleThumb}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.darkMode')}
-            />
-          </View>
+              <View style={styles.settingRow}>
+                <View style={styles.settingLabelRow}>
+                  <Icon name="moon" size={20} color={colors.textSecondary} />
+                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.darkMode')}
+                  </Text>
+                </View>
+                <Switch
+                  value={isDarkToggled}
+                  onValueChange={handleThemeToggle}
+                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+                  thumbColor={colors.toggleThumb}
+                  accessibilityRole="switch"
+                  accessibilityLabel={t('settings.darkMode')}
+                />
+              </View>
 
-          {theme !== 'system' && (
-            <Pressable
-              onPress={handleSystemTheme}
-              style={styles.systemThemeLink}
-              accessibilityRole="button"
-              accessibilityLabel={t('settings.useSystemDefault')}
-            >
-              <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-              <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
-                {t('settings.useSystemDefault')}
-              </Text>
-            </Pressable>
-          )}
-          {theme === 'system' && (
-            <View style={styles.systemThemeLink}>
-              <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-              <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
-                {t('settings.theme.system.label')}
-              </Text>
-            </View>
-          )}
+              {theme !== 'system' && (
+                <Pressable
+                  onPress={handleSystemTheme}
+                  style={styles.systemThemeLink}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('settings.useSystemDefault')}
+                >
+                  <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
+                  <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
+                    {t('settings.useSystemDefault')}
+                  </Text>
+                </Pressable>
+              )}
+              {theme === 'system' && (
+                <View style={styles.systemThemeLink}>
+                  <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
+                  <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
+                    {t('settings.theme.system.label')}
+                  </Text>
+                </View>
+              )}
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Senior Mode Card */}
-        <Animated.View
-          entering={FadeInUp.delay(200).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.seniorMode.label')}
-              </Text>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                {t('settings.seniorMode.description')}
-              </Text>
-            </View>
-            <Switch
-              value={seniorMode}
-              onValueChange={handleSeniorModeToggle}
-              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.toggleThumb}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.seniorMode.label')}
-            />
-          </View>
+        <Animated.View entering={FadeInUp.delay(200).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.seniorMode.label')}
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                    {t('settings.seniorMode.description')}
+                  </Text>
+                </View>
+                <Switch
+                  value={seniorMode}
+                  onValueChange={handleSeniorModeToggle}
+                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+                  thumbColor={colors.toggleThumb}
+                  accessibilityRole="switch"
+                  accessibilityLabel={t('settings.seniorMode.label')}
+                />
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* High Contrast Card */}
-        <Animated.View
-          entering={FadeInUp.delay(300).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                {t('settings.highContrast.label')}
-              </Text>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                {t('settings.highContrast.description')}
-              </Text>
-              {highContrast && (
-                <Text style={[styles.noteText, { color: colors.accent, fontSize: typography.xs }]}>
-                  {t('settings.highContrast.note')}
-                </Text>
-              )}
-            </View>
-            <Switch
-              value={highContrast}
-              onValueChange={handleHighContrastToggle}
-              trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-              thumbColor={colors.toggleThumb}
-              accessibilityRole="switch"
-              accessibilityLabel={t('settings.highContrast.label')}
-            />
-          </View>
+        <Animated.View entering={FadeInUp.delay(300).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.highContrast.label')}
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                    {t('settings.highContrast.description')}
+                  </Text>
+                  {highContrast && (
+                    <Text style={[styles.noteText, { color: colors.accent, fontSize: typography.xs }]}>
+                      {t('settings.highContrast.note')}
+                    </Text>
+                  )}
+                </View>
+                <Switch
+                  value={highContrast}
+                  onValueChange={handleHighContrastToggle}
+                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+                  thumbColor={colors.toggleThumb}
+                  accessibilityRole="switch"
+                  accessibilityLabel={t('settings.highContrast.label')}
+                />
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
 
         {/* Language Card */}
-        <Animated.View
-          entering={FadeInUp.delay(400).duration(400)}
-          style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
-        >
-          <View style={styles.cardHeaderRow}>
-            <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-              <Icon name="language-outline" size={20} color={colors.accent} />
-            </View>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-              {t('settings.language.title')}
-            </Text>
-          </View>
-          <View style={styles.chipRow}>
-            {([
-              { code: 'en' as Language, label: 'EN' },
-              { code: 'id' as Language, label: 'ID' },
-              { code: 'sr' as Language, label: 'SR' },
-              { code: 'tr' as Language, label: 'TR' },
-            ]).map((opt) => (
-              <OptionChip
-                key={opt.code}
-                label={opt.label}
-                selected={language === opt.code}
-                onPress={() => handleLanguageChange(opt.code)}
-              />
-            ))}
-          </View>
+        <Animated.View entering={FadeInUp.delay(400).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="language-outline" size={20} color={colors.accent} />
+                </View>
+                <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                  {t('settings.language.title')}
+                </Text>
+              </View>
+              <View style={styles.chipRow}>
+                {([
+                  { code: 'en' as Language, label: 'EN' },
+                  { code: 'id' as Language, label: 'ID' },
+                  { code: 'sr' as Language, label: 'SR' },
+                  { code: 'tr' as Language, label: 'TR' },
+                ]).map((opt) => (
+                  <OptionChip
+                    key={opt.code}
+                    label={opt.label}
+                    selected={language === opt.code}
+                    onPress={() => handleLanguageChange(opt.code)}
+                  />
+                ))}
+              </View>
+            </CardBody>
+          </Card>
         </Animated.View>
       </ScrollView>
     </View>
@@ -299,14 +304,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
-  card: {
-    borderRadius: 20,
-    padding: 20,
+  cardMargin: {
     marginBottom: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+  },
+  cardRadius: {
+    borderRadius: 20,
   },
   cardHeaderRow: {
     flexDirection: 'row',

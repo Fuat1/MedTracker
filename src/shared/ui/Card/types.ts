@@ -29,6 +29,7 @@ export interface CardHeaderProps {
 
 export interface CardBodyProps {
   children: ReactNode;
+  style?: ViewStyle;
 }
 
 export interface CardFooterProps {

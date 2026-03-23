@@ -90,7 +90,7 @@ export class HealthConnectService implements IHealthPlatform {
       
       return results && results.length > 0 ? results[0] : null;
     } catch (e) {
-      console.warn('saveBloodPressure error:', e);
+      if (__DEV__) console.warn('saveBloodPressure error:', e);
       return null;
     }
   }
@@ -130,7 +130,7 @@ export class HealthConnectService implements IHealthPlatform {
         } as BPRecord;
       }).filter(r => r.systolic > 0 && r.diastolic > 0);
     } catch (e) {
-      console.warn('getBloodPressureRecords error:', e);
+      if (__DEV__) console.warn('getBloodPressureRecords error:', e);
       return [];
     }
   }

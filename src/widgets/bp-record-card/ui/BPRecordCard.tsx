@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -234,7 +234,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
 
   return (
     <Animated.View entering={FadeInRight.duration(400)}>
-      <TouchableOpacity
+      <Pressable
         style={[
           styles.card,
           {
@@ -244,7 +244,8 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
             shadowOpacity: colors.shadowOpacity,
           },
         ]}
-        activeOpacity={0.95}
+        accessibilityRole="button"
+        accessibilityLabel={t('bpRecord.cardLabel', {defaultValue: 'Blood pressure record'})}
       >
         <View style={styles.header}>
           {/* BP Values */}
@@ -370,7 +371,7 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
             <Text style={[styles.notesText, { color: colors.textSecondary, fontSize: typography.sm }]}>{record.notes}</Text>
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }

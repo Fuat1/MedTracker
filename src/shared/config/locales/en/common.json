@@ -9,7 +9,8 @@
     "cancel": "Cancel",
     "saveAnyway": "Save Anyway",
     "back": "Back",
-    "continue": "Continue"
+    "continue": "Continue",
+    "close": "Close"
   },
   "units": {
     "mmhg": "mmHg",

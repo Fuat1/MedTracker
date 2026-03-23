@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, runOnJS } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
@@ -20,41 +21,27 @@ export function Toast({
   duration = 3000,
 }: ToastProps) {
   const { colors } = useTheme();
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-16)).current;
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(-16);
+
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
 
   useEffect(() => {
     if (!visible) return;
 
     // Slide in + fade in
-    Animated.parallel([
-      Animated.spring(translateY, {
-        toValue: 0,
-        useNativeDriver: true,
-        damping: 18,
-        stiffness: 260,
-      }),
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    translateY.value = withSpring(0, { damping: 18, stiffness: 260 });
+    opacity.value = withTiming(1, { duration: 180 });
 
     // Auto-dismiss
     const timer = setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: -16,
-          duration: 180,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 180,
-          useNativeDriver: true,
-        }),
-      ]).start(() => onHide());
+      translateY.value = withTiming(-16, { duration: 180 });
+      opacity.value = withTiming(0, { duration: 180 }, (finished) => {
+        if (finished) runOnJS(onHide)();
+      });
     }, duration);
 
     return () => clearTimeout(timer);
@@ -72,15 +59,7 @@ export function Toast({
   return (
     <Animated.View
       pointerEvents="none"
-      style={[
-        styles.container,
-        {
-          backgroundColor: bgColor,
-          borderColor,
-          opacity,
-          transform: [{ translateY }],
-        },
-      ]}
+      style={[styles.container, { backgroundColor: bgColor, borderColor }, animStyle]}
     >
       <Icon name={iconName} size={14} color={textColor} />
       <Text style={[styles.message, { color: textColor }]} numberOfLines={3}>

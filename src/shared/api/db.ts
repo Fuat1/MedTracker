@@ -115,10 +115,10 @@ export async function initDatabase(): Promise<DB> {
       );
     }
 
-    console.log('Database initialized successfully');
+    if (__DEV__) console.log('Database initialized successfully');
     return db;
   } catch (error) {
-    console.error('Database initialization error:', error);
+    if (__DEV__) console.error('Database initialization error:', error);
     throw error;
   }
 }
@@ -134,6 +134,6 @@ export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
-    console.log('Database closed');
+    if (__DEV__) console.log('Database closed');
   }
 }

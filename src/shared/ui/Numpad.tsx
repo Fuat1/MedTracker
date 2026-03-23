@@ -56,7 +56,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
       }
     } catch (error) {
       // Silently fail if vibration permission not granted
-      console.debug('Vibration not available:', error);
+      if (__DEV__) console.debug('Vibration not available:', error);
     }
 
     scale.value = withSequence(
