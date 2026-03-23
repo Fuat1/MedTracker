@@ -62,19 +62,24 @@ const CHANNELS: Record<NotificationType, ChannelConfig> = {
 // ── Exported functions ──────────────────────────────────────────────
 
 export async function initialize(): Promise<void> {
-  if (Platform.OS === 'android') {
-    const entries = Object.values(CHANNELS);
-    for (const channel of entries) {
-      await notifee.createChannel({
-        id: channel.id,
-        name: channel.name,
-        importance: channel.importance,
-        sound: channel.sound,
-      });
+  try {
+    if (Platform.OS === 'android') {
+      const entries = Object.values(CHANNELS);
+      for (const channel of entries) {
+        await notifee.createChannel({
+          id: channel.id,
+          name: channel.name,
+          importance: channel.importance,
+          sound: channel.sound,
+        });
+      }
     }
-  }
 
-  await notifee.requestPermission();
+    await notifee.requestPermission();
+  } catch (error) {
+    // Degrade gracefully — notifications won't work but app should still launch
+    console.error('Failed to initialize notifications:', error);
+  }
 }
 
 export async function scheduleReminder(params: ScheduleReminderParams): Promise<void> {
