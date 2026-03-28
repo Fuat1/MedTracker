@@ -17,7 +17,7 @@ The app remains **offline-first** — SQLite is still the source of truth. Fireb
 ## Scope
 
 **In scope:**
-- Firebase Auth (Google Sign-In, email/password, phone/OTP)
+- Firebase Auth (Google Sign-In, email/password)
 - Field-level AES-256-GCM encryption of sensitive values before Firestore write
 - Firestore sync of BP records (upload on save, download on foreground)
 - Pairing via QR code / 6-char invite code (in-person) and email/phone invite (remote)
@@ -81,11 +81,10 @@ QR scanning: use native camera app (user saves/shares QR image, scans with syste
 |---|---|---|
 | Google | `@react-native-google-signin/google-signin` (already installed) | One tap; passes token to Firebase Auth |
 | Email/password | Firebase Auth built-in | Email verification required before pairing |
-| Phone/OTP | Firebase Phone Auth | SMS code; no password |
 
 ### AuthGate
 
-Wraps the root navigator. Unauthenticated users see `AuthPage` with three tabs. Authenticated users see the normal app. Family sharing features are gated behind auth; users who never sign in continue using the app as today (no forced login).
+Wraps the root navigator. Unauthenticated users see `AuthPage` with two tabs (Google / Email). Authenticated users see the normal app. Family sharing features are gated behind auth; users who never sign in continue using the app as today (no forced login).
 
 ### Firestore user document
 
@@ -93,7 +92,6 @@ Wraps the root navigator. Unauthenticated users see `AuthPage` with three tabs. 
 /users/{uid}
   displayName: string
   email?: string
-  phone?: string
   encryptedMasterKey: string   ← master key encrypted with device-derived secret
   fcmToken: string             ← updated on each launch for push delivery
   createdAt: timestamp
@@ -168,7 +166,6 @@ Uses Hermes's built-in `crypto` (`SubtleCrypto`) available in React Native 0.76+
   status:            'pending' | 'active' | 'revoked'
   inviteCode:        string            ← 6-char alphanumeric, expires 24h
   inviteEmail?:      string
-  invitePhone?:      string
   createdAt:         Timestamp
   expiresAt:         Timestamp
   initiatorReadKey:  string            ← recipient's read key for initiator's records, encrypted
@@ -349,7 +346,7 @@ cd ios && pod install
 
 Firebase project setup (done once by developer, not automated):
 1. Create Firebase project at console.firebase.google.com
-2. Enable Auth (Google, Email/Password, Phone)
+2. Enable Auth (Google, Email/Password)
 3. Enable Firestore (production mode)
 4. Enable Cloud Functions (requires Blaze plan — pay-as-you-go, free tier covers typical usage)
 5. Add `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) to project
