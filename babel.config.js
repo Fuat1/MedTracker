@@ -5,6 +5,7 @@ module.exports = {
       'module-resolver',
       {
         root: ['.'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
           '@': './src',
         },
