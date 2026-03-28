@@ -20,7 +20,7 @@ import {
 import { loadMasterKey, storeReadKey, removeReadKey } from '@/shared/lib/keychain-keys';
 import {
   deriveReadKey,
-  exportKey,
+  encryptReadKeyForTransport,
   RELATIONSHIPS_QUERY_KEY,
   type Relationship,
   type SharingConfig,
@@ -148,34 +148,17 @@ export function useAcceptInvite() {
 
       // Derive my read key (what the initiator needs to read MY records)
       const myReadKeyForInitiator = await deriveReadKey(myMasterKey, initiatorUid);
-      const myReadKeyBase64 = await exportKey(myReadKeyForInitiator);
 
-      // Load initiator's user doc to get their encrypted read key for us
-      // (The initiator should have pre-computed their read key — but in our flow,
-      //  they create the invite without pre-computing. So we store the encrypted
-      //  read key in the relationship doc after accept.)
-      // For now, the initiator's read key is stored as-is; initiator will set it
-      // when they next load the relationship. We mark status=active immediately.
+      // Encrypt the read key with our own master key before storing in Firestore
+      const encryptedReadKey = await encryptReadKeyForTransport(myReadKeyForInitiator, myMasterKey);
 
-      // Update relationship doc: set recipient, status active, store our read key
+      // Update relationship doc: set recipient, status active, store encrypted read key
       await doc.ref.update({
         recipientUid: currentUser.uid,
         status: RELATIONSHIP_STATUS.active,
-        // recipientReadKey = MY read key, encrypted with initiator's master key.
-        // We can't encrypt this here because we don't have the initiator's master key.
-        // Instead we store it base64 plaintext — the initiator will wrap it in their
-        // encryption on next load. This is a known limitation documented in the spec's
-        // "open questions" — for now we store it unencrypted in the relationship doc.
-        recipientReadKey: myReadKeyBase64,
+        recipientReadKey: encryptedReadKey,
       });
 
-      // Store initiator's read key locally — the initiator will write it to the
-      // relationship doc's `initiatorReadKey` field the next time they open the app.
-      // For this device (recipient), we need the initiator's read key to decrypt their records.
-      // We request it from the initiator's user doc via a Cloud Function or have them
-      // push it. For initial simplicity: derive it as HKDF from the relationship id
-      // (both parties can compute this with their own key). This is resolved in
-      // `useDownloadRecords` which fetches and stores the actual key.
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: RELATIONSHIPS_QUERY_KEY });

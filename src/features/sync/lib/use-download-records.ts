@@ -21,10 +21,12 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRelationships } from '@/entities/family-sharing';
-import { loadReadKey } from '@/shared/lib/keychain-keys';
+import { loadReadKey, loadMasterKey, storeReadKey } from '@/shared/lib/keychain-keys';
 import {
   decryptBPRecord,
   resolveConflict,
+  deriveReadKey,
+  exportKey,
   type FirestoreBPRecord,
 } from '@/entities/family-sharing';
 import {
@@ -44,9 +46,15 @@ export function useDownloadRecords() {
 
   const downloadForUser = useCallback(
     async (linkedUid: string, relationshipId: string): Promise<void> => {
-      const readKey = await loadReadKey(linkedUid);
+      let readKey = await loadReadKey(linkedUid);
       if (!readKey) {
-        return; // No read key — can't decrypt
+        // First download — derive and store read key via HKDF
+        const masterKey = await loadMasterKey();
+        if (!masterKey) return;
+        const derivedKey = await deriveReadKey(masterKey, linkedUid);
+        const derivedKeyBase64 = await exportKey(derivedKey);
+        await storeReadKey(linkedUid, derivedKeyBase64);
+        readKey = derivedKeyBase64;
       }
 
       const since = lastSyncedAt[linkedUid] ?? 0;

@@ -188,6 +188,37 @@ export async function decryptMasterKeyFromBackup(
   return importKey(masterBase64);
 }
 
+// ─── Read Key Transport Encryption ──────────────────────────────────────────
+
+/**
+ * Encrypt a read key for safe storage in a Firestore relationship document.
+ * Uses the owner's master key to encrypt, so only the owner can later decrypt.
+ */
+export async function encryptReadKeyForTransport(
+  readKey: CryptoKey,
+  masterKey: CryptoKey,
+): Promise<string> {
+  const readKeyBase64 = await exportKey(readKey);
+  const encrypted = await encrypt(readKeyBase64, masterKey);
+  return btoa(JSON.stringify(encrypted));
+}
+
+/**
+ * Decrypt a read key that was encrypted for transport.
+ */
+export async function decryptReadKeyFromTransport(
+  encryptedReadKey: string,
+  masterKey: CryptoKey,
+): Promise<CryptoKey | null> {
+  try {
+    const encrypted: EncryptedValue = JSON.parse(atob(encryptedReadKey));
+    const readKeyBase64 = await decrypt(encrypted, masterKey);
+    return importKey(readKeyBase64);
+  } catch {
+    return null;
+  }
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function bufferToBase64(buffer: ArrayBuffer): string {
