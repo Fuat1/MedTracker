@@ -272,6 +272,52 @@ export async function markRecordSynced(id: string): Promise<void> {
   await db.execute('UPDATE bp_records SET is_synced = 1 WHERE id = ?', [id]);
 }
 
+// ─── Linked Users ────────────────────────────────────────────────────────────
+
+export interface LinkedUserRow {
+  uid: string;
+  display_name: string;
+  last_synced_at: number;
+  relationship_id: string;
+  created_at: number;
+}
+
+export async function upsertLinkedUser(
+  uid: string,
+  displayName: string,
+  relationshipId: string,
+): Promise<void> {
+  const db = getDatabase();
+  const now = getCurrentTimestamp();
+  await db.execute(
+    `INSERT INTO linked_users (uid, display_name, last_synced_at, relationship_id, created_at)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(uid) DO UPDATE SET display_name = ?, relationship_id = ?`,
+    [uid, displayName, 0, relationshipId, now, displayName, relationshipId],
+  );
+}
+
+export async function getLinkedUsers(): Promise<LinkedUserRow[]> {
+  const db = getDatabase();
+  const result = await db.execute('SELECT * FROM linked_users ORDER BY display_name');
+  return (result.rows ?? []) as unknown as LinkedUserRow[];
+}
+
+export async function deleteLinkedUser(uid: string): Promise<void> {
+  const db = getDatabase();
+  await db.execute('DELETE FROM linked_users WHERE uid = ?', [uid]);
+}
+
+export async function getLinkedUserDisplayName(uid: string): Promise<string | null> {
+  const db = getDatabase();
+  const result = await db.execute(
+    'SELECT display_name FROM linked_users WHERE uid = ?',
+    [uid],
+  );
+  const rows = (result.rows ?? []) as unknown as Array<{ display_name: string }>;
+  return rows[0]?.display_name ?? null;
+}
+
 // Upsert a linked user's record (used by download sync)
 export async function upsertLinkedRecord(
   firestoreId: string,

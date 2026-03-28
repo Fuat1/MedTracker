@@ -18,6 +18,7 @@ import {
   normalizeInviteCode,
 } from './invite-code';
 import { loadMasterKey, storeReadKey, removeReadKey } from '@/shared/lib/keychain-keys';
+import { upsertLinkedUser } from '@/shared/api/bp-repository';
 import {
   deriveReadKey,
   encryptReadKeyForTransport,
@@ -158,6 +159,14 @@ export function useAcceptInvite() {
         status: RELATIONSHIP_STATUS.active,
         recipientReadKey: encryptedReadKey,
       });
+
+      // Fetch initiator's display name and save to linked_users
+      const initiatorUserDoc = await firestore()
+        .collection(FIRESTORE_COLLECTIONS.users)
+        .doc(initiatorUid)
+        .get();
+      const initiatorName = initiatorUserDoc.data()?.displayName ?? 'Unknown';
+      await upsertLinkedUser(initiatorUid, initiatorName, doc.id);
 
     },
     onSuccess: () => {

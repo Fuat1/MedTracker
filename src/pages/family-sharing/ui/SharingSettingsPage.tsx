@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ import { useFirebaseAuth } from '@/features/auth';
 import { RELATIONSHIP_STATUS } from '@/shared/config';
 import type { Relationship, SharingConfig } from '@/entities/family-sharing';
 import type { SettingsStackParamList } from '@/app/navigation';
+import { getLinkedUsers } from '@/shared/api/bp-repository';
 
 type NavProp = NativeStackNavigationProp<SettingsStackParamList, 'FamilySharing'>;
 
@@ -65,6 +66,7 @@ function SharingToggle({ label, value, onValueChange, colors, typography }: Shar
 interface LinkedPersonCardProps {
   relationship: Relationship;
   currentUid: string;
+  linkedUserNames: Record<string, string>;
   onRevoke: (id: string, name: string) => void;
   onUpdateSharing: (id: string, isInitiator: boolean, config: Partial<SharingConfig>) => void;
   colors: ReturnType<typeof useTheme>['colors'];
@@ -74,6 +76,7 @@ interface LinkedPersonCardProps {
 function LinkedPersonCard({
   relationship,
   currentUid,
+  linkedUserNames,
   onRevoke,
   onUpdateSharing,
   colors,
@@ -82,9 +85,10 @@ function LinkedPersonCard({
   const { t } = useTranslation('pages');
   const isInitiator = relationship.initiatorUid === currentUid;
   const sharing = isInitiator ? relationship.initiatorSharing : relationship.recipientSharing;
-  const displayName = isInitiator
-    ? (relationship.recipientUid ?? t('familySharing.pendingInvite'))
-    : relationship.initiatorUid;
+  const linkedUid = isInitiator ? relationship.recipientUid : relationship.initiatorUid;
+  const displayName = isInitiator && !relationship.recipientUid
+    ? t('familySharing.pendingInvite')
+    : (linkedUid ? (linkedUserNames[linkedUid] ?? linkedUid) : t('familySharing.pendingInvite'));
 
   const isPending = relationship.status === RELATIONSHIP_STATUS.pending;
 
@@ -175,6 +179,18 @@ export function SharingSettingsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const currentUid = firebaseUser?.uid ?? '';
+
+  const [linkedUserNames, setLinkedUserNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    void getLinkedUsers().then((users) => {
+      const names: Record<string, string> = {};
+      for (const u of users) {
+        names[u.uid] = u.display_name;
+      }
+      setLinkedUserNames(names);
+    });
+  }, [relationships]);
 
   const activeRelationships = relationships.filter(
     (r) => r.status === RELATIONSHIP_STATUS.active || r.status === RELATIONSHIP_STATUS.pending,
@@ -323,6 +339,7 @@ export function SharingSettingsPage() {
                 key={rel.id}
                 relationship={rel}
                 currentUid={currentUid}
+                linkedUserNames={linkedUserNames}
                 onRevoke={handleRevoke}
                 onUpdateSharing={handleUpdateSharing}
                 colors={colors}

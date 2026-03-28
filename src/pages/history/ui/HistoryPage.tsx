@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -49,6 +49,7 @@ import {
 import { FONTS } from '../../../shared/config/theme';
 import type { HistoryFilterType } from '../../../shared/lib';
 import type { BPRecord } from '../../../shared/api';
+import { getLinkedUsers } from '../../../shared/api/bp-repository';
 
 type TabKey = 'records' | 'analytics';
 type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
@@ -84,6 +85,18 @@ export function HistoryPage() {
   }, [relationships, currentUid]);
 
   const hasLinkedUsers = linkedUids.length > 0;
+
+  const [linkedUserNames, setLinkedUserNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    void getLinkedUsers().then((users) => {
+      const names: Record<string, string> = {};
+      for (const u of users) {
+        names[u.uid] = u.display_name;
+      }
+      setLinkedUserNames(names);
+    });
+  }, [relationships]);
 
   // Apply owner filter
   const allRecords = useMemo(() => {
@@ -278,11 +291,11 @@ export function HistoryPage() {
                 ]}
                 onPress={() => setSelectedOwner(uid)}
                 accessibilityRole="button"
-                accessibilityLabel={`Person ${idx + 1}`}
+                accessibilityLabel={linkedUserNames[uid] ?? `Person ${idx + 1}`}
               >
                 <Icon name="person-outline" size={12} color={selectedOwner === uid ? colors.surface : colors.textSecondary} style={{ marginRight: 4 }} />
                 <Text style={[styles.filterTabText, { color: selectedOwner === uid ? colors.surface : colors.textSecondary, fontSize: typography.sm }]}>
-                  {`Person ${idx + 1}`}
+                  {linkedUserNames[uid] ?? `Person ${idx + 1}`}
                 </Text>
               </Pressable>
             ))}
