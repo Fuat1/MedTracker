@@ -123,6 +123,9 @@ export {
   type TimeInRangeResult,
 } from './circadian-utils';
 
+// Voice query parser
+export { parseVoiceQuery } from './voice-query-parser';
+
 // Notification service
 export {
   initialize as initNotifications,

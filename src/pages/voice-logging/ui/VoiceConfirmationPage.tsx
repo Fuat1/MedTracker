@@ -14,7 +14,8 @@ import { Button, ButtonText, ButtonSpinner, Card, Toast, Numpad } from '../../..
 type VoiceConfirmationRouteProp = RouteProp<RootStackParamList, 'VoiceConfirmation'>;
 
 export function VoiceConfirmationPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('pages');
+  const { t: tCommon } = useTranslation('common');
   const navigation = useNavigation();
   const route = useRoute<VoiceConfirmationRouteProp>();
   const { toastMsg, toastType, toastVisible, showToast, hideToast } = useToast();
@@ -43,12 +44,12 @@ export function VoiceConfirmationPage() {
 
   const handleSave = async () => {
     if (!voiceLoggingEnabled) {
-      showToast('Voice logging is disabled in Settings.', 'warning');
+      showToast(t('voiceConfirmation.disabledToast'), 'warning');
       return;
     }
 
     if (isNaN(systolic) || isNaN(diastolic)) {
-      showToast('Invalid blood pressure values', 'error');
+      showToast(t('voiceConfirmation.invalidValuesToast'), 'error');
       return;
     }
 
@@ -66,7 +67,7 @@ export function VoiceConfirmationPage() {
       });
       navigation.goBack();
     } catch {
-      showToast('Failed to save reading', 'error');
+      showToast(t('voiceConfirmation.saveError'), 'error');
     }
   };
 
@@ -81,28 +82,28 @@ export function VoiceConfirmationPage() {
       {!voiceLoggingEnabled ? (
         <View className="flex-1 justify-center items-center px-6">
           <Text className="text-xl font-bold mb-4 text-center text-text-primary">
-            Voice Logging Disabled
+            {t('voiceConfirmation.disabledTitle')}
           </Text>
           <Text className="text-base text-center text-text-secondary mb-8">
-            Please enable Voice Logging in the app settings to log blood pressure via voice assistants.
+            {t('voiceConfirmation.disabledDescription')}
           </Text>
           <Button
             variant="primary"
             size="lg"
             onPress={() => navigation.goBack()}
           >
-            <ButtonText>Go Back</ButtonText>
+            <ButtonText>{t('voiceConfirmation.goBack')}</ButtonText>
           </Button>
         </View>
       ) : (
         <ScrollView className="flex-1 px-4 pt-6">
           <Text className="text-2xl font-bold mb-2 text-center text-text-primary">
-            Confirm Voice Entry
+            {t('voiceConfirmation.title')}
           </Text>
           <Text className="text-base mb-6 text-center text-text-secondary">
             {sysMissing || diaMissing
-              ? 'Complete the missing values below'
-              : 'Does this look correct?'}
+              ? t('voiceConfirmation.subtitleMissing')
+              : t('voiceConfirmation.subtitleConfirm')}
           </Text>
 
           <Card style={{ padding: 24, marginBottom: 16, alignItems: 'center' }}>
@@ -110,7 +111,7 @@ export function VoiceConfirmationPage() {
               {sysStr || '--'} / {diaStr || '--'}
             </Text>
             <Text className="text-sm text-text-secondary">
-              {t('common.bloodPressure')} (mmHg)
+              {tCommon('common.bloodPressure')} (mmHg)
             </Text>
 
             {pulse !== undefined && !isNaN(pulse) ? (
@@ -119,7 +120,7 @@ export function VoiceConfirmationPage() {
                   {pulse}
                 </Text>
                 <Text className="text-sm text-text-secondary">
-                  {t('common.pulse')} (BPM)
+                  {tCommon('common.pulse')} (BPM)
                 </Text>
               </View>
             ) : null}
@@ -128,7 +129,7 @@ export function VoiceConfirmationPage() {
           {sysMissing && (
             <View className="mb-4">
               <Text className="text-base font-semibold text-text-primary text-center mb-2">
-                Systolic (mmHg)
+                {t('voiceConfirmation.systolicLabel')}
               </Text>
               <Numpad
                 value={sysStr}
@@ -142,7 +143,7 @@ export function VoiceConfirmationPage() {
           {diaMissing && (
             <View className="mb-4">
               <Text className="text-base font-semibold text-text-primary text-center mb-2">
-                Diastolic (mmHg)
+                {t('voiceConfirmation.diastolicLabel')}
               </Text>
               <Numpad
                 value={diaStr}
@@ -160,7 +161,7 @@ export function VoiceConfirmationPage() {
               onPress={handleSave}
               isDisabled={isPending || sysMissing || diaMissing}
             >
-              <ButtonText>{t('buttons.save')}</ButtonText>
+              <ButtonText>{tCommon('buttons.save')}</ButtonText>
               {isPending ? <ButtonSpinner /> : null}
             </Button>
 
@@ -170,7 +171,7 @@ export function VoiceConfirmationPage() {
               onPress={() => navigation.goBack()}
               isDisabled={isPending}
             >
-              <ButtonText>{t('buttons.cancel')}</ButtonText>
+              <ButtonText>{tCommon('buttons.cancel')}</ButtonText>
             </Button>
           </View>
         </ScrollView>

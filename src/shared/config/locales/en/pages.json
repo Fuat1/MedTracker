@@ -371,6 +371,11 @@
       "updated": "Settings updated for your region",
       "noChange": "Your settings already match your region"
     },
+    "voiceLogging": {
+      "label": "Voice Logging",
+      "description": "Allow Siri or Google Assistant to log blood pressure readings",
+      "note": "When enabled, voice assistants can launch MedTracker and pre-fill readings for confirmation."
+    },
     "darkMode": "Dark Mode",
     "useSystemDefault": "Use System Default",
     "about": {
@@ -427,6 +432,19 @@
         "message": "Failed to save reading. Please try again."
       }
     }
+  },
+  "voiceConfirmation": {
+    "title": "Confirm Voice Entry",
+    "subtitleConfirm": "Does this look correct?",
+    "subtitleMissing": "Complete the missing values below",
+    "systolicLabel": "Systolic (mmHg)",
+    "diastolicLabel": "Diastolic (mmHg)",
+    "disabledTitle": "Voice Logging Disabled",
+    "disabledDescription": "Please enable Voice Logging in the app settings to log blood pressure via voice assistants.",
+    "goBack": "Go Back",
+    "disabledToast": "Voice logging is disabled in Settings.",
+    "invalidValuesToast": "Invalid blood pressure values",
+    "saveError": "Failed to save reading"
   },
   "newReading": {
     "title": "New Reading",
