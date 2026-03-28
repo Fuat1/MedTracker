@@ -56,6 +56,32 @@
     "readingsCount": "{{count}} readings",
     "disclaimer": "Statistical patterns only. Consult your healthcare provider."
   },
+  "weatherCorrelation": {
+    "title": "Weather & Blood Pressure",
+    "higher": "Your BP tends to be {{delta}} mmHg higher on {{condition}} days",
+    "lower": "Your BP tends to be {{delta}} mmHg lower on {{condition}} days",
+    "sampleSize": "Based on {{count}} readings with weather data",
+    "disclaimer": "Statistical patterns only. Consult your healthcare provider.",
+    "empty": {
+      "disabled": "Enable weather tracking in Settings to see weather patterns.",
+      "notEnoughData": "Need 10+ readings with weather data for insights.",
+      "noSignificant": "No significant weather patterns found yet."
+    },
+    "conditions": {
+      "warm": "warm",
+      "cold": "cold",
+      "highPressure": "high pressure",
+      "lowPressure": "low pressure",
+      "humid": "humid",
+      "dry": "dry",
+      "windy": "windy",
+      "calm": "calm"
+    },
+    "medianLabel": "Median: {{value}}{{unit}}"
+  },
+  "weatherBadge": {
+    "noData": "No weather data"
+  },
   "bpRecordCard": {
     "metadata": {
       "location": "Location",

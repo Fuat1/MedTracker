@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   Switch,
 } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -44,6 +45,8 @@ import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
 import { CircadianCard } from '../../../widgets/circadian-card';
 import { CorrelationCard } from '../../../widgets/correlation-card';
+import { WeatherCorrelationCard } from '../../../widgets/weather-correlation-card';
+import { getWeatherForRecords } from '../../../shared/api/weather-repository';
 import type { BPRecord } from '../../../shared/api/bp-repository';
 
 type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
@@ -129,6 +132,12 @@ export function AnalyticsPage() {
     () => (tagMap ? computeTagCorrelations(records, tagMap) : []),
     [records, tagMap],
   );
+
+  const { data: weatherMap = {} } = useQuery({
+    queryKey: ['weather-readings', recordIds],
+    queryFn: () => getWeatherForRecords(recordIds),
+    enabled: recordIds.length > 0,
+  });
 
   const ppMapAvg = useMemo(() => {
     if (!records || records.length === 0) return { pp: 0, map: 0, hasData: false };
@@ -487,6 +496,11 @@ export function AnalyticsPage() {
         {/* Lifestyle Insights */}
         <Animated.View entering={FadeInUp.delay(300).duration(500)}>
           <CorrelationCard correlations={correlations} />
+        </Animated.View>
+
+        {/* Weather Insights */}
+        <Animated.View entering={FadeInUp.delay(350).duration(500)}>
+          <WeatherCorrelationCard records={records} weatherMap={weatherMap} />
         </Animated.View>
 
         {/* Doctor Notes */}

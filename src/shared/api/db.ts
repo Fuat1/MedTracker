@@ -85,6 +85,30 @@ const CREATE_MEDICATION_LOGS_IDX_MED_ID_SQL = `
   CREATE INDEX IF NOT EXISTS idx_medication_logs_med_id ON medication_logs(medication_id);
 `;
 
+const CREATE_WEATHER_READINGS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS weather_readings (
+    id              TEXT PRIMARY KEY NOT NULL,
+    record_id       TEXT NOT NULL UNIQUE,
+    temperature     REAL NOT NULL,
+    feels_like      REAL,
+    pressure        REAL NOT NULL,
+    humidity        INTEGER NOT NULL,
+    wind_speed      REAL,
+    weather_code    INTEGER NOT NULL,
+    weather_desc    TEXT NOT NULL,
+    latitude        REAL NOT NULL,
+    longitude       REAL NOT NULL,
+    city_name       TEXT,
+    fetched_at      INTEGER NOT NULL,
+    created_at      INTEGER NOT NULL,
+    FOREIGN KEY (record_id) REFERENCES bp_records(id) ON DELETE CASCADE
+  );
+`;
+
+const CREATE_WEATHER_READINGS_IDX_SQL = `
+  CREATE INDEX IF NOT EXISTS idx_weather_record_id ON weather_readings(record_id);
+`;
+
 export async function initDatabase(): Promise<DB> {
   if (db) {
     return db;
@@ -105,6 +129,8 @@ export async function initDatabase(): Promise<DB> {
     await db.execute(CREATE_MEDICATION_LOGS_TABLE_SQL);
     await db.execute(CREATE_MEDICATION_LOGS_IDX_TIMESTAMP_SQL);
     await db.execute(CREATE_MEDICATION_LOGS_IDX_MED_ID_SQL);
+    await db.execute(CREATE_WEATHER_READINGS_TABLE_SQL);
+    await db.execute(CREATE_WEATHER_READINGS_IDX_SQL);
 
     // Migrations — use PRAGMA + executeSync so errors are caught synchronously
     const tableInfo = db.executeSync('PRAGMA table_info(bp_records)');

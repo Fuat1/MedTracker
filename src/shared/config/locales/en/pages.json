@@ -376,6 +376,37 @@
       "description": "Allow Siri or Google Assistant to log blood pressure readings",
       "note": "When enabled, voice assistants can launch MedTracker and pre-fill readings for confirmation."
     },
+    "weather": {
+      "title": "Weather",
+      "menuSubtitle": "Weather correlation tracking",
+      "toggle": {
+        "label": "Weather Correlation",
+        "description": "Track weather conditions when logging blood pressure to discover environmental patterns."
+      },
+      "location": {
+        "title": "Location Source",
+        "gps": "Use GPS",
+        "city": "Search City",
+        "permissionGranted": "Location permission granted",
+        "permissionDenied": "Location permission denied",
+        "requestPermission": "Grant Location Access",
+        "permissionDeniedToast": "Location permission denied. Switch to city mode in Weather settings.",
+        "citySearch": {
+          "placeholder": "Search for a city...",
+          "search": "Search",
+          "noResults": "No cities found",
+          "selected": "Selected: {{city}}"
+        }
+      },
+      "temperature": {
+        "title": "Temperature Unit",
+        "celsius": "°C",
+        "fahrenheit": "°F"
+      },
+      "privacy": {
+        "note": "Your location is used only to fetch local weather data. Weather data is stored locally on your device."
+      }
+    },
     "darkMode": "Dark Mode",
     "useSystemDefault": "Use System Default",
     "about": {
