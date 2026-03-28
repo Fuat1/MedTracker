@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-03-28 (weather correlation added)
+> Last verified: 2026-03-28 (family sharing fixes applied)
 
 ---
 
@@ -176,7 +176,27 @@
 
 ---
 
-## 15. App Architecture & Infrastructure
+## 15. Family Sharing
+
+- **Firebase Auth**: Google Sign-In + email/password authentication
+- **Master key**: AES-256-GCM generated per user, stored in Keychain, backed up to Firestore (encrypted)
+- **Read keys**: HKDF-derived per linked user; encrypted before Firestore storage
+- **Field-level encryption**: systolic, diastolic, pulse, weight, notes, tags encrypted with AES-256-GCM; timestamp/location/posture stored plaintext for queries
+- **Pairing flow**: invite code (6-char alphanumeric) + QR code deep link, 24h expiry
+- **Firestore sync**: upload on BP save (fire-and-forget), download on app foreground
+- **Retry queue**: failed uploads queued with max 10 retries (persisted via AsyncStorage)
+- **Conflict resolution**: last-writer-wins by `updatedAt`, soft-delete propagation
+- **Per-relationship sharing config**: weight, notes, medications, tags, crisis alerts — individually toggleable
+- **Crisis push notifications**: FCM via Cloud Function; BP values omitted from payload for privacy; server-side crisis threshold validation (SBP >= 180 OR DBP >= 120)
+- **Owner filter**: History page filters by "My Readings" or linked person's display name
+- **Revocation**: dedicated Firestore snapshot listener; cleans up local records + read keys
+- **Account deletion**: revokes all relationships, deletes Firestore records sub-collection, removes user doc, clears Keychain, then deletes Firebase Auth account
+- **Display names**: populated from Firestore user docs into local `linked_users` SQLite table
+- **SyncManager**: runs inside NavigationContainer for navigation context access
+
+---
+
+## 16. App Architecture & Infrastructure
 
 - **FSD (Feature-Sliced Design)** layered architecture
 - **SQLite + SQLCipher** encrypted local database via op-sqlite (JSI)
@@ -191,7 +211,7 @@
 
 ---
 
-## 16. UI Components (Shared)
+## 17. UI Components (Shared)
 
 | Component | Description |
 |---|---|
@@ -214,7 +234,7 @@
 
 ---
 
-## 17. Test Coverage
+## 18. Test Coverage
 
 | Module | Test File |
 |---|---|
