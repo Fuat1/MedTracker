@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, type LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import BootSplash from 'react-native-bootsplash';
 import notifee, { EventType } from '@notifee/react-native';
-import { HomePage, HistoryPage, SettingsPage, NewReadingPage, EditReadingPage, MedicationPage } from '../../pages';
+import { HomePage, HistoryPage, SettingsPage, NewReadingPage, EditReadingPage, MedicationPage, VoiceConfirmationPage } from '../../pages';
 import { PersonalInfoPage } from '../../pages/settings/ui/PersonalInfoPage';
 import { ClassificationPage } from '../../pages/settings/ui/ClassificationPage';
 import { AppSettingsPage } from '../../pages/settings/ui/AppSettingsPage';
@@ -42,6 +42,7 @@ export type RootStackParamList = {
   PreMeasurement: undefined;
   NewReading: undefined;
   EditReading: { recordId: string };
+  VoiceConfirmation: { sys?: string; dia?: string; pulse?: string; query?: string };
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -87,6 +88,15 @@ function TabNavigator() {
 }
 
 export function Navigation() {
+  const linking: LinkingOptions<RootStackParamList> = {
+    prefixes: ['medtracker://'],
+    config: {
+      screens: {
+        VoiceConfirmation: 'log',
+      },
+    },
+  };
+
   useEffect(() => {
     return notifee.onForegroundEvent(({ type, detail }) => {
       if (type === EventType.PRESS && detail.notification) {
@@ -98,6 +108,7 @@ export function Navigation() {
   return (
     <ErrorBoundary>
       <NavigationContainer
+        linking={linking}
         ref={navigationRef}
         onReady={() => {
           BootSplash.hide({ fade: true });
@@ -140,6 +151,14 @@ export function Navigation() {
           <Stack.Screen
             name="EditReading"
             component={EditReadingPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="VoiceConfirmation"
+            component={VoiceConfirmationPage}
             options={{
               presentation: 'modal',
               animation: 'slide_from_bottom',
