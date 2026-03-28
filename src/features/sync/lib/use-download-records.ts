@@ -26,7 +26,6 @@ import {
   decryptBPRecord,
   resolveConflict,
   deriveReadKey,
-  exportKey,
   type FirestoreBPRecord,
 } from '@/entities/family-sharing';
 import {
@@ -45,16 +44,14 @@ export function useDownloadRecords() {
   const { lastSyncedAt, setLastSyncedAt } = useSyncStore();
 
   const downloadForUser = useCallback(
-    async (linkedUid: string, relationshipId: string): Promise<void> => {
+    async (linkedUid: string, _relationshipId: string): Promise<void> => {
       let readKey = await loadReadKey(linkedUid);
       if (!readKey) {
         // First download — derive and store read key via HKDF
         const masterKey = await loadMasterKey();
         if (!masterKey) return;
-        const derivedKey = await deriveReadKey(masterKey, linkedUid);
-        const derivedKeyBase64 = await exportKey(derivedKey);
-        await storeReadKey(linkedUid, derivedKeyBase64);
-        readKey = derivedKeyBase64;
+        readKey = await deriveReadKey(masterKey, linkedUid);
+        await storeReadKey(linkedUid, readKey);
       }
 
       const since = lastSyncedAt[linkedUid] ?? 0;
@@ -116,8 +113,7 @@ export function useDownloadRecords() {
       }
 
       const latestUpdatedAt = Math.max(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...snapshot.docs.map((d: any) => (d.data() as FirestoreBPRecord).updatedAt),
+        ...snapshot.docs.map((d) => (d.data() as FirestoreBPRecord).updatedAt),
       );
       setLastSyncedAt(linkedUid, latestUpdatedAt);
 

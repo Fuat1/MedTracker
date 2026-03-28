@@ -7,7 +7,6 @@
  * - watchRelationships: Firestore snapshot listener for active relationships
  */
 
-import { useCallback } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +16,7 @@ import {
   isInviteValid,
   normalizeInviteCode,
 } from './invite-code';
-import { loadMasterKey, storeReadKey, removeReadKey } from '@/shared/lib/keychain-keys';
+import { loadMasterKey, removeReadKey } from '@/shared/lib/keychain-keys';
 import { upsertLinkedUser } from '@/shared/api/bp-repository';
 import {
   deriveReadKey,

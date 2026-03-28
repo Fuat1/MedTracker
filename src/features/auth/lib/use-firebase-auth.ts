@@ -60,8 +60,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
 
   // Auth state listener
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser: any) => {
+    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
         setUser({
           uid: firebaseUser.uid,

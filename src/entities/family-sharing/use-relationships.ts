@@ -38,10 +38,8 @@ export function useRelationships(): UseRelationshipsResult {
       .collection(FIRESTORE_COLLECTIONS.relationships)
       .where('initiatorUid', '==', uid)
       .where('status', 'in', [RELATIONSHIP_STATUS.pending, RELATIONSHIP_STATUS.active])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .onSnapshot((snapshot: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const initiatorRels = snapshot.docs.map((doc: any) => ({
+      .onSnapshot((snapshot) => {
+        const initiatorRels = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...(doc.data() as Omit<Relationship, 'id'>),
         }));
@@ -56,10 +54,8 @@ export function useRelationships(): UseRelationshipsResult {
       .collection(FIRESTORE_COLLECTIONS.relationships)
       .where('recipientUid', '==', uid)
       .where('status', '==', RELATIONSHIP_STATUS.active)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .onSnapshot((snapshot: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const recipientRels = snapshot.docs.map((doc: any) => ({
+      .onSnapshot((snapshot) => {
+        const recipientRels = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...(doc.data() as Omit<Relationship, 'id'>),
         }));
@@ -74,6 +70,7 @@ export function useRelationships(): UseRelationshipsResult {
       unsubInitiator();
       unsubRecipient();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.uid]);
 
   return { relationships, isLoading };
