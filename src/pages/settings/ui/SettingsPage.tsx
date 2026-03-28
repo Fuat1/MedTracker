@@ -146,6 +146,17 @@ export function SettingsPage() {
           />
         </Animated.View>
 
+        <Animated.View entering={FadeInUp.delay(500).duration(400)}>
+          <MenuItem
+            icon="cloud-outline"
+            label={t('settings.weather.title')}
+            subtitle={t('settings.weather.menuSubtitle')}
+            onPress={() => navigation.navigate('WeatherSettings')}
+            colors={colors}
+            typography={typography}
+          />
+        </Animated.View>
+
         {/* About & Disclaimer Card - stays on this page */}
         <Animated.View
           entering={FadeInUp.delay(500).duration(400)}

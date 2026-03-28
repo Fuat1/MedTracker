@@ -15,3 +15,5 @@ export { convertHtmlToPdf } from './pdf-client';
 export type { PdfOptions, PdfResult } from './pdf-client';
 export * from './bp-tags-repository';
 export * from './custom-tags-repository';
+export * from './weather-repository';
+export * from './weather-client';

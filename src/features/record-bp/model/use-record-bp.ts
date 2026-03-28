@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { insertBPRecord, saveTagsForRecord, type BPRecordInput } from '../../../shared/api';
 import { validateBPValues } from '../../../entities/blood-pressure';
+import { useWeatherFetch } from '../../weather-fetch';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export const BP_RECORDS_QUERY_KEY = ['bp-records'];
@@ -11,6 +12,7 @@ interface RecordBPInput extends BPRecordInput {
 
 export function useRecordBP() {
   const queryClient = useQueryClient();
+  const { fetchWeatherForReading } = useWeatherFetch();
 
   return useMutation({
     mutationFn: async (input: RecordBPInput) => {
@@ -35,10 +37,13 @@ export function useRecordBP() {
 
       return record;
     },
-    onSuccess: () => {
+    onSuccess: (record) => {
       // Invalidate and refetch BP records + tags
       queryClient.invalidateQueries({ queryKey: BP_RECORDS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ['bp-tags'] });
+
+      // Fire-and-forget weather fetch — BP is already saved
+      fetchWeatherForReading(record.id);
     },
   });
 }

@@ -11,6 +11,8 @@ import i18n from './i18n';
 export type Language = 'en' | 'id' | 'sr' | 'tr';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type EntryMode = 'quickLog' | 'guided' | null;
+export type WeatherLocationMode = 'gps' | 'city';
+export type TemperatureUnit = 'celsius' | 'fahrenheit';
 
 interface SettingsState {
   unit: BPUnit;
@@ -23,6 +25,13 @@ interface SettingsState {
   highContrast: boolean;
   preferredEntryMode: EntryMode;
   voiceLoggingEnabled: boolean;
+  // Weather
+  weatherEnabled: boolean;
+  weatherLocationMode: WeatherLocationMode;
+  weatherCity: string | null;
+  weatherCityLat: number | null;
+  weatherCityLon: number | null;
+  temperatureUnit: TemperatureUnit;
   // User profile
   userName: string | null;
   dateOfBirth: string | null;
@@ -41,6 +50,10 @@ interface SettingsState {
   setHighContrast: (enabled: boolean) => void;
   setPreferredEntryMode: (mode: EntryMode) => void;
   setVoiceLoggingEnabled: (enabled: boolean) => void;
+  setWeatherEnabled: (enabled: boolean) => void;
+  setWeatherLocationMode: (mode: WeatherLocationMode) => void;
+  setWeatherCity: (name: string | null, lat: number | null, lon: number | null) => void;
+  setTemperatureUnit: (unit: TemperatureUnit) => void;
   setUserName: (name: string | null) => void;
   setDateOfBirth: (dob: string | null) => void;
   setHeight: (height: number | null) => void;
@@ -63,6 +76,12 @@ export const useSettingsStore = create<SettingsState>()(
       highContrast: false,
       preferredEntryMode: null,
       voiceLoggingEnabled: true,
+      weatherEnabled: false,
+      weatherLocationMode: 'gps',
+      weatherCity: null,
+      weatherCityLat: null,
+      weatherCityLon: null,
+      temperatureUnit: 'celsius',
       userName: null,
       dateOfBirth: null,
       gender: null,
@@ -83,6 +102,11 @@ export const useSettingsStore = create<SettingsState>()(
       setHighContrast: (enabled) => set({ highContrast: enabled }),
       setPreferredEntryMode: (mode) => set({ preferredEntryMode: mode }),
       setVoiceLoggingEnabled: (enabled) => set({ voiceLoggingEnabled: enabled }),
+      setWeatherEnabled: (enabled) => set({ weatherEnabled: enabled }),
+      setWeatherLocationMode: (mode) => set({ weatherLocationMode: mode }),
+      setWeatherCity: (name, lat, lon) =>
+        set({ weatherCity: name, weatherCityLat: lat, weatherCityLon: lon }),
+      setTemperatureUnit: (unit) => set({ temperatureUnit: unit }),
       setUserName: (name) => set({ userName: name }),
       setDateOfBirth: (dob) => set({ dateOfBirth: dob }),
       setGender: (gender) => set({ gender }),

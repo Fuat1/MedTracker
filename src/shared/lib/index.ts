@@ -110,6 +110,9 @@ export { useBPInput, type BPActiveField } from './use-bp-input';
 // Toast hook
 export { useToast } from './use-toast';
 
+// Global toast store (use from non-component hooks)
+export { useToastStore } from './toast-store';
+
 // Circadian utilities
 export {
   getTimeWindow,

@@ -34,7 +34,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>MedTracker uses your location to fetch local weather data when you record a blood pressure reading. Location is used only at the moment of recording and is never stored or shared.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>MedTracker needs to read your blood pressure readings to aggregate your data.</string>
 	<key>NSHealthUpdateUsageDescription</key>
