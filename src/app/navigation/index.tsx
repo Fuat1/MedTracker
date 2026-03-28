@@ -16,6 +16,7 @@ import { SyncPage } from '../../pages/settings/ui/SyncPage';
 import { WeatherSettingsPage } from '../../pages/settings/ui/WeatherSettingsPage';
 import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
+import { SharingSettingsPage, InvitePage, AcceptInvitePage } from '../../pages/family-sharing';
 import { CustomTabBar } from './CustomTabBar';
 import { ErrorBoundary } from '../providers/ErrorBoundary';
 import {
@@ -23,6 +24,7 @@ import {
   consumePendingNavigation,
   handleNotificationPress,
 } from '../../shared/lib/notification-service';
+import { useDownloadRecords, useRetryUploadQueue } from '../../features/sync';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export type SettingsStackParamList = {
@@ -32,6 +34,8 @@ export type SettingsStackParamList = {
   AppSettings: undefined;
   Sync: undefined;
   WeatherSettings: undefined;
+  FamilySharing: undefined;
+  InvitePerson: { inviteCode: string; expiresAt: number };
 };
 
 export type RootTabParamList = {
@@ -48,11 +52,30 @@ export type RootStackParamList = {
   NewReading: undefined;
   EditReading: { recordId: string };
   VoiceConfirmation: { sys?: string; dia?: string; pulse?: string; query?: string };
+  AcceptInvite: { code?: string };
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
+
+/**
+ * SyncManager — mounts sync side-effects inside the QueryClient + Navigation tree.
+ * Triggers download on foreground and retries the upload queue. Renders nothing.
+ */
+function SyncManager() {
+  const { downloadAll } = useDownloadRecords();
+  const { retryAll } = useRetryUploadQueue();
+
+  // On mount, do an initial sync pass
+  React.useEffect(() => {
+    void downloadAll();
+    void retryAll();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+}
 
 function renderTabBar(props: BottomTabBarProps) {
   return <CustomTabBar {...props} />;
@@ -72,6 +95,8 @@ function SettingsNavigator() {
       <SettingsStack.Screen name="AppSettings" component={AppSettingsPage} />
       <SettingsStack.Screen name="Sync" component={SyncPage} />
       <SettingsStack.Screen name="WeatherSettings" component={WeatherSettingsPage} />
+      <SettingsStack.Screen name="FamilySharing" component={SharingSettingsPage} />
+      <SettingsStack.Screen name="InvitePerson" component={InvitePage} />
     </SettingsStack.Navigator>
   );
 }
@@ -106,6 +131,10 @@ export function Navigation() {
     config: {
       screens: {
         VoiceConfirmation: 'log',
+        AcceptInvite: {
+          path: 'invite',
+          parse: { code: (code: string) => code },
+        },
       },
     },
   };
@@ -121,6 +150,7 @@ export function Navigation() {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
+      <SyncManager />
       <NavigationContainer
         linking={linking}
         ref={navigationRef}
@@ -173,6 +203,14 @@ export function Navigation() {
           <Stack.Screen
             name="VoiceConfirmation"
             component={VoiceConfirmationPage}
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="AcceptInvite"
+            component={AcceptInvitePage}
             options={{
               presentation: 'modal',
               animation: 'slide_from_bottom',

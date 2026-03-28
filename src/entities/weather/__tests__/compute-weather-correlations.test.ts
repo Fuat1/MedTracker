@@ -17,6 +17,7 @@ function makeRecord(id: string, systolic: number, diastolic: number): BPRecord {
     createdAt: 1700000000,
     updatedAt: 1700000000,
     isSynced: false,
+    ownerUid: null,
   };
 }
 

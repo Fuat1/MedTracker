@@ -31,6 +31,7 @@ function makeRecord(
     createdAt: timestamp,
     updatedAt: timestamp,
     isSynced: false,
+    ownerUid: null,
   };
 }
 

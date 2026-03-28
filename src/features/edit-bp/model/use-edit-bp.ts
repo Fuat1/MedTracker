@@ -4,6 +4,7 @@ import { saveTagsForRecord } from '../../../shared/api/bp-tags-repository';
 import { validateBPValues } from '../../../entities/blood-pressure';
 import { BP_RECORDS_QUERY_KEY } from '../../record-bp';
 import { BP_TAGS_QUERY_KEY } from '../../manage-tags';
+import { useUploadRecord } from '../../sync';
 import type { MeasurementLocation, MeasurementPosture } from '../../../shared/config';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
@@ -22,6 +23,7 @@ export interface EditBPInput {
 
 export function useEditBP() {
   const queryClient = useQueryClient();
+  const { uploadRecord } = useUploadRecord();
 
   return useMutation({
     mutationFn: async (input: EditBPInput) => {
@@ -47,9 +49,14 @@ export function useEditBP() {
 
       return updated;
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: BP_RECORDS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: BP_TAGS_QUERY_KEY });
+
+      // Fire-and-forget Firestore sync — never blocks BP save
+      if (updated) {
+        void uploadRecord(updated.id);
+      }
     },
   });
 }

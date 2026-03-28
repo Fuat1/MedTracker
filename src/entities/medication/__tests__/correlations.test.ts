@@ -42,6 +42,7 @@ function makeBPRecord(
     createdAt: timestamp,
     updatedAt: timestamp,
     isSynced: false,
+    ownerUid: null,
     ...overrides,
   };
 }

@@ -72,6 +72,7 @@ const stubRecords: BPRecord[] = [
     createdAt: 0,
     updatedAt: 0,
     isSynced: false,
+    ownerUid: null,
   },
 ];
 

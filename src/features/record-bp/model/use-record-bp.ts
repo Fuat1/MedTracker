@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { insertBPRecord, saveTagsForRecord, type BPRecordInput } from '../../../shared/api';
 import { validateBPValues } from '../../../entities/blood-pressure';
 import { useWeatherFetch } from '../../weather-fetch';
+import { useUploadRecord } from '../../sync';
+import { useCrisisAlert } from '../../sync';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 export const BP_RECORDS_QUERY_KEY = ['bp-records'];
@@ -13,6 +15,8 @@ interface RecordBPInput extends BPRecordInput {
 export function useRecordBP() {
   const queryClient = useQueryClient();
   const { fetchWeatherForReading } = useWeatherFetch();
+  const { uploadRecord } = useUploadRecord();
+  const { checkAndAlert } = useCrisisAlert();
 
   return useMutation({
     mutationFn: async (input: RecordBPInput) => {
@@ -44,6 +48,12 @@ export function useRecordBP() {
 
       // Fire-and-forget weather fetch — BP is already saved
       fetchWeatherForReading(record.id);
+
+      // Fire-and-forget Firestore sync — never blocks BP save
+      void uploadRecord(record.id);
+
+      // Fire-and-forget crisis alert — notify linked family members if threshold crossed
+      checkAndAlert(record.systolic, record.diastolic);
     },
   });
 }

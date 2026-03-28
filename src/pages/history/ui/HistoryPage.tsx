@@ -23,6 +23,8 @@ import { BPRecordCard } from '../../../widgets/bp-record-card';
 import { CircadianCard } from '../../../widgets/circadian-card';
 import { CorrelationCard } from '../../../widgets/correlation-card';
 import { useBPRecords } from '../../../features/record-bp';
+import { useRelationships } from '../../../features/pairing';
+import { useFirebaseAuth } from '../../../features/auth';
 import { useExportPdf } from '../../../features/export-pdf';
 import { useTagsForRecords } from '../../../features/manage-tags';
 import { classifyBP, calculatePulsePressure, calculateMAP } from '../../../entities/blood-pressure';
@@ -64,7 +66,32 @@ export function HistoryPage() {
   const { colors, typography } = useTheme();
   const { guideline, height: userHeight, weightUnit, dateOfBirth, gender } = useSettingsStore();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { data: allRecords, isLoading, isError, refetch, isRefetching } = useBPRecords();
+  const { data: allRecordsRaw, isLoading, isError, refetch, isRefetching } = useBPRecords();
+  const { relationships } = useRelationships();
+  const { user: firebaseUser } = useFirebaseAuth();
+  const currentUid = firebaseUser?.uid ?? null;
+
+  // Owner filter: null = my records, string UID = linked user's records, 'all' = everything
+  const [selectedOwner, setSelectedOwner] = useState<string | null | 'all'>(null);
+
+  // Active linked UIDs for the owner chips
+  const linkedUids = useMemo(() => {
+    if (!currentUid) return [];
+    return relationships
+      .filter((r) => r.status === 'active')
+      .map((r) => (r.initiatorUid === currentUid ? r.recipientUid! : r.initiatorUid))
+      .filter(Boolean);
+  }, [relationships, currentUid]);
+
+  const hasLinkedUsers = linkedUids.length > 0;
+
+  // Apply owner filter
+  const allRecords = useMemo(() => {
+    if (!allRecordsRaw) return allRecordsRaw;
+    if (!hasLinkedUsers || selectedOwner === 'all') return allRecordsRaw;
+    if (selectedOwner === null) return allRecordsRaw.filter((r) => r.ownerUid === null);
+    return allRecordsRaw.filter((r) => r.ownerUid === selectedOwner);
+  }, [allRecordsRaw, selectedOwner, hasLinkedUsers]);
   const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
   const { width: screenWidth } = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
@@ -193,6 +220,75 @@ export function HistoryPage() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <PageHeader variant="title" title={t('history.title')} />
+
+      {/* Owner filter chips — only visible when there are linked users */}
+      {hasLinkedUsers && (
+        <Animated.View entering={FadeInDown.duration(400)} style={styles.ownerFilterContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterScroll}
+          >
+            {/* All */}
+            <Pressable
+              style={[
+                styles.filterTab,
+                {
+                  backgroundColor: selectedOwner === 'all' ? colors.accent : 'transparent',
+                  borderColor: selectedOwner === 'all' ? colors.accent : colors.border,
+                },
+              ]}
+              onPress={() => setSelectedOwner('all')}
+              accessibilityRole="button"
+              accessibilityLabel={t('familySharing.ownerAll')}
+            >
+              <Text style={[styles.filterTabText, { color: selectedOwner === 'all' ? colors.surface : colors.textSecondary, fontSize: typography.sm }]}>
+                {t('familySharing.ownerAll')}
+              </Text>
+            </Pressable>
+
+            {/* Me */}
+            <Pressable
+              style={[
+                styles.filterTab,
+                {
+                  backgroundColor: selectedOwner === null ? colors.accent : 'transparent',
+                  borderColor: selectedOwner === null ? colors.accent : colors.border,
+                },
+              ]}
+              onPress={() => setSelectedOwner(null)}
+              accessibilityRole="button"
+              accessibilityLabel={t('familySharing.ownerMe')}
+            >
+              <Text style={[styles.filterTabText, { color: selectedOwner === null ? colors.surface : colors.textSecondary, fontSize: typography.sm }]}>
+                {t('familySharing.ownerMe')}
+              </Text>
+            </Pressable>
+
+            {/* One chip per linked user */}
+            {linkedUids.map((uid, idx) => (
+              <Pressable
+                key={uid}
+                style={[
+                  styles.filterTab,
+                  {
+                    backgroundColor: selectedOwner === uid ? colors.accent : 'transparent',
+                    borderColor: selectedOwner === uid ? colors.accent : colors.border,
+                  },
+                ]}
+                onPress={() => setSelectedOwner(uid)}
+                accessibilityRole="button"
+                accessibilityLabel={`Person ${idx + 1}`}
+              >
+                <Icon name="person-outline" size={12} color={selectedOwner === uid ? colors.surface : colors.textSecondary} style={{ marginRight: 4 }} />
+                <Text style={[styles.filterTabText, { color: selectedOwner === uid ? colors.surface : colors.textSecondary, fontSize: typography.sm }]}>
+                  {`Person ${idx + 1}`}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </Animated.View>
+      )}
 
       {/* Segment Control */}
       <View style={[styles.segmentContainer, { backgroundColor: colors.surfaceSecondary }]}>
@@ -768,6 +864,11 @@ const styles = StyleSheet.create({
   segmentLabel: {
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
+  },
+
+  // Owner filter
+  ownerFilterContainer: {
+    marginBottom: 4,
   },
 
   // History filters

@@ -35,6 +35,7 @@ const makeRecord = (sys: number, dia: number, ts: number): BPRecord => ({
   createdAt: ts,
   updatedAt: ts,
   isSynced: false,
+  ownerUid: null,
 });
 
 const DAY = 86400;

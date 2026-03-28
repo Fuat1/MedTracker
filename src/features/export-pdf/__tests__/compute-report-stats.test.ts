@@ -21,6 +21,7 @@ const makeRecord = (
   createdAt: timestamp,
   updatedAt: timestamp,
   isSynced: false,
+  ownerUid: null,
 });
 
 const NOW = Math.floor(Date.now() / 1000);

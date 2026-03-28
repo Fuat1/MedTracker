@@ -62,3 +62,6 @@ export * from './settings';
 
 // Profile constants
 export * from './profile-constants';
+
+// Firebase configuration
+export * from './firebase';

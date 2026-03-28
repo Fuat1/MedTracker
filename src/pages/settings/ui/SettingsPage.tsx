@@ -157,6 +157,17 @@ export function SettingsPage() {
           />
         </Animated.View>
 
+        <Animated.View entering={FadeInUp.delay(600).duration(400)}>
+          <MenuItem
+            icon="people-outline"
+            label={t('familySharing.title')}
+            subtitle={t('familySharing.noLinkedPeopleSubtitle')}
+            onPress={() => navigation.navigate('FamilySharing')}
+            colors={colors}
+            typography={typography}
+          />
+        </Animated.View>
+
         {/* About & Disclaimer Card - stays on this page */}
         <Animated.View
           entering={FadeInUp.delay(500).duration(400)}

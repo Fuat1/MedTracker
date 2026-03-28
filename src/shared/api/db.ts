@@ -109,6 +109,16 @@ const CREATE_WEATHER_READINGS_IDX_SQL = `
   CREATE INDEX IF NOT EXISTS idx_weather_record_id ON weather_readings(record_id);
 `;
 
+const CREATE_LINKED_USERS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS linked_users (
+    uid TEXT PRIMARY KEY NOT NULL,
+    display_name TEXT NOT NULL,
+    last_synced_at INTEGER NOT NULL DEFAULT 0,
+    relationship_id TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+`;
+
 export async function initDatabase(): Promise<DB> {
   if (db) {
     return db;
@@ -131,14 +141,22 @@ export async function initDatabase(): Promise<DB> {
     await db.execute(CREATE_MEDICATION_LOGS_IDX_MED_ID_SQL);
     await db.execute(CREATE_WEATHER_READINGS_TABLE_SQL);
     await db.execute(CREATE_WEATHER_READINGS_IDX_SQL);
+    await db.execute(CREATE_LINKED_USERS_TABLE_SQL);
 
     // Migrations — use PRAGMA + executeSync so errors are caught synchronously
     const tableInfo = db.executeSync('PRAGMA table_info(bp_records)');
-    const hasWeight = tableInfo.rows.some((row) => row.name === 'weight');
+    const columns = tableInfo.rows as Array<{ name: string }>;
+
+    const hasWeight = columns.some((row) => row.name === 'weight');
     if (!hasWeight) {
       db.executeSync(
         'ALTER TABLE bp_records ADD COLUMN weight REAL CHECK(weight IS NULL OR weight BETWEEN 20 AND 500)',
       );
+    }
+
+    const hasOwnerUid = columns.some((row) => row.name === 'owner_uid');
+    if (!hasOwnerUid) {
+      db.executeSync('ALTER TABLE bp_records ADD COLUMN owner_uid TEXT');
     }
 
     if (__DEV__) console.log('Database initialized successfully');
