@@ -5,8 +5,9 @@ import {
   StyleSheet,
   Pressable,
   Share,
-  Clipboard,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import QRCode from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
@@ -119,6 +120,16 @@ export function InvitePage() {
               <Text style={[styles.codeHint, { color: colors.textSecondary, fontSize: typography.sm }]}>
                 {t('familySharing.inviteCodeHint')}
               </Text>
+
+              {/* QR code for deep link */}
+              <View style={styles.qrContainer}>
+                <QRCode
+                  value={deepLink}
+                  size={160}
+                  backgroundColor="transparent"
+                  color={colors.textPrimary}
+                />
+              </View>
             </CardBody>
           </Card>
         </Animated.View>
@@ -189,6 +200,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   codeCharText: { fontFamily: FONTS.extraBold, fontWeight: '800' },
+  qrContainer: {
+    alignItems: 'center' as const,
+    marginTop: 16,
+    marginBottom: 8,
+  },
   codeHint: {
     fontFamily: FONTS.regular,
     fontWeight: '400',
