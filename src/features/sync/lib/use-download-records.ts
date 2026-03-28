@@ -21,7 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRelationships } from '@/entities/family-sharing';
-import { loadReadKey, loadMasterKey, storeReadKey } from '@/shared/lib/keychain-keys';
+import { loadReadKey, loadMasterKey, storeReadKey, removeReadKey } from '@/shared/lib/keychain-keys';
 import {
   decryptBPRecord,
   resolveConflict,
@@ -144,21 +144,44 @@ export function useDownloadRecords() {
     );
   }, [relationships, downloadForUser]);
 
-  // Listen for revoked relationships and clean up local records
+  // Dedicated Firestore listener for revocation — useRelationships() filters these out
   useEffect(() => {
     const currentUid = auth().currentUser?.uid;
     if (!currentUid) {
       return;
     }
 
-    const revokedUids = relationships
-      .filter((r) => r.status === RELATIONSHIP_STATUS.revoked)
-      .map((r) => (r.initiatorUid === currentUid ? r.recipientUid! : r.initiatorUid));
+    const unsubInitiator = firestore()
+      .collection(FIRESTORE_COLLECTIONS.relationships)
+      .where('initiatorUid', '==', currentUid)
+      .where('status', '==', RELATIONSHIP_STATUS.revoked)
+      .onSnapshot((snapshot) => {
+        for (const doc of snapshot.docs) {
+          const rel = doc.data() as { recipientUid: string | null };
+          if (rel.recipientUid) {
+            void deleteBPRecordsByOwner(rel.recipientUid);
+            void removeReadKey(rel.recipientUid);
+          }
+        }
+      });
 
-    for (const uid of revokedUids) {
-      void deleteBPRecordsByOwner(uid);
-    }
-  }, [relationships]);
+    const unsubRecipient = firestore()
+      .collection(FIRESTORE_COLLECTIONS.relationships)
+      .where('recipientUid', '==', currentUid)
+      .where('status', '==', RELATIONSHIP_STATUS.revoked)
+      .onSnapshot((snapshot) => {
+        for (const doc of snapshot.docs) {
+          const rel = doc.data() as { initiatorUid: string };
+          void deleteBPRecordsByOwner(rel.initiatorUid);
+          void removeReadKey(rel.initiatorUid);
+        }
+      });
+
+    return () => {
+      unsubInitiator();
+      unsubRecipient();
+    };
+  }, []);
 
   // Trigger download on app foreground
   useEffect(() => {
