@@ -27,6 +27,7 @@ import {
 import {
   GOOGLE_SIGN_IN_WEB_CLIENT_ID,
   FIRESTORE_COLLECTIONS,
+  RELATIONSHIP_STATUS,
 } from '@/shared/config';
 import { loadMasterKey, storeMasterKey, removeMasterKey } from '@/shared/lib/keychain-keys';
 
@@ -137,11 +138,50 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
     }
     try {
       const uid = currentUser.uid;
-      // Delete Firestore user document and records
+
+      // 1. Revoke all active relationships
+      const [initiatorSnap, recipientSnap] = await Promise.all([
+        firestore()
+          .collection(FIRESTORE_COLLECTIONS.relationships)
+          .where('initiatorUid', '==', uid)
+          .where('status', 'in', [RELATIONSHIP_STATUS.pending, RELATIONSHIP_STATUS.active])
+          .get(),
+        firestore()
+          .collection(FIRESTORE_COLLECTIONS.relationships)
+          .where('recipientUid', '==', uid)
+          .where('status', '==', RELATIONSHIP_STATUS.active)
+          .get(),
+      ]);
+
+      const batch = firestore().batch();
+      for (const doc of [...initiatorSnap.docs, ...recipientSnap.docs]) {
+        batch.update(doc.ref, {
+          status: RELATIONSHIP_STATUS.revoked,
+          initiatorReadKey: '',
+          recipientReadKey: null,
+        });
+      }
+      await batch.commit();
+
+      // 2. Delete all BP records in Firestore sub-collection
+      const recordsSnap = await firestore()
+        .collection(FIRESTORE_COLLECTIONS.records(uid))
+        .get();
+      const recordBatch = firestore().batch();
+      for (const doc of recordsSnap.docs) {
+        recordBatch.delete(doc.ref);
+      }
+      if (recordsSnap.docs.length > 0) {
+        await recordBatch.commit();
+      }
+
+      // 3. Delete Firestore user document
       await firestore().collection(FIRESTORE_COLLECTIONS.users).doc(uid).delete();
-      // Remove master key from Keychain
+
+      // 4. Remove master key from Keychain
       await removeMasterKey();
-      // Delete Firebase Auth account
+
+      // 5. Delete Firebase Auth account
       await currentUser.delete();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Account deletion failed');
