@@ -69,6 +69,18 @@ export const sendCrisisAlert = functions.https.onCall(
       throw new functions.https.HttpsError('invalid-argument', 'BP values out of valid range');
     }
 
+    // Crisis thresholds — must match mobile-side isCrisisReading()
+    // AHA/ACC 2025: SBP >= 180 OR DBP >= 120
+    const CRISIS_SBP_THRESHOLD = 180;
+    const CRISIS_DBP_THRESHOLD = 120;
+
+    if (systolic < CRISIS_SBP_THRESHOLD && diastolic < CRISIS_DBP_THRESHOLD) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Reading does not meet crisis threshold',
+      );
+    }
+
     // Find all active relationships involving this user where the other party
     // has crisisAlertsEnabled for the sender's readings
     const [initiatorSnap, recipientSnap] = await Promise.all([
@@ -130,14 +142,12 @@ export const sendCrisisAlert = functions.https.onCall(
       messages.push({
         token: fcmToken,
         notification: {
-          title: '⚠️ Hypertensive Crisis Alert',
-          body: `${senderName} recorded a critical reading: ${systolic}/${diastolic} mmHg. Please check on them.`,
+          title: 'High BP Alert',
+          body: `${senderName} logged a reading that may need attention.`,
         },
         data: {
           type: 'crisis_alert',
           senderUid,
-          systolic: String(systolic),
-          diastolic: String(diastolic),
         },
         android: {
           priority: 'high',
@@ -167,8 +177,6 @@ export const sendCrisisAlert = functions.https.onCall(
 
     functions.logger.info(`Crisis alert sent: ${successCount}/${messages.length} delivered`, {
       senderUid,
-      systolic,
-      diastolic,
     });
 
     return { sent: successCount };
