@@ -150,7 +150,6 @@ export function Navigation() {
   return (
     <ErrorBoundary>
       <View style={styles.container}>
-      <SyncManager />
       <NavigationContainer
         linking={linking}
         ref={navigationRef}
@@ -162,6 +161,7 @@ export function Navigation() {
           }
         }}
       >
+        <SyncManager />
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
