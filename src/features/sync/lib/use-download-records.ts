@@ -20,8 +20,8 @@ import { AppState } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useQueryClient } from '@tanstack/react-query';
-import { useRelationships } from '@/features/pairing';
-import { loadReadKey } from '@/features/auth';
+import { useRelationships } from '@/entities/family-sharing';
+import { loadReadKey } from '@/shared/lib/keychain-keys';
 import {
   decryptBPRecord,
   resolveConflict,
@@ -35,7 +35,7 @@ import {
 } from '@/shared/api/bp-repository';
 import { FIRESTORE_COLLECTIONS, RELATIONSHIP_STATUS } from '@/shared/config';
 import { useSyncStore } from './sync-store';
-import { BP_RECORDS_QUERY_KEY } from '../../record-bp';
+import { BP_RECORDS_QUERY_KEY } from '@/shared/config';
 
 export function useDownloadRecords() {
   const { relationships } = useRelationships();

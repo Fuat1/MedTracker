@@ -19,21 +19,16 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import DeviceInfo from 'react-native-device-info';
-import * as Keychain from 'react-native-keychain';
 import {
   generateMasterKey,
-  exportKey,
-  importKey,
   encryptMasterKeyForBackup,
   decryptMasterKeyFromBackup,
-  serializeKey,
 } from '@/entities/family-sharing';
 import {
   GOOGLE_SIGN_IN_WEB_CLIENT_ID,
   FIRESTORE_COLLECTIONS,
 } from '@/shared/config';
-
-const MASTER_KEY_KEYCHAIN_SERVICE = 'medtracker.masterKey';
+import { loadMasterKey, storeMasterKey, removeMasterKey } from '@/shared/lib/keychain-keys';
 
 export interface FirebaseUser {
   uid: string;
@@ -145,7 +140,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
       // Delete Firestore user document and records
       await firestore().collection(FIRESTORE_COLLECTIONS.users).doc(uid).delete();
       // Remove master key from Keychain
-      await Keychain.resetGenericPassword({ service: MASTER_KEY_KEYCHAIN_SERVICE });
+      await removeMasterKey();
       // Delete Firebase Auth account
       await currentUser.delete();
     } catch (e) {
@@ -165,9 +160,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
  */
 async function ensureMasterKey(uid: string): Promise<void> {
   // Try loading from Keychain first
-  const existing = await Keychain.getGenericPassword({
-    service: MASTER_KEY_KEYCHAIN_SERVICE,
-  });
+  const existing = await loadMasterKey();
   if (existing) {
     return; // Already have a key in Keychain
   }
@@ -198,12 +191,7 @@ async function ensureMasterKey(uid: string): Promise<void> {
   }
 
   // Store in Keychain
-  const serialized = await serializeKey(masterKey);
-  await Keychain.setGenericPassword(
-    uid,
-    JSON.stringify(serialized),
-    { service: MASTER_KEY_KEYCHAIN_SERVICE },
-  );
+  await storeMasterKey(uid, masterKey);
 
   // Backup to Firestore (also creates/updates user document)
   const encryptedMasterKey = await encryptMasterKeyForBackup(masterKey, uid, deviceId);
@@ -234,47 +222,3 @@ async function getFcmToken(): Promise<string> {
   }
 }
 
-/** Load the master key from Keychain. Returns null if not found. */
-export async function loadMasterKey(): Promise<CryptoKey | null> {
-  const result = await Keychain.getGenericPassword({
-    service: MASTER_KEY_KEYCHAIN_SERVICE,
-  });
-  if (!result) {
-    return null;
-  }
-  try {
-    const serialized = JSON.parse(result.password);
-    const key = await importKey(serialized.keyBase64);
-    return key;
-  } catch {
-    return null;
-  }
-}
-
-/** Load a relationship read key from Keychain (stored by owner UID). */
-export async function loadReadKey(ownerUid: string): Promise<CryptoKey | null> {
-  const service = `medtracker.readKey.${ownerUid}`;
-  const result = await Keychain.getGenericPassword({ service });
-  if (!result) {
-    return null;
-  }
-  try {
-    const base64 = result.password;
-    return importKey(base64);
-  } catch {
-    return null;
-  }
-}
-
-/** Store a relationship read key in Keychain. */
-export async function storeReadKey(ownerUid: string, key: CryptoKey): Promise<void> {
-  const service = `medtracker.readKey.${ownerUid}`;
-  const base64 = await exportKey(key);
-  await Keychain.setGenericPassword(ownerUid, base64, { service });
-}
-
-/** Remove a relationship read key from Keychain (on revocation). */
-export async function removeReadKey(ownerUid: string): Promise<void> {
-  const service = `medtracker.readKey.${ownerUid}`;
-  await Keychain.resetGenericPassword({ service });
-}

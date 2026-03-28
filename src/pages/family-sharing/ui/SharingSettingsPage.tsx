@@ -18,11 +18,11 @@ import { useTheme } from '@/shared/lib/use-theme';
 import { FONTS } from '@/shared/config/theme';
 import { Card, CardBody, Button, ButtonText, ButtonIcon } from '@/shared/ui';
 import {
-  useRelationships,
   useRevokeRelationship,
   useUpdateSharingConfig,
   useGenerateInvite,
 } from '@/features/pairing';
+import { useRelationships } from '@/entities/family-sharing';
 import { useFirebaseAuth } from '@/features/auth';
 import { RELATIONSHIP_STATUS } from '@/shared/config';
 import type { Relationship, SharingConfig } from '@/entities/family-sharing';

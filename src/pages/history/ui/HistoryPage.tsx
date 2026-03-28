@@ -23,7 +23,7 @@ import { BPRecordCard } from '../../../widgets/bp-record-card';
 import { CircadianCard } from '../../../widgets/circadian-card';
 import { CorrelationCard } from '../../../widgets/correlation-card';
 import { useBPRecords } from '../../../features/record-bp';
-import { useRelationships } from '../../../features/pairing';
+import { useRelationships } from '../../../entities/family-sharing';
 import { useFirebaseAuth } from '../../../features/auth';
 import { useExportPdf } from '../../../features/export-pdf';
 import { useTagsForRecords } from '../../../features/manage-tags';

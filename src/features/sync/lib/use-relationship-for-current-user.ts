@@ -10,7 +10,7 @@
  */
 
 import { useCallback } from 'react';
-import { useRelationships } from '@/features/pairing';
+import { useRelationships } from '@/entities/family-sharing';
 import { type SharingConfig, DEFAULT_SHARING_CONFIG } from '@/entities/family-sharing';
 import auth from '@react-native-firebase/auth';
 

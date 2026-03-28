@@ -6,7 +6,8 @@ import { useUploadRecord } from '../../sync';
 import { useCrisisAlert } from '../../sync';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
-export const BP_RECORDS_QUERY_KEY = ['bp-records'];
+import { BP_RECORDS_QUERY_KEY } from '@/shared/config';
+export { BP_RECORDS_QUERY_KEY };
 
 interface RecordBPInput extends BPRecordInput {
   tags?: TagKey[];

@@ -54,6 +54,9 @@ export const DB_CONFIG = {
   name: 'medtracker.db',
 } as const;
 
+/** TanStack Query key for BP records — shared across features */
+export const BP_RECORDS_QUERY_KEY = ['bp-records'] as const;
+
 // BP classification thresholds
 export * from './bp-guidelines';
 

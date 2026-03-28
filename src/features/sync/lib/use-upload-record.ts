@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { getBPRecordById, markRecordSynced } from '@/shared/api/bp-repository';
-import { loadMasterKey } from '@/features/auth';
+import { loadMasterKey } from '@/shared/lib/keychain-keys';
 import { encryptBPRecord } from '@/entities/family-sharing';
 import { FIRESTORE_COLLECTIONS } from '@/shared/config';
 import { useSyncStore } from './sync-store';
