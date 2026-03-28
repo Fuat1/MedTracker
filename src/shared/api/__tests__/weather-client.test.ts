@@ -1,7 +1,7 @@
 import { fetchCurrentWeather, searchCities } from '../weather-client';
 
 const mockFetch = jest.fn();
-global.fetch = mockFetch;
+(globalThis as any).fetch = mockFetch;
 
 beforeEach(() => {
   mockFetch.mockReset();
