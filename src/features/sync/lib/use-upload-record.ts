@@ -12,7 +12,7 @@ import { getBPRecordById, markRecordSynced } from '@/shared/api/bp-repository';
 import { loadMasterKey } from '@/shared/lib/keychain-keys';
 import { encryptBPRecord } from '@/entities/family-sharing';
 import { FIRESTORE_COLLECTIONS } from '@/shared/config';
-import { useSyncStore } from './sync-store';
+import { useSyncStore, MAX_RETRY_COUNT } from './sync-store';
 import { useRelationshipForCurrentUser } from './use-relationship-for-current-user';
 
 export function useUploadRecord() {
@@ -79,6 +79,11 @@ export function useRetryUploadQueue() {
     const sharingConfig = getSharingConfig();
 
     for (const item of retryQueue) {
+      if (item.retryCount >= MAX_RETRY_COUNT) {
+        removeFromRetryQueue(item.recordId);
+        continue;
+      }
+
       try {
         const record = await getBPRecordById(item.recordId);
         if (!record) {

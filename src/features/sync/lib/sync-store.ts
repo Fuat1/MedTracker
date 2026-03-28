@@ -8,6 +8,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+/** Maximum retry attempts before giving up on a record */
+export const MAX_RETRY_COUNT = 10;
+
 export interface RetryQueueItem {
   recordId: string;
   ownerUid: string;

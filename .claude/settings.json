@@ -6,10 +6,35 @@
       "Read(//c/Users/fuats/Desktop/Workdir/**)",
       "WebSearch",
       "Bash(rm -f hc_test.log lint.log lint2.log lint4.log sync_test.log test.log typecheck.log typecheck2.log typecheck3.log typecheck4.log typecheck5.log)",
-      "Bash(rm -rf docs/superpowers/plans)"
+      "Bash(rm -rf docs/superpowers/plans)",
+      "Bash(grep -E \"\\\\.ts$|\\\\.tsx$\")",
+      "Bash(git -C \"c:/Users/fuats/Desktop/Workdir/MedTracker\" branch --show-current)",
+      "Bash(git -C \"c:/Users/fuats/Desktop/Workdir/MedTracker\" checkout -b feat/weather-correlation)",
+      "Bash(git -C /c/Users/fuats/Desktop/Workdir/MedTracker log --oneline -3)",
+      "Bash(git -C /c/Users/fuats/Desktop/Workdir/MedTracker show --name-only fa5652c)",
+      "Bash(git -C /c/Users/fuats/Desktop/Workdir/MedTracker show --stat HEAD)",
+      "Bash(git -C c:/Users/fuats/Desktop/Workdir/MedTracker log --oneline -3)",
+      "Bash(git -C c:/Users/fuats/Desktop/Workdir/MedTracker show --stat HEAD)",
+      "Bash(git -C /c/Users/fuats/Desktop/Workdir/MedTracker log --oneline -5)",
+      "Read(//tmp/**)",
+      "Bash(git -C \"c:/Users/fuats/Desktop/Workdir/MedTracker\" log --oneline feat/weather-correlation ^main)",
+      "Bash(grep -rn from.*app/navigation c:/Users/fuats/Desktop/Workdir/MedTracker/src/pages/)",
+      "Bash(grep -rn from.*shared/api c:/Users/fuats/Desktop/Workdir/MedTracker/src/entities/)",
+      "Bash(grep -E \"^import.*from ''''\\(\\\\.\\\\./\\)?\\\\.?\\\\./?\\(pages|widgets|entities\\)\\(?!.*shared\\)\" src/features/weather-fetch/model/use-weather-fetch.ts)",
+      "Bash(gh pr:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(sed -n '15,25p' src/entities/weather/__tests__/compute-weather-correlations.test.ts)",
+      "Bash(sed -n '20,28p' src/features/export-pdf/__tests__/compute-report-stats.test.ts)",
+      "Bash(sed -n '33,42p' src/features/export-pdf/__tests__/generate-bp-chart-svg.test.ts)",
+      "Bash(sed -n '70,80p' src/features/export-pdf/__tests__/generate-report-html.test.ts)",
+      "Bash(grep -rn @/ src/shared/ src/entities/ src/features/ --include=*.ts --include=*.tsx -l)",
+      "Bash(grep -v \"^$\")",
+      "Bash(git push:*)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib"
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib",
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\sync\\lib"
     ]
   }
 }

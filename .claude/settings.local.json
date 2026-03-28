@@ -80,7 +80,11 @@
       "Bash($ANDROID_HOME/emulator/emulator -list-avds)",
       "Bash(\"$LOCALAPPDATA/Android/Sdk/emulator/emulator\" -list-avds)",
       "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb\" devices:*)",
-      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb\" shell:*)"
+      "Bash(\"$LOCALAPPDATA/Android/Sdk/platform-tools/adb\" shell:*)",
+      "Bash(chmod:*)",
+      "Bash(mkdir -p ~/.claude/channels/telegram/approved)",
+      "Bash(~/.claude/channels/telegram/approved/941529447)",
+      "mcp__plugin_telegram_telegram__reply"
     ]
   },
   "model": "sonnet",
