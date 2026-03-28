@@ -22,6 +22,7 @@ interface SettingsState {
   seniorMode: boolean;
   highContrast: boolean;
   preferredEntryMode: EntryMode;
+  voiceLoggingEnabled: boolean;
   // User profile
   userName: string | null;
   dateOfBirth: string | null;
@@ -39,6 +40,7 @@ interface SettingsState {
   setSeniorMode: (enabled: boolean) => void;
   setHighContrast: (enabled: boolean) => void;
   setPreferredEntryMode: (mode: EntryMode) => void;
+  setVoiceLoggingEnabled: (enabled: boolean) => void;
   setUserName: (name: string | null) => void;
   setDateOfBirth: (dob: string | null) => void;
   setHeight: (height: number | null) => void;
@@ -60,6 +62,7 @@ export const useSettingsStore = create<SettingsState>()(
       seniorMode: false,
       highContrast: false,
       preferredEntryMode: null,
+      voiceLoggingEnabled: true,
       userName: null,
       dateOfBirth: null,
       gender: null,
@@ -79,6 +82,7 @@ export const useSettingsStore = create<SettingsState>()(
       setSeniorMode: (enabled) => set({ seniorMode: enabled }),
       setHighContrast: (enabled) => set({ highContrast: enabled }),
       setPreferredEntryMode: (mode) => set({ preferredEntryMode: mode }),
+      setVoiceLoggingEnabled: (enabled) => set({ voiceLoggingEnabled: enabled }),
       setUserName: (name) => set({ userName: name }),
       setDateOfBirth: (dob) => set({ dateOfBirth: dob }),
       setGender: (gender) => set({ gender }),

@@ -9,12 +9,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Numpad, DateTimePicker, Toast, CrisisModal, SaveButton } from '../../../shared/ui';
+import { Numpad, DateTimePicker, Toast, CrisisModal, SaveButton, Card, CardBody } from '../../../shared/ui';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { useBPInput, useToast } from '../../../shared/lib';
 import { isCrisisReading, useBPClassification } from '../../../entities/blood-pressure';
 import { FONTS } from '../../../shared/config/theme';
+import { BP_LIMITS } from '../../../shared/config';
 import { useRecordBP, BP_RECORDS_QUERY_KEY } from '../../../features/record-bp';
 import { useQueryClient } from '@tanstack/react-query';
 import type { BPRecord } from '../../../shared/api/bp-repository';
@@ -104,6 +105,23 @@ export function QuickLogPage() {
 
   const isValid = validation.isValid && !!systolic && !!diastolic;
   const hasCategory = !!(category && validation.isValid);
+
+  // Per-field range warnings
+  const sysOutOfRange = systolicNum != null && (systolicNum < BP_LIMITS.systolic.min || systolicNum > BP_LIMITS.systolic.max);
+  const diaOutOfRange = diastolicNum != null && (diastolicNum < BP_LIMITS.diastolic.min || diastolicNum > BP_LIMITS.diastolic.max);
+  const pulseOutOfRange = pulseNum != null && (pulseNum < BP_LIMITS.pulse.min || pulseNum > BP_LIMITS.pulse.max);
+  const sysLeDia = systolicNum != null && diastolicNum != null && systolicNum <= diastolicNum;
+
+  const fieldWarning = sysOutOfRange
+    ? tCommon('common.systolic') + ': ' + tValidation('errors.systolicRange', { min: BP_LIMITS.systolic.min, max: BP_LIMITS.systolic.max })
+    : diaOutOfRange
+    ? tCommon('common.diastolic') + ': ' + tValidation('errors.diastolicRange', { min: BP_LIMITS.diastolic.min, max: BP_LIMITS.diastolic.max })
+    : pulseOutOfRange
+    ? tCommon('common.pulse') + ': ' + tValidation('errors.pulseRange', { min: BP_LIMITS.pulse.min, max: BP_LIMITS.pulse.max })
+    : sysLeDia
+    ? tValidation('errors.systolicGreater')
+    : null;
+
   const hasTags = selectedTags.length > 0;
   const tagPillBg = hasTags ? colors.accent + '15' : 'transparent';
   const tagPillBorder = hasTags ? colors.accent : colors.border;
@@ -189,145 +207,161 @@ export function QuickLogPage() {
             </View>
           </View>
 
-          {/* Value cards row */}
-          <View style={styles.valuesRow}>
+          {/* Unified BP display */}
+          <View style={styles.bpCardWrapper}>
+            <Card variant="elevated" size="lg">
+              <CardBody>
+                {/* Labels row */}
+                <View style={styles.bpLabelsRow}>
+                  <Text style={[styles.bpLabel, { color: colors.textSecondary, fontSize: typography.md }]}>
+                    {tCommon('common.systolic')}
+                  </Text>
+                  <View style={styles.bpLabelSpacer} />
+                  <Text style={[styles.bpLabel, { color: colors.textSecondary, fontSize: typography.md }]}>
+                    {tCommon('common.diastolic')}
+                  </Text>
+                </View>
 
-            {/* Systolic */}
-            <Pressable
-              style={[
-                styles.valueBox,
-                {
-                  backgroundColor:
-                    activeField === 'systolic' ? colors.accent + '10' : colors.surface,
-                  borderColor: activeField === 'systolic' ? colors.accent : colors.border,
-                  shadowColor: colors.shadow,
-                  shadowOpacity: colors.shadowOpacity,
-                },
-              ]}
-              onPress={() => { setWeightFocused(false); setActiveField('systolic'); }}
-              accessibilityRole="button"
-              accessibilityLabel={tCommon('common.systolic')}
-            >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
-                {tCommon('common.systolic')}
-              </Text>
-              <Text
-                style={[
-                  styles.valueText,
-                  {
-                    color:
-                      systolic && validation.isValid
-                        ? categoryColor
-                        : activeField === 'systolic'
-                        ? colors.accent
-                        : colors.textPrimary,
-                    fontSize: 44 * fontScale,
-                  },
-                ]}
-              >
-                {systolic || '---'}
-              </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </Pressable>
+                {/* Main BP numbers row */}
+                <View style={styles.bpNumbersRow}>
+                  <Pressable
+                    style={[
+                      styles.bpTapArea,
+                      activeField === 'systolic' && !sysOutOfRange && !sysLeDia && { backgroundColor: colors.accent + '20', borderRadius: 14, borderWidth: 2, borderColor: colors.accent },
+                      (sysOutOfRange || sysLeDia) && activeField === 'systolic' && { backgroundColor: colors.error + '30', borderRadius: 14, borderWidth: 2.5, borderColor: colors.error },
+                      (sysOutOfRange || sysLeDia) && activeField !== 'systolic' && { backgroundColor: colors.error + '10', borderRadius: 14, borderWidth: 1.5, borderColor: colors.error + '60' },
+                    ]}
+                    onPress={() => { setWeightFocused(false); setActiveField('systolic'); }}
+                    accessibilityRole="button"
+                    accessibilityLabel={tCommon('common.systolic')}
+                  >
+                    <Text
+                      style={[
+                        styles.bpNumber,
+                        {
+                          color:
+                            systolic && validation.isValid
+                              ? categoryColor
+                              : activeField === 'systolic'
+                              ? colors.accent
+                              : colors.textPrimary,
+                          fontSize: typography.hero,
+                        },
+                      ]}
+                    >
+                      {systolic || '---'}
+                    </Text>
+                  </Pressable>
 
-            {/* "/" divider */}
-            <View style={styles.divider}>
-              <Text style={[styles.dividerText, { color: colors.textTertiary, fontSize: typography.xl }]}>/</Text>
-            </View>
+                  <Text style={[styles.bpSlash, { color: colors.textTertiary, fontSize: typography['3xl'] }]}>/</Text>
 
-            {/* Diastolic */}
-            <Pressable
-              style={[
-                styles.valueBox,
-                {
-                  backgroundColor:
-                    activeField === 'diastolic' ? colors.accent + '10' : colors.surface,
-                  borderColor: activeField === 'diastolic' ? colors.accent : colors.border,
-                  shadowColor: colors.shadow,
-                  shadowOpacity: colors.shadowOpacity,
-                },
-              ]}
-              onPress={() => { setWeightFocused(false); setActiveField('diastolic'); }}
-              accessibilityRole="button"
-              accessibilityLabel={tCommon('common.diastolic')}
-            >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
-                {tCommon('common.diastolic')}
-              </Text>
-              <Text
-                style={[
-                  styles.valueText,
-                  {
-                    color:
-                      diastolic && validation.isValid
-                        ? categoryColor
-                        : activeField === 'diastolic'
-                        ? colors.accent
-                        : colors.textPrimary,
-                    fontSize: 44 * fontScale,
-                  },
-                ]}
-              >
-                {diastolic || '---'}
-              </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>mmHg</Text>
-            </Pressable>
+                  <Pressable
+                    style={[
+                      styles.bpTapArea,
+                      activeField === 'diastolic' && !diaOutOfRange && !sysLeDia && { backgroundColor: colors.accent + '20', borderRadius: 14, borderWidth: 2, borderColor: colors.accent },
+                      (diaOutOfRange || sysLeDia) && activeField === 'diastolic' && { backgroundColor: colors.error + '30', borderRadius: 14, borderWidth: 2.5, borderColor: colors.error },
+                      (diaOutOfRange || sysLeDia) && activeField !== 'diastolic' && { backgroundColor: colors.error + '10', borderRadius: 14, borderWidth: 1.5, borderColor: colors.error + '60' },
+                    ]}
+                    onPress={() => { setWeightFocused(false); setActiveField('diastolic'); }}
+                    accessibilityRole="button"
+                    accessibilityLabel={tCommon('common.diastolic')}
+                  >
+                    <Text
+                      style={[
+                        styles.bpNumber,
+                        {
+                          color:
+                            diastolic && validation.isValid
+                              ? categoryColor
+                              : activeField === 'diastolic'
+                              ? colors.accent
+                              : colors.textPrimary,
+                          fontSize: typography.hero,
+                        },
+                      ]}
+                    >
+                      {diastolic || '---'}
+                    </Text>
+                  </Pressable>
+                </View>
 
-            {/* Pulse */}
-            <Pressable
-              style={[
-                styles.valueBoxPulse,
-                {
-                  backgroundColor:
-                    activeField === 'pulse' ? colors.accent + '10' : colors.surface,
-                  borderColor: activeField === 'pulse' ? colors.accent : colors.border,
-                  shadowColor: colors.shadow,
-                  shadowOpacity: colors.shadowOpacity,
-                },
-              ]}
-              onPress={() => { setWeightFocused(false); setActiveField('pulse'); }}
-              accessibilityRole="button"
-              accessibilityLabel={tCommon('common.pulse')}
-            >
-              <Text style={[styles.valueLabel, { color: colors.textSecondary, fontSize: Math.round(10 * fontScale) }]}>
-                {tCommon('common.pulse')}
-              </Text>
-              <Text
-                style={[
-                  styles.valueText,
-                  {
-                    color: activeField === 'pulse' ? colors.accent : colors.textPrimary,
-                    fontSize: 44 * fontScale,
-                  },
-                ]}
-              >
-                {pulse || '--'}
-              </Text>
-              <Text style={[styles.valueUnit, { color: colors.textTertiary, fontSize: Math.round(9 * fontScale) }]}>
-                {tCommon('units.bpm')}
-              </Text>
-            </Pressable>
-          </View>
+                {/* mmHg unit */}
+                <Text style={[styles.bpUnit, { color: colors.textTertiary, fontSize: typography.md }]}>mmHg</Text>
 
-          {/* Category badge row */}
-          {category && validation.isValid ? (
-            <View style={styles.categoryRow}>
-              <View
-                style={[
-                  styles.categoryBadge,
-                  { backgroundColor: categoryColor + '18', borderColor: categoryColor },
-                ]}
-              >
-                <View style={[styles.categoryDot, { backgroundColor: categoryColor }]} />
-                <Text
-                  style={[styles.categoryText, { color: categoryColor, fontSize: 13 * fontScale }]}
-                  numberOfLines={1}
+                {/* Pulse row */}
+                <Pressable
+                  style={[
+                    styles.pulseRow,
+                    {
+                      backgroundColor: pulseOutOfRange
+                        ? colors.error + '15'
+                        : activeField === 'pulse' ? colors.accent + '20' : colors.surfaceSecondary,
+                      borderColor: pulseOutOfRange
+                        ? colors.error
+                        : activeField === 'pulse' ? colors.accent : colors.border,
+                      borderWidth: activeField === 'pulse' || pulseOutOfRange ? 2 : 1,
+                    },
+                  ]}
+                  onPress={() => { setWeightFocused(false); setActiveField('pulse'); }}
+                  accessibilityRole="button"
+                  accessibilityLabel={tCommon('common.pulse')}
                 >
-                  {categoryLabel}
-                </Text>
-              </View>
-            </View>
-          ) : null}
+                  <Icon name="heart" size={20 * fontScale} color={activeField === 'pulse' ? colors.accent : colors.textSecondary} />
+                  <Text
+                    style={[
+                      styles.pulseText,
+                      {
+                        color: activeField === 'pulse' ? colors.accent : colors.textPrimary,
+                        fontSize: typography.xl,
+                      },
+                    ]}
+                  >
+                    {pulse || '--'}
+                  </Text>
+                  <Text style={[styles.pulseUnit, { color: colors.textTertiary, fontSize: typography.md }]}>
+                    {tCommon('units.bpm')}
+                  </Text>
+                </Pressable>
+
+                {/* Category badge or field warning */}
+                {fieldWarning ? (
+                  <View style={styles.categoryRow}>
+                    <View
+                      style={[
+                        styles.categoryBadge,
+                        { backgroundColor: colors.error + '15', borderColor: colors.error },
+                      ]}
+                    >
+                      <Icon name="warning" size={14 * fontScale} color={colors.error} />
+                      <Text
+                        style={[styles.categoryText, { color: colors.error, fontSize: typography.sm }]}
+                        numberOfLines={2}
+                      >
+                        {fieldWarning}
+                      </Text>
+                    </View>
+                  </View>
+                ) : category && validation.isValid ? (
+                  <View style={styles.categoryRow}>
+                    <View
+                      style={[
+                        styles.categoryBadge,
+                        { backgroundColor: categoryColor + '18', borderColor: categoryColor },
+                      ]}
+                    >
+                      <View style={[styles.categoryDot, { backgroundColor: categoryColor }]} />
+                      <Text
+                        style={[styles.categoryText, { color: categoryColor, fontSize: typography.sm }]}
+                        numberOfLines={1}
+                      >
+                        {categoryLabel}
+                      </Text>
+                    </View>
+                  </View>
+                ) : null}
+              </CardBody>
+            </Card>
+          </View>
         </View>
 
         {/* ── Bottom section: numpad + save ── */}
@@ -338,7 +372,7 @@ export function QuickLogPage() {
             maxLength={weightFocused ? 6 : 3}
             allowDecimal={weightFocused}
             disabled={recordBP.isPending}
-            compact={hasCategory}
+            compact={false}
           />
           <View style={styles.saveRow}>
             <SaveButton
@@ -406,7 +440,7 @@ const styles = StyleSheet.create({
   content: { flex: 1 },
 
   // ── Top section ──
-  topSection: { paddingTop: 8 },
+  topSection: { flex: 1, justifyContent: 'center', paddingTop: 4 },
   dateTimeWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -415,60 +449,67 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
   },
 
-  // ── Value cards ──
-  valuesRow: {
-    flexDirection: 'row',
+  // ── Unified BP display ──
+  bpCardWrapper: {
     paddingHorizontal: 16,
-    gap: 6,
-    alignItems: 'center',
   },
-  valueBox: {
-    flex: 2,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-    alignItems: 'center',
-    borderWidth: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  valueBoxPulse: {
-    flex: 1.4,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    borderRadius: 14,
-    alignItems: 'center',
-    borderWidth: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  divider: {
-    alignItems: 'center',
+  bpLabelsRow: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    paddingBottom: 10,
-    width: 14,
+    alignItems: 'center',
+    marginBottom: 2,
   },
-  dividerText: {
-    fontFamily: FONTS.extraBold,
-    fontWeight: '800',
-  },
-  valueLabel: {
+  bpLabel: {
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 3,
+    letterSpacing: 0.8,
+    textAlign: 'center',
+    flex: 1,
   },
-  valueText: {
+  bpLabelSpacer: {
+    width: 32,
+  },
+  bpNumbersRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bpTapArea: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  bpNumber: {
     fontFamily: FONTS.extraBold,
     fontWeight: '800',
     letterSpacing: -1,
   },
-  valueUnit: {
+  bpSlash: {
     fontFamily: FONTS.regular,
+    marginHorizontal: 4,
+  },
+  bpUnit: {
+    fontFamily: FONTS.regular,
+    textAlign: 'center',
     marginTop: 2,
+    marginBottom: 12,
+  },
+  pulseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  pulseText: {
+    fontFamily: FONTS.bold,
+    fontWeight: '700',
+  },
+  pulseUnit: {
+    fontFamily: FONTS.regular,
   },
 
   // ── Pills row ──
@@ -499,8 +540,8 @@ const styles = StyleSheet.create({
 
   // ── Category badge ──
   categoryRow: {
-    paddingHorizontal: 16,
-    marginTop: 10,
+    alignItems: 'center',
+    marginTop: 12,
   },
   tagPill: {
     flexDirection: 'row',

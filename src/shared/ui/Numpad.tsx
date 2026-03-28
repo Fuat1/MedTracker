@@ -76,7 +76,6 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
       style={[
         styles.key,
         {
-          width: keySize.width,
           height: keySize.height,
           backgroundColor: isClear
             ? colors.numpadClearBg
@@ -103,8 +102,8 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
           {
             color: colors.numpadKeyText,
             fontSize: compact
-              ? (isAction ? 18 * fontScale : 22 * fontScale)
-              : (isAction ? 22 * fontScale : 28 * fontScale),
+              ? (isAction ? 20 * fontScale : 26 * fontScale)
+              : (isAction ? 26 * fontScale : 32 * fontScale),
           },
           isClear && { color: colors.error },
           disabled && { color: colors.textTertiary },
@@ -129,11 +128,11 @@ export function Numpad({
   // Dynamic button sizing: compact when category badge is showing (20% reduction)
   const keySize = compact
     ? seniorMode
-      ? { width: 69, height: 54 }   // 20% smaller than senior normal
-      : { width: 77, height: 45 }   // 20% smaller than normal
+      ? { width: 76, height: 58 }   // 20% smaller than senior normal
+      : { width: 84, height: 50 }   // 20% smaller than normal
     : seniorMode
-      ? { width: 86, height: 68 }
-      : { width: 96, height: 56 };
+      ? { width: 94, height: 72 }
+      : { width: 104, height: 62 };
 
   // When decimal mode is on, replace 'C' with '.' in the bottom row
   const keys = allowDecimal
@@ -198,22 +197,25 @@ export function Numpad({
 // Minimum touch target 48x48dp per accessibility guidelines
 const styles = StyleSheet.create({
   container: {
-    padding: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 16,
   },
   containerCompact: {
-    padding: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 16,
     marginTop: 8,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
+    gap: 16,
     marginBottom: 12,
   },
   rowCompact: {
     marginBottom: 10,
   },
   key: {
-    marginHorizontal: 14,
+    flex: 1,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',

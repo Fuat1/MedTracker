@@ -25,11 +25,13 @@ export function AppSettingsPage({ navigation }: Props) {
     seniorMode,
     highContrast,
     preferredEntryMode,
+    voiceLoggingEnabled,
     setLanguage,
     setTheme,
     setSeniorMode,
     setHighContrast,
     setPreferredEntryMode,
+    setVoiceLoggingEnabled,
   } = useSettingsStore();
 
   const insets = useSafeAreaInsets();
@@ -72,6 +74,11 @@ export function AppSettingsPage({ navigation }: Props) {
   const handleEntryModeChange = (mode: EntryMode) => {
     setPreferredEntryMode(mode);
     showSavedToast(t('settings.entryMode.label'));
+  };
+
+  const handleVoiceLoggingToggle = (value: boolean) => {
+    setVoiceLoggingEnabled(value);
+    showSavedToast(t('settings.voiceLogging.label'));
   };
 
   const isDarkToggled = theme === 'dark' || (theme === 'system' && isDark);
@@ -234,6 +241,37 @@ export function AppSettingsPage({ navigation }: Props) {
                   thumbColor={colors.toggleThumb}
                   accessibilityRole="switch"
                   accessibilityLabel={t('settings.highContrast.label')}
+                />
+              </View>
+            </CardBody>
+          </Card>
+        </Animated.View>
+
+        {/* Voice Logging Card */}
+        <Animated.View entering={FadeInUp.delay(350).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                    {t('settings.voiceLogging.label')}
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                    {t('settings.voiceLogging.description')}
+                  </Text>
+                  {voiceLoggingEnabled && (
+                    <Text style={[styles.noteText, { color: colors.accent, fontSize: typography.xs }]}>
+                      {t('settings.voiceLogging.note')}
+                    </Text>
+                  )}
+                </View>
+                <Switch
+                  value={voiceLoggingEnabled}
+                  onValueChange={handleVoiceLoggingToggle}
+                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
+                  thumbColor={colors.toggleThumb}
+                  accessibilityRole="switch"
+                  accessibilityLabel={t('settings.voiceLogging.label')}
                 />
               </View>
             </CardBody>

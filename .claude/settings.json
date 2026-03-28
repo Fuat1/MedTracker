@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git branch:*)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Read(//c/Users/fuats/Desktop/Workdir/**)",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib"
+    ]
+  }
+}
