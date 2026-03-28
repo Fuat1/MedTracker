@@ -165,7 +165,35 @@ src/pages/medications/ui/MedicationModal.tsx    ← Add/edit medication modal �
 src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries ✅
 ```
 
-### 3.3 Voice Logging ✅
+### 3.3 Weather Correlation ✅
+
+- **Data Source**: Open-Meteo API (free, no API key required, privacy-respecting)
+- **Analysis**: Median-split correlation between barometric pressure, temperature, humidity, wind speed and BP patterns
+- **Display**: `WeatherCorrelationCard` on Analytics page — "Your BP tends to be X mmHg higher on high-pressure days" (requires ≥5 paired readings with meaningful delta ≥3 mmHg)
+- **Privacy**: Opt-in, disabled by default; location never sent without user consent
+- **Architecture**: Fire-and-forget — weather fetch never blocks BP save
+
+**Tech Stack**:
+- Open-Meteo API (`shared/config/weather.ts`) — geocoding + current weather
+- `@react-native-community/geolocation` — GPS location (requires `pod install` after add)
+- GPS mode (on-device location) or City search mode (Open-Meteo geocoding)
+- Temperature units: °C / °F (stored in settings store)
+
+**FSD Structure**:
+```
+src/shared/config/weather.ts                            ← API URLs and timeouts ✅
+src/shared/api/weather-client.ts                        ← fetchCurrentWeather, searchCities ✅
+src/shared/api/weather-repository.ts                    ← weather_readings CRUD ✅
+src/shared/lib/toast-store.ts                           ← Zustand global toast store ✅
+src/entities/weather/                                   ← WeatherReading types, correlations, utils ✅
+src/features/weather-fetch/model/use-weather-fetch.ts   ← GPS+city hook, permissions, fire-and-forget ✅
+src/widgets/weather-correlation-card/                   ← Analytics card with median-split insights ✅
+src/pages/settings/ui/WeatherSettingsPage.tsx           ← Toggle, location mode, city search, unit ✅
+```
+
+**Design**: `docs/superpowers/specs/2026-03-28-weather-correlation-design.md`
+
+### 3.4 Voice Logging ✅
 
 #### iOS — Siri Shortcuts
 - `LogBloodPressureIntent.swift` (App Intent, iOS 16+) — Siri phrases: "Log my blood pressure in MedTracker"
@@ -199,10 +227,7 @@ src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries
 - **Regulatory**: Requires FDA clearance for medical claims
 - **Privacy**: On-device ML (CoreML, TensorFlow Lite)
 
-### 4.3 Weather Correlation
-- **Data Source**: OpenWeather API (optional, user-controlled)
-- **Analysis**: Identify patterns between barometric pressure/temperature and BP
-- **Display**: "Your BP tends to rise 5 mmHg on cold days (<50°F)"
+### 4.3 Weather Correlation ✅ (Shipped in Phase 3 — see 3.3)
 
 ## What We Will NOT Build
 
@@ -218,8 +243,8 @@ src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries
 
 **Tier 1 (Must-Have)**: ✅ All completed
 **Tier 2 (High Value)**: ✅ Circadian analysis, ✅ Lifestyle tagging, ✅ Custom tags, ✅ Personalization & weight tracking, ✅ Platform sync
-**Tier 3 (Nice-to-Have)**: ✅ Medication tracking, ✅ Voice logging (iOS Siri Shortcuts + Android Google App Actions)
-**Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
+**Tier 3 (Nice-to-Have)**: ✅ Medication tracking, ✅ Voice logging (iOS Siri Shortcuts + Android Google App Actions), ✅ Weather correlation (Open-Meteo, median-split, opt-in)
+**Tier 4 (Future/Experimental)**: Family sharing, Predictive AI
 
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-28 (weather correlation shipped)
 

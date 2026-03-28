@@ -94,8 +94,13 @@ npx react-native run-ios            # Build iOS
 - **Platform & Performance**: `docs/docs-react-native-best-practices.md` (comprehensive guide)
 - **Platform Rules**: See `.claude/rules/platform-rules.md` (always loaded)
 - **Design Plans**: `docs/plans/` (older plans) and `docs/superpowers/specs/` (newer feature design specs)
+- **Weather Correlation Design**: `docs/superpowers/specs/2026-03-28-weather-correlation-design.md`
 - **Card & Button Usage**: `docs/card-button-usage.md` (variants, patterns, examples)
 - **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
+
+## Global Toast Pattern
+
+Use `src/shared/lib/toast-store.ts` (Zustand) for showing toasts from inside feature hooks that don't have direct UI access (e.g. fire-and-forget hooks). The ToastContainer in `app/` subscribes to this store. Never import UI components from feature hooks.
 
 ## Known Violations (Tech Debt)
 
