@@ -1,15 +1,19 @@
 import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { NavigationContainer, type LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import BootSplash from 'react-native-bootsplash';
 import notifee, { EventType } from '@notifee/react-native';
+import { Toast } from '../../shared/ui';
+import { useToastStore } from '../../shared/lib/toast-store';
 import { HomePage, HistoryPage, SettingsPage, NewReadingPage, EditReadingPage, MedicationPage, VoiceConfirmationPage } from '../../pages';
 import { PersonalInfoPage } from '../../pages/settings/ui/PersonalInfoPage';
 import { ClassificationPage } from '../../pages/settings/ui/ClassificationPage';
 import { AppSettingsPage } from '../../pages/settings/ui/AppSettingsPage';
 import { SyncPage } from '../../pages/settings/ui/SyncPage';
+import { WeatherSettingsPage } from '../../pages/settings/ui/WeatherSettingsPage';
 import { PreMeasurementPage } from '../../pages/pre-measurement';
 import { QuickLogPage } from '../../pages/quick-log';
 import { CustomTabBar } from './CustomTabBar';
@@ -27,6 +31,7 @@ export type SettingsStackParamList = {
   Classification: undefined;
   AppSettings: undefined;
   Sync: undefined;
+  WeatherSettings: undefined;
 };
 
 export type RootTabParamList = {
@@ -66,6 +71,7 @@ function SettingsNavigator() {
       <SettingsStack.Screen name="Classification" component={ClassificationPage} />
       <SettingsStack.Screen name="AppSettings" component={AppSettingsPage} />
       <SettingsStack.Screen name="Sync" component={SyncPage} />
+      <SettingsStack.Screen name="WeatherSettings" component={WeatherSettingsPage} />
     </SettingsStack.Navigator>
   );
 }
@@ -84,6 +90,13 @@ function TabNavigator() {
       <Tab.Screen name="Medications" component={MedicationPage} />
       <Tab.Screen name="Settings" component={SettingsNavigator} />
     </Tab.Navigator>
+  );
+}
+
+function GlobalToast() {
+  const { message, type, visible, hideToast } = useToastStore();
+  return (
+    <Toast message={message} type={type} visible={visible} onHide={hideToast} />
   );
 }
 
@@ -107,6 +120,7 @@ export function Navigation() {
 
   return (
     <ErrorBoundary>
+      <View style={styles.container}>
       <NavigationContainer
         linking={linking}
         ref={navigationRef}
@@ -166,6 +180,14 @@ export function Navigation() {
           />
         </Stack.Navigator>
       </NavigationContainer>
+      <GlobalToast />
+      </View>
     </ErrorBoundary>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
