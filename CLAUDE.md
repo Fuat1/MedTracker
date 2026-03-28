@@ -93,7 +93,7 @@ npx react-native run-ios            # Build iOS
 - **Project Roadmap**: `docs/roadmap.md` (planning reference, not coding guidance)
 - **Platform & Performance**: `docs/docs-react-native-best-practices.md` (comprehensive guide)
 - **Platform Rules**: See `.claude/rules/platform-rules.md` (always loaded)
-- **Design Plans**: `docs/plans/` (feature design & implementation plans)
+- **Design Plans**: `docs/plans/` (older plans) and `docs/superpowers/specs/` (newer feature design specs)
 - **Card & Button Usage**: `docs/card-button-usage.md` (variants, patterns, examples)
 - **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
 
@@ -118,4 +118,4 @@ npx react-native run-ios            # Build iOS
 
 If you violate a rule or make an error, update the relevant CLAUDE.md file (root or subdirectory) with a specific instruction to prevent recurrence. Keep instructions concise and actionable.
 
-**Last Updated**: 2026-03-23
+**Last Updated**: 2026-03-28

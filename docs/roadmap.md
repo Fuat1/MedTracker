@@ -165,6 +165,26 @@ src/pages/medications/ui/MedicationModal.tsx    ← Add/edit medication modal �
 src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries ✅
 ```
 
+### 3.3 Voice Logging ✅
+
+#### iOS — Siri Shortcuts
+- `LogBloodPressureIntent.swift` (App Intent, iOS 16+) — Siri phrases: "Log my blood pressure in MedTracker"
+- Parameters: systolic, diastolic, pulse (optional)
+- Triggers deep link `medtracker://log?sys=X&dia=Y&pulse=Z` → `VoiceConfirmationPage`
+
+#### Android — Google Assistant App Actions
+- Hybrid BII strategy declared in `android/app/src/main/res/xml/shortcuts.xml`:
+  - **Primary** `actions.intent.RECORD_HEALTH_OBSERVATION`: Google extracts numbers natively from "120 over 80" → `medtracker://log?sys=120&dia=80&pulse=72`
+  - **Fallback** `actions.intent.CREATE_THING`: captures full phrase → `medtracker://log?query=...`, parsed in-app with `parseVoiceQuery()`
+  - Static launcher shortcut (`log_bp`) bound to both capabilities for long-press
+- `medtracker://` deep link intent-filter added to `AndroidManifest.xml`
+- `parseVoiceQuery()` — pure utility in `shared/lib`, handles "120 over 80", "120/80", "pulse 72", URL-encoded `+` spaces, range-validates all values
+- `VoiceConfirmationPage` shows inline `<Numpad>` for any missing required field (sys/dia) rather than blocking navigation
+- Trigger: "Hey Google, log blood pressure 120 over 80 [pulse 72]" (active after Play Store publish)
+- Voice logging can be disabled per-user via Settings → Voice Logging toggle
+
+**Design**: `docs/superpowers/specs/2026-03-28-android-voice-logging-design.md`
+
 ## Phase 4: Next-Generation Features (2027+)
 
 ### 4.1 Family Sharing / Remote Monitoring
@@ -173,19 +193,13 @@ src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries
 - **Privacy**: Explicit consent required, revocable anytime
 - **Alerts**: Notify family if reading enters Crisis zone (push notifications)
 
-### 4.2 Voice Logging (Siri/Google Assistant)
-- **iOS**: Siri Shortcuts integration
-- **Android**: Google Assistant App Actions
-- **Command**: "Hey Siri, log blood pressure 120 over 80 pulse 72"
-- **Validation**: Voice confirmation before saving
-
-### 4.3 Predictive Intelligence (Experimental)
+### 4.2 Predictive Intelligence (Experimental)
 - **Causal AI**: Multi-factor analysis (sleep, diet, stress, weather)
 - **Example**: "Your BP is elevated due to insufficient sleep (<6hrs) and high sodium intake yesterday"
 - **Regulatory**: Requires FDA clearance for medical claims
 - **Privacy**: On-device ML (CoreML, TensorFlow Lite)
 
-### 4.4 Weather Correlation
+### 4.3 Weather Correlation
 - **Data Source**: OpenWeather API (optional, user-controlled)
 - **Analysis**: Identify patterns between barometric pressure/temperature and BP
 - **Display**: "Your BP tends to rise 5 mmHg on cold days (<50°F)"
@@ -203,9 +217,9 @@ src/shared/api/medication-repository.ts         ← op-sqlite CRUD + log queries
 ## Feature Prioritization Tiers
 
 **Tier 1 (Must-Have)**: ✅ All completed
-**Tier 2 (High Value)**: ✅ Circadian analysis complete, ✅ Lifestyle tagging complete, ✅ Custom tags complete, ✅ Personalization & weight tracking complete, ✅ Platform sync complete
-**Tier 3 (Nice-to-Have)**: ✅ Medication tracking complete — Voice logging remaining
+**Tier 2 (High Value)**: ✅ Circadian analysis, ✅ Lifestyle tagging, ✅ Custom tags, ✅ Personalization & weight tracking, ✅ Platform sync
+**Tier 3 (Nice-to-Have)**: ✅ Medication tracking, ✅ Voice logging (iOS Siri Shortcuts + Android Google App Actions)
 **Tier 4 (Future/Experimental)**: Family sharing, Predictive AI, Weather correlation
 
-**Last Updated**: 2026-03-06
+**Last Updated**: 2026-03-28
 
