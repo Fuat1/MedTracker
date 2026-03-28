@@ -36,6 +36,19 @@
       <intent-filter>
         <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
       </intent-filter>
+
+      <!-- Deep link handler for medtracker:// scheme (App Actions + direct links) -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="medtracker" />
+      </intent-filter>
+
+      <!-- App Actions Shortcuts -->
+      <meta-data
+        android:name="android.app.shortcuts"
+        android:resource="@xml/shortcuts" />
     </activity>
 
     <provider

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Primary: health-specific BII — Google Assistant extracts numbers natively -->
+    <!-- Trigger: "Hey Google, log blood pressure 120 over 80 pulse 72" -->
+    <capability android:name="actions.intent.RECORD_HEALTH_OBSERVATION">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.medtracker"
+            android:targetClass="com.medtracker.MainActivity">
+            <url-template
+                android:value="medtracker://log?sys={sys}&amp;dia={dia}&amp;pulse={pulse}" />
+            <parameter
+                android:name="healthObservation.highValue"
+                android:key="sys" />
+            <parameter
+                android:name="healthObservation.lowValue"
+                android:key="dia" />
+            <parameter
+                android:name="healthObservation.value"
+                android:key="pulse" />
+        </intent>
+    </capability>
+
+    <!-- Fallback: generic creation BII — captures full phrase for in-app parsing -->
+    <!-- Trigger: "Hey Google, log blood pressure in MedTracker" (no numbers) -->
+    <capability android:name="actions.intent.CREATE_THING">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.medtracker"
+            android:targetClass="com.medtracker.MainActivity">
+            <url-template android:value="medtracker://log?query={query}" />
+            <parameter
+                android:name="thing.name"
+                android:key="query" />
+        </intent>
+    </capability>
+
+    <!-- Static launcher shortcut — long-press app icon, bound to both capabilities -->
+    <shortcut
+        android:shortcutId="log_bp"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/log_bp_short"
+        android:shortcutLongLabel="@string/log_bp_long"
+        android:shortcutDisabledMessage="@string/log_bp_disabled">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.medtracker"
+            android:targetClass="com.medtracker.MainActivity"
+            android:data="medtracker://log" />
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.RECORD_HEALTH_OBSERVATION" />
+        <capability-binding android:key="actions.intent.CREATE_THING" />
+    </shortcut>
+
+</shortcuts>

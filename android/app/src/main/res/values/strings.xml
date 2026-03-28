@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MedTracker</string>
+    <string name="log_bp_short">Log BP</string>
+    <string name="log_bp_long">Log Blood Pressure</string>
+    <string name="log_bp_disabled">Voice Logging disabled</string>
+    <string name="log_bp_voice_hint">Try: Hey Google, log blood pressure 120 over 80</string>
+    <string name="log_bp_fallback_label">Log Blood Pressure</string>
 </resources>
