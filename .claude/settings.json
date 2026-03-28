@@ -4,7 +4,9 @@
       "Bash(git branch:*)",
       "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
       "Read(//c/Users/fuats/Desktop/Workdir/**)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(rm -f hc_test.log lint.log lint2.log lint4.log sync_test.log test.log typecheck.log typecheck2.log typecheck3.log typecheck4.log typecheck5.log)",
+      "Bash(rm -rf docs/superpowers/plans)"
     ],
     "additionalDirectories": [
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib"
