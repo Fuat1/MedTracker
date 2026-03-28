@@ -98,6 +98,16 @@ npx react-native run-ios            # Build iOS
 - **Card & Button Usage**: `docs/card-button-usage.md` (variants, patterns, examples)
 - **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
 
+## Verified Functionalities Doc (MUST)
+
+After implementing any feature, bugfix, or meaningful change:
+- **Update `docs/verified-functionalities.md`** to reflect the new or changed capability
+- Add new features as numbered sections; update existing sections if behavior changed
+- Add new test files to the Test Coverage table with test count if it changed
+- Update the `> Last verified:` date at the top
+
+This file is the canonical reference for what the app actually does — keep it accurate.
+
 ## Global Toast Pattern
 
 Use `src/shared/lib/toast-store.ts` (Zustand) for showing toasts from inside feature hooks that don't have direct UI access (e.g. fire-and-forget hooks). The ToastContainer in `app/` subscribes to this store. Never import UI components from feature hooks.

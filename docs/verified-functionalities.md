@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-03-28
+> Last verified: 2026-03-28 (weather correlation added)
 
 ---
 
@@ -91,7 +91,23 @@
 
 ---
 
-## 9. PDF Export
+## 9. Weather Correlation
+
+- **Opt-in feature** — disabled by default, enabled via Settings → Weather
+- **Data source**: Open-Meteo API (free, no API key, privacy-respecting)
+- **Location modes**: GPS (on-device) or City Search (Open-Meteo geocoding)
+- **Temperature units**: °C / °F (user-selectable)
+- **Weather captured at BP save time** — fire-and-forget, never blocks BP recording
+- **Metrics stored**: barometric pressure, temperature, humidity, wind speed, WMO weather code
+- **Correlation analysis**: median-split algorithm comparing BP across high/low weather conditions; requires ≥5 paired readings and ≥3 mmHg meaningful delta
+- **WeatherCorrelationCard** on Analytics page — shows per-factor insights with medical disclaimer
+- **WeatherSettingsPage**: master toggle, GPS/city mode, city autocomplete search, temperature unit toggle, privacy note
+- **Permission handling**: GPS denial shows toast directing user to city mode
+- **Data retention**: `weather_readings` table — CASCADE deletes with parent BP record
+
+---
+
+## 10. PDF Export
 
 - **Professional medical report** generated from HTML template
 - **Configurable period** (7d / 30d / 90d / all-time / custom)
@@ -104,7 +120,7 @@
 
 ---
 
-## 10. User Profile & Personal Info
+## 11. User Profile & Personal Info
 
 - **Name**, date of birth (age calculation), gender
 - **Height**: cm or feet+inches with unit conversion
@@ -114,7 +130,7 @@
 
 ---
 
-## 11. Lifestyle Tags
+## 12. Lifestyle Tags
 
 - **Predefined tags**: sleep, stress, exercise, alcohol, caffeine, salt, hydration, illness
 - **Custom tag creation** and deletion
@@ -123,7 +139,7 @@
 
 ---
 
-## 12. Settings
+## 13. Settings
 
 | Setting | Options |
 |---|---|
@@ -136,10 +152,13 @@
 | Default Location | Selectable |
 | Default Posture | Selectable |
 | Voice Logging | Enable / Disable |
+| Weather Correlation | Enable / Disable (opt-in) |
+| Weather Location Mode | GPS / City Search |
+| Temperature Unit | °C / °F |
 
 ---
 
-## 13. Native Integrations
+## 14. Native Integrations
 
 ### iOS
 - **App Intent** (`LogBloodPressureIntent.swift`) for iOS 16+ Siri Shortcuts
@@ -157,7 +176,7 @@
 
 ---
 
-## 14. App Architecture & Infrastructure
+## 15. App Architecture & Infrastructure
 
 - **FSD (Feature-Sliced Design)** layered architecture
 - **SQLite + SQLCipher** encrypted local database via op-sqlite (JSI)
@@ -172,7 +191,7 @@
 
 ---
 
-## 15. UI Components (Shared)
+## 16. UI Components (Shared)
 
 | Component | Description |
 |---|---|
@@ -195,7 +214,7 @@
 
 ---
 
-## 16. Test Coverage
+## 17. Test Coverage
 
 | Module | Test File |
 |---|---|
@@ -214,3 +233,9 @@
 | Health Connect API | `shared/api/health-platform/health-connect.test.ts` |
 | Button Component | `shared/ui/Button/__tests__/Button.test.ts` |
 | Card Component | `shared/ui/Card/__tests__/Card.test.ts` |
+| Weather Correlations | `entities/weather/__tests__/compute-weather-correlations.test.ts` |
+| Weather Client | `shared/api/__tests__/weather-client.test.ts` |
+| Medication Correlations | `entities/medication/__tests__/correlations.test.ts` |
+| Voice Query Parser | `shared/lib/voice-query-parser.test.ts` |
+
+**Total: 247 tests, 26 suites (verified 2026-03-28)**
