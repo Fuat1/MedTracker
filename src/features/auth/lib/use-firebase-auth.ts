@@ -18,6 +18,7 @@ import { useEffect, useState, useCallback } from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import appleAuth from '@invertase/react-native-apple-authentication';
 import DeviceInfo from 'react-native-device-info';
 import {
   generateMasterKey,
@@ -42,6 +43,7 @@ export interface UseFirebaseAuthResult {
   isLoading: boolean;
   error: string | null;
   signInWithGoogle: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -89,6 +91,52 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
       await auth().signInWithCredential(credential);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Google Sign-In failed');
+    }
+  }, []);
+
+  const signInWithApple = useCallback(async () => {
+    setError(null);
+    if (!appleAuth.isSupported) {
+      return;
+    }
+    try {
+      const appleAuthResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthResponse.user,
+      );
+      if (credentialState !== appleAuth.State.AUTHORIZED) {
+        throw new Error('Apple credential not authorized');
+      }
+
+      const { identityToken, nonce, fullName } = appleAuthResponse;
+      if (!identityToken) {
+        throw new Error('Apple Sign-In did not return an identity token');
+      }
+
+      const credential = auth.AppleAuthProvider.credential(identityToken, nonce);
+      const { user: firebaseUser } = await auth().signInWithCredential(credential);
+
+      // Apple only sends name on first sign-in — capture it if present
+      const givenName = fullName?.givenName ?? '';
+      const familyName = fullName?.familyName ?? '';
+      const displayName = [givenName, familyName].filter(Boolean).join(' ');
+      if (displayName && !firebaseUser.displayName) {
+        await firebaseUser.updateProfile({ displayName });
+      }
+    } catch (e: unknown) {
+      // Silently ignore user cancellation
+      if (
+        e instanceof Error &&
+        'code' in e &&
+        (e as { code: string }).code === '1000'
+      ) {
+        return;
+      }
+      setError(e instanceof Error ? e.message : 'Apple Sign-In failed');
     }
   }, []);
 
@@ -187,7 +235,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
     }
   }, []);
 
-  return { user, isLoading, error, signInWithGoogle, signInWithEmail, signUpWithEmail, signOut, deleteAccount };
+  return { user, isLoading, error, signInWithGoogle, signInWithApple, signInWithEmail, signUpWithEmail, signOut, deleteAccount };
 }
 
 // ─── Master Key Management ────────────────────────────────────────────────────
