@@ -1,10 +1,11 @@
 /// <reference lib="dom" />
 /**
- * Firebase Auth hook — wraps Google Sign-In and Email/Password.
+ * Firebase Auth hook — wraps Google Sign-In, Apple Sign-In, and Email/Password.
  *
  * Manages:
  *   - Auth state listener
  *   - Google Sign-In flow
+ *   - Apple Sign-In flow (iOS only)
  *   - Email/Password sign-up and sign-in
  *   - Sign-out
  *   - Account deletion
@@ -18,7 +19,7 @@ import { useEffect, useState, useCallback } from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import appleAuth from '@invertase/react-native-apple-authentication';
+import appleAuth, { AppleError } from '@invertase/react-native-apple-authentication';
 import DeviceInfo from 'react-native-device-info';
 import {
   generateMasterKey,
@@ -132,7 +133,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
       if (
         e instanceof Error &&
         'code' in e &&
-        (e as { code: string }).code === '1000'
+        (e as { code: string }).code === AppleError.CANCELED
       ) {
         return;
       }
