@@ -116,7 +116,7 @@ export function AuthPage({ onSkip }: AuthPageProps) {
                   <ButtonIcon as={Icon} name="logo-google" />
                   <ButtonText>{t('auth.signInWithGoogle')}</ButtonText>
                 </Button>
-              ) : activeTab === 'apple' ? (
+              ) : activeTab === 'apple' && Platform.OS === 'ios' ? (
                 <Button
                   variant="primary"
                   size="lg"
