@@ -178,7 +178,7 @@
 
 ## 15. Family Sharing
 
-- **Firebase Auth**: Google Sign-In + email/password authentication
+- **Firebase Auth**: Google Sign-In + Sign in with Apple (iOS only) + email/password authentication
 - **Master key**: AES-256-GCM generated per user, stored in Keychain, backed up to Firestore (encrypted)
 - **Read keys**: HKDF-derived per linked user; encrypted before Firestore storage
 - **Field-level encryption**: systolic, diastolic, pulse, weight, notes, tags encrypted with AES-256-GCM; timestamp/location/posture stored plaintext for queries
