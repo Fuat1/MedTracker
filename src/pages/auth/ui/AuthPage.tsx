@@ -18,7 +18,7 @@ import { Card, CardBody } from '@/shared/ui';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { FONTS } from '@/shared/config/theme';
 
-type AuthTab = 'google' | 'email';
+type AuthTab = 'google' | 'apple' | 'email';
 type EmailMode = 'signin' | 'signup';
 
 interface AuthPageProps {
@@ -29,7 +29,7 @@ export function AuthPage({ onSkip }: AuthPageProps) {
   const { t } = useTranslation('pages');
   const { colors, fontScale } = useTheme();
   const insets = useSafeAreaInsets();
-  const { signInWithGoogle, signInWithEmail, signUpWithEmail, error, isLoading } =
+  const { signInWithGoogle, signInWithApple, signInWithEmail, signUpWithEmail, error, isLoading } =
     useFirebaseAuth();
 
   const [activeTab, setActiveTab] = useState<AuthTab>('google');
@@ -83,6 +83,15 @@ export function AuthPage({ onSkip }: AuthPageProps) {
             colors={colors}
             fontScale={fontScale}
           />
+          {Platform.OS === 'ios' && (
+            <TabButton
+              label={t('auth.tabApple')}
+              active={activeTab === 'apple'}
+              onPress={() => setActiveTab('apple')}
+              colors={colors}
+              fontScale={fontScale}
+            />
+          )}
           <TabButton
             label={t('auth.tabEmail')}
             active={activeTab === 'email'}
@@ -106,6 +115,17 @@ export function AuthPage({ onSkip }: AuthPageProps) {
                 >
                   <ButtonIcon as={Icon} name="logo-google" />
                   <ButtonText>{t('auth.signInWithGoogle')}</ButtonText>
+                </Button>
+              ) : activeTab === 'apple' ? (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onPress={signInWithApple}
+                  isLoading={isLoading}
+                  style={styles.fullWidth}
+                >
+                  <ButtonIcon as={Icon} name="logo-apple" />
+                  <ButtonText>{t('auth.signInWithApple')}</ButtonText>
                 </Button>
               ) : (
                 <View>
