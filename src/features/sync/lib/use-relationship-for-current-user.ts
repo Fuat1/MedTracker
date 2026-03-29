@@ -12,11 +12,11 @@
 import { useCallback } from 'react';
 import { useRelationships } from '@/entities/family-sharing';
 import { type SharingConfig, DEFAULT_SHARING_CONFIG } from '@/entities/family-sharing';
-import auth from '@react-native-firebase/auth';
+import { getFirebaseUser } from '@/shared/lib/safe-firebase-auth';
 
 export function useRelationshipForCurrentUser() {
   const { relationships } = useRelationships();
-  const currentUserUid = auth().currentUser?.uid;
+  const currentUserUid = getFirebaseUser()?.uid;
 
   const getSharingConfig = useCallback((): SharingConfig => {
     const active = relationships.filter((r) => r.status === 'active');

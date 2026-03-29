@@ -18,7 +18,7 @@
 import { useCallback, useEffect } from 'react';
 import { AppState } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { getFirebaseUser } from '@/shared/lib/safe-firebase-auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRelationships } from '@/entities/family-sharing';
 import { loadReadKey, loadMasterKey, storeReadKey, removeReadKey } from '@/shared/lib/keychain-keys';
@@ -125,7 +125,7 @@ export function useDownloadRecords() {
   );
 
   const downloadAll = useCallback(async (): Promise<void> => {
-    const currentUid = auth().currentUser?.uid;
+    const currentUid = getFirebaseUser()?.uid;
     if (!currentUid) {
       return;
     }
@@ -142,7 +142,7 @@ export function useDownloadRecords() {
 
   // Dedicated Firestore listener for revocation — useRelationships() filters these out
   useEffect(() => {
-    const currentUid = auth().currentUser?.uid;
+    const currentUid = getFirebaseUser()?.uid;
     if (!currentUid) {
       return;
     }

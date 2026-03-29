@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import functions from '@react-native-firebase/functions';
-import auth from '@react-native-firebase/auth';
+import { getFirebaseUser } from '@/shared/lib/safe-firebase-auth';
 import { isCrisisReading } from '@/entities/blood-pressure';
 import { useSettingsStore } from '@/shared/lib/settings-store';
 import { CRISIS_ALERT_FUNCTION_NAME } from '@/shared/config';
@@ -17,7 +17,7 @@ export function useCrisisAlert() {
 
   const checkAndAlert = useCallback(
     (systolic: number, diastolic: number): void => {
-      const currentUser = auth().currentUser;
+      const currentUser = getFirebaseUser();
       if (!currentUser) {
         return;
       }

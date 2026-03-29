@@ -7,9 +7,9 @@
 
 import { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import type { Relationship } from './types';
 import { FIRESTORE_COLLECTIONS, RELATIONSHIP_STATUS } from '@/shared/config';
+import { getFirebaseUser } from '@/shared/lib/safe-firebase-auth';
 
 export const RELATIONSHIPS_QUERY_KEY = ['relationships'] as const;
 
@@ -22,7 +22,7 @@ export function useRelationships(): UseRelationshipsResult {
   const [relationships, setRelationships] = useState<Relationship[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentUser = auth().currentUser;
+  const currentUser = getFirebaseUser();
 
   useEffect(() => {
     if (!currentUser) {

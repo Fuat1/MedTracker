@@ -218,6 +218,7 @@ src/pages/settings/ui/WeatherSettingsPage.tsx           ← Toggle, location mod
 ### 4.1 Family Sharing / Remote Monitoring
 - **Use Case**: Adult children monitoring elderly parent's BP
 - **Architecture**: End-to-end encrypted sync via Firebase/Supabase
+- **Offline-First**: App is fully usable without Firebase — sync/pairing only activates after user signs in; no network calls on startup
 - **Privacy**: Explicit consent required, revocable anytime
 - **Alerts**: Notify family if reading enters Crisis zone (push notifications)
 

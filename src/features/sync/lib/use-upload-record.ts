@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { getFirebaseUser } from '@/shared/lib/safe-firebase-auth';
 import { getBPRecordById, markRecordSynced } from '@/shared/api/bp-repository';
 import { loadMasterKey } from '@/shared/lib/keychain-keys';
 import { encryptBPRecord } from '@/entities/family-sharing';
@@ -22,7 +22,7 @@ export function useUploadRecord() {
 
   const uploadRecord = useCallback(
     async (recordId: string): Promise<void> => {
-      const currentUser = auth().currentUser;
+      const currentUser = getFirebaseUser();
       if (!currentUser) {
         return; // Not signed in — no sync
       }
@@ -49,7 +49,7 @@ export function useUploadRecord() {
         await markRecordSynced(recordId);
         removeFromRetryQueue(recordId);
       } catch {
-        addToRetryQueue({ recordId, ownerUid: auth().currentUser?.uid ?? '' });
+        addToRetryQueue({ recordId, ownerUid: getFirebaseUser()?.uid ?? '' });
       }
     },
     [addToRetryQueue, removeFromRetryQueue, getSharingConfig],
@@ -66,7 +66,7 @@ export function useRetryUploadQueue() {
   const { getSharingConfig } = useRelationshipForCurrentUser();
 
   const retryAll = useCallback(async (): Promise<void> => {
-    const currentUser = auth().currentUser;
+    const currentUser = getFirebaseUser();
     if (!currentUser || retryQueue.length === 0) {
       return;
     }

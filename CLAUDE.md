@@ -11,6 +11,15 @@ React Native CLI blood pressure tracking app with multi-guideline classification
 - **ALL** user-facing health information MUST include disclaimers from `docs/medical-disclaimers.md`
 - **Changes to classification logic** require explicit human review before commit
 
+## Offline-First Architecture (MUST FOLLOW)
+
+- **App MUST be fully usable without Firebase or any external API calls**
+- **Firebase features (sync, pairing, crisis alerts) activate ONLY after user signs in**
+- **NEVER call `auth()` at render time** — use `getFirebaseUser()` from `shared/lib/safe-firebase-auth.ts` which wraps in try-catch
+- **SyncManager is gated behind auth state** — only mounts when user is authenticated
+- **All Firebase hooks MUST gracefully handle** the case where Firebase isn't initialized (return empty state, not crash)
+- **No network calls on app startup** — the app boots fully from local SQLite
+
 ## Tech Stack
 
 - **Framework**: React Native CLI 0.76+ (Bare workflow, New Architecture enabled)

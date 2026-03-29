@@ -25,6 +25,7 @@ import {
   handleNotificationPress,
 } from '../../shared/lib/notification-service';
 import { useDownloadRecords, useRetryUploadQueue } from '../../features/sync';
+import { getFirebaseUser } from '../../shared/lib/safe-firebase-auth';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export type SettingsStackParamList = {
@@ -60,10 +61,10 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
 /**
- * SyncManager — mounts sync side-effects inside the QueryClient + Navigation tree.
- * Triggers download on foreground and retries the upload queue. Renders nothing.
+ * SyncManagerInner — sync side-effects (download + retry upload).
+ * Only mounted when the user is authenticated (gated by SyncManager).
  */
-function SyncManager() {
+function SyncManagerInner() {
   const { downloadAll } = useDownloadRecords();
   const { retryAll } = useRetryUploadQueue();
 
@@ -75,6 +76,30 @@ function SyncManager() {
   }, []);
 
   return null;
+}
+
+/**
+ * SyncManager — offline-first gate. Only mounts sync hooks when the user
+ * is signed in to Firebase. Without this, auth() calls crash on startup.
+ */
+function SyncManager() {
+  const [hasUser, setHasUser] = React.useState(() => !!getFirebaseUser());
+
+  React.useEffect(() => {
+    try {
+      const authModule = require('@react-native-firebase/auth').default;
+      const unsubscribe = authModule().onAuthStateChanged(
+        (user: { uid: string } | null) => setHasUser(!!user),
+      );
+      return unsubscribe;
+    } catch {
+      // Firebase not available — stay in offline mode
+      return undefined;
+    }
+  }, []);
+
+  if (!hasUser) { return null; }
+  return <SyncManagerInner />;
 }
 
 function renderTabBar(props: BottomTabBarProps) {

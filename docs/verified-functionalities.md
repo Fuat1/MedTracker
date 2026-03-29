@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-03-28 (family sharing fixes applied)
+> Last verified: 2026-03-29 (offline-first Firebase guards applied)
 
 ---
 
@@ -192,13 +192,15 @@
 - **Revocation**: dedicated Firestore snapshot listener; cleans up local records + read keys
 - **Account deletion**: revokes all relationships, deletes Firestore records sub-collection, removes user doc, clears Keychain, then deletes Firebase Auth account
 - **Display names**: populated from Firestore user docs into local `linked_users` SQLite table
-- **SyncManager**: runs inside NavigationContainer for navigation context access
+- **SyncManager**: gated behind auth state — only mounts when user is signed in (offline-first)
+- **Offline-first**: app boots fully from local SQLite with no Firebase/network calls; all Firebase hooks use `getFirebaseUser()` safe wrapper that returns null if Firebase isn't initialized
 
 ---
 
 ## 16. App Architecture & Infrastructure
 
 - **FSD (Feature-Sliced Design)** layered architecture
+- **Offline-first**: no external API calls on startup; Firebase features activate only after user authentication
 - **SQLite + SQLCipher** encrypted local database via op-sqlite (JSI)
 - **TanStack Query** for data fetching, caching, and invalidation
 - **Zustand** for client/UI state (settings store, theme)
