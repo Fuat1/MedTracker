@@ -148,7 +148,19 @@ export function ClassificationPage({ navigation }: Props) {
                 <ButtonText>{t('settings.detectRegion.button')}</ButtonText>
               </Button>
               {detectionResult !== null && (
-                <View style={[styles.detectionBanner, { backgroundColor: colors.surface, borderLeftColor: colors.accent }]}>
+                <View
+                  accessible={true}
+                  accessibilityRole="alert"
+                  accessibilityLabel={
+                    detectionResult.countryCode
+                      ? t('settings.detectRegion.detected', {
+                          country: detectedCountryName ?? detectionResult.countryCode,
+                          guideline: guidelineNameMap[detectionResult.guideline] ?? detectionResult.guideline,
+                        })
+                      : t('settings.detectRegion.unknownRegion')
+                  }
+                  style={[styles.detectionBanner, { backgroundColor: colors.surface, borderLeftColor: colors.accent }]}
+                >
                   <Icon name="information-circle-outline" size={16} color={colors.accent} style={styles.bannerIcon} />
                   <View style={styles.bannerText}>
                     <Text style={[styles.bannerCountry, { color: colors.textPrimary, fontSize: typography.sm }]}>
