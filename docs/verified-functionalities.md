@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-03-29 (offline-first Firebase guards applied)
+> Last verified: 2026-03-30 (region detection banner)
 
 ---
 
@@ -27,6 +27,17 @@
 - **Category colors and labels**: Normal, Elevated, Stage 1 Hypertension, Stage 2 Hypertension, Crisis
 - **Thresholds imported from typed constants** — never hardcoded inline (`src/shared/config/bp-guidelines.ts`)
 - **Visual threshold reference** in Classification Settings page
+
+---
+
+## 2.5. Region Detection
+
+- **"Detect My Region" button** in Settings → Classification
+- **Inline banner** appears below button after tapping, displaying:
+  - Detected country name
+  - Applied BP guideline for that region
+  - Disclaimer: "Please double-check with your doctor"
+- **Geo-IP lookup** to automatically determine user's region and recommend appropriate guideline
 
 ---
 
