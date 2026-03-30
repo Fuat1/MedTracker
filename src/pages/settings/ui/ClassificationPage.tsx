@@ -18,7 +18,7 @@ import type { SettingsStackParamList } from '../../../app/navigation/index';
 type Props = NativeStackScreenProps<SettingsStackParamList, 'Classification'>;
 
 export function ClassificationPage({ navigation }: Props) {
-  const { t } = useTranslation('pages');
+  const { t, i18n } = useTranslation('pages');
   const { t: tMedical } = useTranslation('medical');
   const { t: tCommon } = useTranslation('common');
   const { colors, isDark, typography } = useTheme();
@@ -30,6 +30,11 @@ export function ClassificationPage({ navigation }: Props) {
     setUnit,
     setGuideline,
   } = useSettingsStore();
+
+  const [detectionResult, setDetectionResult] = React.useState<{
+    countryCode: string;
+    guideline: string;
+  } | null>(null);
 
   const insets = useSafeAreaInsets();
 
@@ -76,6 +81,8 @@ export function ClassificationPage({ navigation }: Props) {
         visibilityTime: 2500,
       });
     }
+
+    setDetectionResult({ countryCode, guideline: recommended.guideline });
   };
 
   const guidelineNameMap: Record<string, string> = {
@@ -85,6 +92,16 @@ export function ClassificationPage({ navigation }: Props) {
     [BP_GUIDELINES.WHO]: tMedical('guidelines.who.name'),
   };
   const guidelineName = guidelineNameMap[guideline] || 'AHA/ACC';
+
+  const detectedCountryName = React.useMemo(() => {
+    if (!detectionResult?.countryCode) return null;
+    try {
+      const displayNames = new Intl.DisplayNames([i18n.language, 'en'], { type: 'region' });
+      return displayNames.of(detectionResult.countryCode) ?? detectionResult.countryCode;
+    } catch {
+      return detectionResult.countryCode;
+    }
+  }, [detectionResult?.countryCode, i18n.language]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -130,6 +147,24 @@ export function ClassificationPage({ navigation }: Props) {
                 <ButtonIcon as={Icon} name="earth-outline" />
                 <ButtonText>{t('settings.detectRegion.button')}</ButtonText>
               </Button>
+              {detectionResult !== null && (
+                <View style={[styles.detectionBanner, { backgroundColor: colors.surface, borderLeftColor: colors.accent }]}>
+                  <Icon name="information-circle-outline" size={16} color={colors.accent} style={styles.bannerIcon} />
+                  <View style={styles.bannerText}>
+                    <Text style={[styles.bannerCountry, { color: colors.textPrimary, fontSize: typography.sm }]}>
+                      {detectionResult.countryCode
+                        ? t('settings.detectRegion.detected', {
+                            country: detectedCountryName ?? detectionResult.countryCode,
+                            guideline: guidelineNameMap[detectionResult.guideline] ?? detectionResult.guideline,
+                          })
+                        : t('settings.detectRegion.unknownRegion')}
+                    </Text>
+                    <Text style={[styles.bannerDisclaimer, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                      {t('settings.detectRegion.disclaimer')}
+                    </Text>
+                  </View>
+                </View>
+              )}
               <View style={styles.chipRow}>
                 {([
                   { value: BP_GUIDELINES.AHA_ACC, label: tMedical('guidelines.ahaAcc.name') },
@@ -307,5 +342,30 @@ const styles = StyleSheet.create({
   legendText: {
     fontFamily: FONTS.medium,
     fontWeight: '500',
+  },
+  detectionBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderLeftWidth: 3,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 12,
+    gap: 8,
+  },
+  bannerIcon: {
+    marginTop: 1,
+  },
+  bannerText: {
+    flex: 1,
+    gap: 2,
+  },
+  bannerCountry: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+  },
+  bannerDisclaimer: {
+    fontFamily: FONTS.regular,
+    lineHeight: 16,
   },
 });
