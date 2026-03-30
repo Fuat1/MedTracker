@@ -369,7 +369,10 @@
     "detectRegion": {
       "button": "Detect My Region",
       "updated": "Settings updated for your region",
-      "noChange": "Your settings already match your region"
+      "noChange": "Your settings already match your region",
+      "detected": "{{country}} · {{guideline}}",
+      "unknownRegion": "Region not detected · Defaulted to AHA/ACC",
+      "disclaimer": "Please double-check with your doctor"
     },
     "voiceLogging": {
       "label": "Voice Logging",
