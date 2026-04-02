@@ -16,7 +16,16 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import auth from '@react-native-firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithCredential,
+  signOut as firebaseSignOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  AppleAuthProvider,
+} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import appleAuth, { AppleError } from '@invertase/react-native-apple-authentication';
@@ -63,20 +72,27 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
 
   // Auth state listener
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser({
-          uid: firebaseUser.uid,
-          displayName: firebaseUser.displayName,
-          email: firebaseUser.email,
-        });
-        await ensureMasterKey(firebaseUser.uid);
-      } else {
-        setUser(null);
-      }
+    try {
+      const authInstance = getAuth();
+      const unsubscribe = onAuthStateChanged(authInstance, async (firebaseUser) => {
+        if (firebaseUser) {
+          setUser({
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+          });
+          await ensureMasterKey(firebaseUser.uid);
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      });
+      return unsubscribe;
+    } catch {
+      // Firebase not initialized — stay in offline mode
       setIsLoading(false);
-    });
-    return unsubscribe;
+      return undefined;
+    }
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
@@ -88,8 +104,8 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
       if (!idToken) {
         throw new Error('Google Sign-In did not return an ID token');
       }
-      const credential = auth.GoogleAuthProvider.credential(idToken);
-      await auth().signInWithCredential(credential);
+      const credential = GoogleAuthProvider.credential(idToken);
+      await signInWithCredential(getAuth(), credential);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Google Sign-In failed');
     }
@@ -118,8 +134,8 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
         throw new Error('Apple Sign-In did not return an identity token');
       }
 
-      const credential = auth.AppleAuthProvider.credential(identityToken, nonce);
-      const { user: firebaseUser } = await auth().signInWithCredential(credential);
+      const credential = AppleAuthProvider.credential(identityToken, nonce);
+      const { user: firebaseUser } = await signInWithCredential(getAuth(), credential);
 
       // Apple only sends name on first sign-in — capture it if present
       const givenName = fullName?.givenName ?? '';
@@ -144,7 +160,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     setError(null);
     try {
-      await auth().signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(getAuth(), email, password);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign-in failed');
     }
@@ -154,7 +170,8 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
     async (email: string, password: string, displayName: string) => {
       setError(null);
       try {
-        const { user: newUser } = await auth().createUserWithEmailAndPassword(
+        const { user: newUser } = await createUserWithEmailAndPassword(
+          getAuth(),
           email,
           password,
         );
@@ -172,7 +189,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
     setError(null);
     try {
       await GoogleSignin.signOut().catch(() => {}); // No-op if not signed in with Google
-      await auth().signOut();
+      await firebaseSignOut(getAuth());
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Sign-out failed');
     }
@@ -180,7 +197,7 @@ export function useFirebaseAuth(): UseFirebaseAuthResult {
 
   const deleteAccount = useCallback(async () => {
     setError(null);
-    const currentUser = auth().currentUser;
+    const currentUser = getAuth().currentUser;
     if (!currentUser) {
       return;
     }
@@ -290,8 +307,8 @@ async function ensureMasterKey(uid: string): Promise<void> {
     .doc(uid)
     .set(
       {
-        displayName: auth().currentUser?.displayName ?? '',
-        email: auth().currentUser?.email ?? null,
+        displayName: getAuth().currentUser?.displayName ?? '',
+        email: getAuth().currentUser?.email ?? null,
         encryptedMasterKey,
         fcmToken,
         createdAt: firestore.FieldValue.serverTimestamp(),

@@ -14,8 +14,9 @@ import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
  */
 export function getFirebaseUser(): FirebaseAuthTypes.User | null {
   try {
-    const authModule = require('@react-native-firebase/auth').default;
-    return authModule().currentUser;
+    const { getAuth } = require('@react-native-firebase/auth');
+    const authInstance = getAuth();
+    return authInstance.currentUser;
   } catch {
     return null;
   }
@@ -26,8 +27,8 @@ export function getFirebaseUser(): FirebaseAuthTypes.User | null {
  */
 export function isFirebaseAvailable(): boolean {
   try {
-    const authModule = require('@react-native-firebase/auth').default;
-    authModule();
+    const { getAuth } = require('@react-native-firebase/auth');
+    getAuth();
     return true;
   } catch {
     return false;

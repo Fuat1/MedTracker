@@ -30,11 +30,29 @@
       "Bash(sed -n '70,80p' src/features/export-pdf/__tests__/generate-report-html.test.ts)",
       "Bash(grep -rn @/ src/shared/ src/entities/ src/features/ --include=*.ts --include=*.tsx -l)",
       "Bash(grep -v \"^$\")",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(grep -r @/ src/ --include=*.ts --include=*.tsx -l)",
+      "Bash(npx babel:*)",
+      "Bash(tasklist)",
+      "Bash(rm -rf node_modules/.cache/metro)",
+      "Bash(rm -rf $TMPDIR/metro-*)",
+      "Bash(rm -rf $TMPDIR/haste-map-*)",
+      "Bash(rm -rf /tmp/metro-*)",
+      "Read(//c/Users/fuats/AppData/Local/Temp/claude/c--Users-fuats-Desktop-Workdir-MedTracker/4ca0fe0c-ed82-4acb-a66f-6969305234ec/tasks/**)",
+      "Bash(git commit:*)",
+      "Bash(created\" because SyncManager mounted unconditionally and triggered:*)",
+      "Bash(grep -A 30 '\"\"auth\"\"' src/shared/config/locales/en/pages.json)",
+      "Read(//c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/subagent-driven-development/**)",
+      "Bash(grep -r export.*onAuthStateChanged c:/Users/fuats/Desktop/Workdir/MedTracker/node_modules/@react-native-firebase/auth/lib/modular/index.js)",
+      "Bash(python -m json.tool)",
+      "Read(//dev/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib",
-      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\sync\\lib"
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\sync\\lib",
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\pages\\family-sharing\\ui",
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\config\\locales\\en",
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\auth\\lib"
     ]
   }
 }

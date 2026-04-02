@@ -8,7 +8,7 @@
  */
 
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   generateInviteCode,
@@ -46,7 +46,7 @@ export function useGenerateInvite() {
 
   return useMutation({
     mutationFn: async (): Promise<GenerateInviteResult> => {
-      const currentUser = auth().currentUser;
+      const currentUser = getAuth().currentUser;
       if (!currentUser) {
         throw new Error('Must be signed in to generate an invite');
       }
@@ -105,7 +105,7 @@ export function useAcceptInvite() {
 
   return useMutation({
     mutationFn: async (rawCode: string): Promise<void> => {
-      const currentUser = auth().currentUser;
+      const currentUser = getAuth().currentUser;
       if (!currentUser) {
         throw new Error('Must be signed in to accept an invite');
       }
@@ -181,7 +181,7 @@ export function useRevokeRelationship() {
 
   return useMutation({
     mutationFn: async (relationshipId: string): Promise<void> => {
-      const currentUser = auth().currentUser;
+      const currentUser = getAuth().currentUser;
       if (!currentUser) {
         throw new Error('Must be signed in to revoke a relationship');
       }

@@ -87,8 +87,10 @@ function SyncManager() {
 
   React.useEffect(() => {
     try {
-      const authModule = require('@react-native-firebase/auth').default;
-      const unsubscribe = authModule().onAuthStateChanged(
+      const { getAuth, onAuthStateChanged } = require('@react-native-firebase/auth');
+      const authInstance = getAuth();
+      const unsubscribe = onAuthStateChanged(
+        authInstance,
         (user: { uid: string } | null) => setHasUser(!!user),
       );
       return unsubscribe;
