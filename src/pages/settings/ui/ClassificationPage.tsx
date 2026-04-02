@@ -10,8 +10,7 @@ import { useTheme } from '../../../shared/lib/use-theme';
 import { OptionChip, Card, CardBody, Button, ButtonText, ButtonIcon } from '../../../shared/ui';
 import { BP_UNITS, BP_GUIDELINES } from '../../../shared/config/settings';
 import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
-import { getLocales } from 'react-native-localize';
-import { getSettingsForRegion } from '../../../shared/lib/region-settings';
+import { detectCountryCode, getSettingsForRegion } from '../../../shared/lib/region-settings';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SettingsStackParamList } from '../../../app/navigation/index';
 
@@ -59,8 +58,7 @@ export function ClassificationPage({ navigation }: Props) {
   };
 
   const handleDetectRegion = () => {
-    const locales = getLocales();
-    const countryCode = locales[0]?.countryCode ?? '';
+    const countryCode = detectCountryCode();
     const recommended = getSettingsForRegion(countryCode);
 
     const changed = recommended.guideline !== guideline || recommended.unit !== unit;
