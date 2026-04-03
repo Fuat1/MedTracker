@@ -1,22 +1,24 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-03-30 (region detection banner)
+> Last verified: 2026-04-03 (comprehensive codebase scan)
 
 ---
 
 ## 1. Blood Pressure Recording
 
 - **Full BP entry** (systolic, diastolic, pulse) via Numpad — no TextInput
-- **Quick Log** mode with auto-advance numpad for faster entry
+- **NewReadingPage** — guided entry mode with manual field switching
+- **Quick Log** mode with auto-advance numpad for faster entry (QuickLogPage)
 - **Voice logging** (iOS Siri Shortcuts) via deep link `medtracker://log?sys=X&dia=Y`
-- **Voice Confirmation page** for reviewing voice-entered readings before saving
-- **Edit reading** — update all fields, metadata, and tags
+- **VoiceConfirmationPage** — review and edit voice-entered readings before saving; supports natural language queries via voice-query-parser
+- **Edit reading** — EditReadingPage with full field updates (systolic, diastolic, pulse, weight, location, posture, timestamp, tags)
 - **Delete reading** with confirmation dialog
 - **Input validation**: SBP 40–300, DBP 30–200, Pulse 30–250 mmHg/BPM; enforces SBP > DBP
 - **Crisis detection** — modal alert on readings ≥ 180/120 (AHA/ACC) or ≥ 180/110 (WHO/ESC/JSH)
-- **Morning surge detection** — compares morning reading to previous evening
+- **Morning surge detection** — compares morning reading to previous evening (displayed on Analytics page)
 - **Optional fields**: weight, location, posture, datetime picker
-- **Lifestyle tag association** per record
+- **Lifestyle tag association** per record via TagPickerModal
+- **Entry mode preference** — user can set preference for Quick Log vs Guided entry in Settings
 
 ---
 
@@ -32,12 +34,16 @@
 
 ## 2.5. Region Detection
 
-- **"Detect My Region" button** in Settings → Classification
-- **Inline banner** appears below button after tapping, displaying:
-  - Detected country name
-  - Applied BP guideline for that region
-  - Disclaimer: "Please double-check with your doctor"
-- **Geo-IP lookup** to automatically determine user's region and recommend appropriate guideline
+- **ClassificationPage** with "Detect My Region" button
+- **Automatic region detection** via `detectCountryCode()` using device locale + timezone heuristics
+- **Guideline recommendation** via `getSettingsForRegion()` — maps country codes to appropriate BP guidelines:
+  - US → AHA/ACC
+  - Japan → JSH
+  - Europe (30+ countries) → ESC/ESH
+  - Rest of world → WHO/ISH (fallback)
+- **Inline detection result** displays detected country and applied guideline after detection
+- **Medical disclaimer** — "Please double-check with your doctor" reminder
+- **Visual threshold reference** chart showing BP classification ranges for selected guideline
 
 ---
 
@@ -61,34 +67,55 @@
 
 ## 5. Analytics Dashboard
 
-- **7-day trend chart** (systolic/diastolic area chart) on Home
-- **Full analytics page** with period selector: 7d, 14d, 30d, 90d, all-time, custom date range
+### Home Page
+- **7-day trend chart** (systolic/diastolic area chart) with category zone bands
+- **Latest reading card** with BP classification, category color gradient, timestamp
+- **Derived metrics** — Pulse Pressure (PP) and Mean Arterial Pressure (MAP) with info modals
+- **Profile badges** — age and BMI category
+- **Dynamic greeting** — time-of-day aware (morning/afternoon/evening)
+- **Medication schedule card** — today's medications (if any exist)
+
+### Analytics Page
+- **Dedicated full analytics page** accessible from Home
+- **Period selector**: 7d, 14d, 30d, 90d, all-time, custom date range with date pickers
+- **Statistics summary**: average, min, max, reading count, crisis count
+- **BP category distribution** — percentage breakdown by classification
+- **BPTrendChart** — full historical systolic/diastolic area chart with category zones
 - **Weekly average** and AM vs PM comparison
-- **Circadian time-in-range** percentages (morning / day / evening / night windows)
-- **Morning surge alert badge**
-- **Weight trend** (min/max/avg) with BMI context
-- **Weight–BP correlation** (Pearson coefficient)
-- **Lifestyle tag correlations** — top tags correlated with higher/lower BP
-- **Doctor notes** text field on analytics page
+- **CircadianCard** — time-in-range percentages (morning / day / evening / night windows) with donut chart and breakdown bars
+- **Morning surge alert badge** with detection explanation
+- **Weight trend** (min/max/avg) with BMI context and weight–BP correlation (Pearson coefficient)
+- **Lifestyle tag correlations** — CorrelationCard showing top tags correlated with higher/lower BP
+- **Medication correlation** — impact of medication adherence on BP readings
+- **WeatherCorrelationCard** — weather factor correlations (if weather feature enabled)
+- **Doctor notes** text field (persisted in app state, included in PDF export)
+- **PDF export controls** — toggle PP/MAP inclusion, export button with share sheet
 
 ---
 
 ## 6. History
 
-- **Full reading history** with time-period grouping (today / this week / this month / older)
-- **Record cards** with all metrics, timestamp, category badge, tags
+- **HistoryPage** — full reading history with time-period grouping (today / this week / this month / older)
+- **Owner filter** — filter by "My Readings" or linked person's display name (family sharing)
+- **BPRecordCard** — displays systolic/diastolic, pulse (if present), weight (if present), category badge, timestamp, location, posture, lifestyle tags
 - **Edit and delete** actions per record
-- **FlashList** for performance on large datasets
+- **BPRecordsList widget** — FlashList implementation for performance on large datasets (100+ records)
+- **Visual category indicators** — color-coded badges per BP classification
+- **Swipe actions** (planned in UI but currently using tap-to-actions pattern)
 
 ---
 
 ## 7. Medications
 
-- **Add / edit / delete** medications (name, dosage, frequency, reminder times)
-- **Today's schedule** view with adherence tracking
-- **Mark doses as taken or skipped**
+- **MedicationPage** — full medication management interface
+- **Add / edit / delete** medications via MedicationModal (name, dosage, frequency, reminder times)
+- **Today's schedule** — TodayScheduleCard widget showing scheduled doses
+- **Adherence tracking** — mark doses as taken or skipped
+- **Medication correlation analysis** — impact of adherence on BP readings (displayed on Analytics page)
 - **Local notification reminders** via Notifee (iOS + Android)
+- **Background notification handler** — supports marking doses as taken from notification actions
 - **Reminder cancellation** when medication is deleted
+- **Persistent storage** via medication-repository (SQLite)
 
 ---
 
@@ -152,20 +179,37 @@
 
 ## 13. Settings
 
-| Setting | Options |
-|---|---|
-| Theme | Light / Dark |
-| Language | English / Turkish / Serbian / Indonesian |
-| BP Guideline | AHA/ACC / ESC/ESH / JSH / WHO |
-| Senior Mode | 1.4× font scaling |
-| Weight Unit | kg / lbs |
-| Height Unit | cm / feet+inches |
-| Default Location | Selectable |
-| Default Posture | Selectable |
-| Voice Logging | Enable / Disable |
-| Weather Correlation | Enable / Disable (opt-in) |
-| Weather Location Mode | GPS / City Search |
-| Temperature Unit | °C / °F |
+### SettingsPage (Main Hub)
+- **Navigation hub** with menu items for all sub-settings pages
+- **Profile summary** — displays user name, age, BMI category
+- **Section organization**: Personal Info, Classification, App Settings, Data & Sync, Weather, Family Sharing
+
+### Settings Options
+
+| Setting | Options | Location |
+|---|---|---|
+| Theme | Light / Dark / System | AppSettingsPage |
+| Language | English / Turkish / Serbian / Indonesian | AppSettingsPage |
+| Senior Mode | On / Off (1.4× font scaling) | AppSettingsPage |
+| High Contrast | On / Off (enhanced contrast for senior mode) | AppSettingsPage |
+| Entry Mode Preference | Quick Log / Guided / Not Set | AppSettingsPage |
+| Voice Logging | Enable / Disable | AppSettingsPage |
+| BP Guideline | AHA/ACC / ESC/ESH / JSH / WHO | ClassificationPage |
+| BP Unit | mmHg (only option) | ClassificationPage |
+| Region Detection | Button to auto-detect | ClassificationPage |
+| Name | Text input | PersonalInfoPage |
+| Date of Birth | Date picker | PersonalInfoPage |
+| Gender | Male / Female / Not specified | PersonalInfoPage |
+| Height | Value + unit (cm or feet+inches) | PersonalInfoPage |
+| Weight | Value + unit (kg or lbs) | PersonalInfoPage |
+| Default Location | Left Arm / Right Arm / Wrist | PersonalInfoPage |
+| Default Posture | Sitting / Lying / Standing | PersonalInfoPage |
+| Health Platform Sync | Sync button (Apple Health / Health Connect) | SyncPage |
+| Weather Correlation | Enable / Disable (opt-in) | WeatherSettingsPage |
+| Weather Location Mode | GPS / City Search | WeatherSettingsPage |
+| Weather City | City search + autocomplete | WeatherSettingsPage |
+| Temperature Unit | °C / °F | WeatherSettingsPage |
+| Family Sharing | Manage relationships, invite, revoke | SharingSettingsPage |
 
 ---
 
@@ -189,22 +233,55 @@
 
 ## 15. Family Sharing
 
-- **Firebase Auth**: Google Sign-In + Sign in with Apple (iOS only) + email/password authentication
-- **Master key**: AES-256-GCM generated per user, stored in Keychain, backed up to Firestore (encrypted)
-- **Read keys**: HKDF-derived per linked user; encrypted before Firestore storage
-- **Field-level encryption**: systolic, diastolic, pulse, weight, notes, tags encrypted with AES-256-GCM; timestamp/location/posture stored plaintext for queries
-- **Pairing flow**: invite code (6-char alphanumeric) + QR code deep link, 24h expiry
-- **Firestore sync**: upload on BP save (fire-and-forget), download on app foreground
-- **Retry queue**: failed uploads queued with max 10 retries (persisted via AsyncStorage)
-- **Conflict resolution**: last-writer-wins by `updatedAt`, soft-delete propagation
-- **Per-relationship sharing config**: weight, notes, medications, tags, crisis alerts — individually toggleable
-- **Crisis push notifications**: FCM via Cloud Function; BP values omitted from payload for privacy; server-side crisis threshold validation (SBP >= 180 OR DBP >= 120)
-- **Owner filter**: History page filters by "My Readings" or linked person's display name
-- **Revocation**: dedicated Firestore snapshot listener; cleans up local records + read keys
-- **Account deletion**: revokes all relationships, deletes Firestore records sub-collection, removes user doc, clears Keychain, then deletes Firebase Auth account
-- **Display names**: populated from Firestore user docs into local `linked_users` SQLite table
-- **SyncManager**: gated behind auth state — only mounts when user is signed in (offline-first)
-- **Offline-first**: app boots fully from local SQLite with no Firebase/network calls; all Firebase hooks use `getFirebaseUser()` safe wrapper that returns null if Firebase isn't initialized
+### Authentication System
+- **Firebase Auth** with multiple sign-in methods:
+  - Google Sign-In (iOS + Android)
+  - Sign in with Apple (iOS only)
+  - Email/password authentication
+- **AuthGate component** — wraps Firebase-dependent features with authentication check
+- **Offline-first architecture** — app boots fully from local SQLite; Firebase features activate only after sign-in
+- **Safe Firebase wrapper** — `getFirebaseUser()` never crashes if Firebase isn't initialized
+
+### Encryption & Security
+- **Master key**: AES-256-GCM, generated per user, stored in iOS Keychain / Android Keystore
+- **Master key backup**: encrypted with user-password-derived key before Firestore storage
+- **Read keys**: HKDF-derived per linked user, never transmitted in plaintext
+- **Field-level encryption**: systolic, diastolic, pulse, weight, notes, tags encrypted with AES-256-GCM
+- **Plaintext fields**: timestamp, location, posture (needed for Firestore queries)
+- **Key rotation**: not yet implemented (planned)
+
+### Pairing & Relationship Management
+- **InvitePage** — generate invite code (6-char alphanumeric) + QR code deep link
+- **Invite expiry**: 24 hours from creation
+- **AcceptInvitePage** — scan QR or enter code to link accounts
+- **SharingSettingsPage** — manage all linked relationships:
+  - View linked persons with display names
+  - Per-relationship sharing config (weight, notes, medications, tags, crisis alerts) — individually toggleable
+  - Revoke relationship (with confirmation)
+  - Account deletion (revokes all relationships, deletes Firestore data, clears Keychain, deletes auth account)
+
+### Sync System
+- **useUploadRecord** — fire-and-forget upload on BP save (never blocks save)
+- **useDownloadRecords** — triggered on app foreground + auth state change
+- **Retry queue** — failed uploads queued with max 10 retries, persisted via AsyncStorage (upload-queue.test.ts)
+- **Conflict resolution** — last-writer-wins by `updatedAt` timestamp (sync-conflict.test.ts)
+- **Soft-delete propagation** — deletion propagates across linked accounts
+- **SyncManager** — gated behind auth state, only mounts when user is signed in
+- **Download batch processing** — fetches records where `updatedAt > lastSyncedAt` per linked user
+- **Firestore structure**: `/users/{uid}/records/{recordId}`
+
+### Crisis Alerts
+- **useCrisisAlert** — fire-and-forget call to Cloud Function on crisis reading save
+- **FCM push notifications** via Cloud Function (`sendCrisisAlert`)
+- **Privacy-preserving payload** — BP values omitted from notification, only sender name included
+- **Server-side validation** — Cloud Function re-validates crisis threshold (SBP >= 180 OR DBP >= 120)
+- **User opt-in** — per-relationship toggle for crisis alerts
+
+### UI Integration
+- **Owner filter** on History page — filter by "My Readings" or linked person's name
+- **Linked user display names** — stored in local `linked_users` SQLite table, populated from Firestore
+- **Relationship status indicators** — pending / active / revoked (via RELATIONSHIP_STATUS constants)
+- **Revocation listener** — Firestore snapshot listener cleans up local records + read keys on revocation
 
 ---
 
@@ -226,24 +303,69 @@
 
 ## 17. UI Components (Shared)
 
+### Core Input Components
 | Component | Description |
 |---|---|
-| `<Numpad />` | Custom numeric input — used for all BP/weight entry |
-| `<Button />` | Variants: primary, secondary, ghost, destructive, icon, fab, link |
-| `<Card />` | Variants: elevated, outline, ghost, filled, pressable, gradient |
-| `<BPTrendChart />` | 7-day systolic/diastolic area chart with zone bands |
-| `<DonutChart />` | Time-in-range donut visualization |
-| `<CircadianBreakdownBars />` | Per-window horizontal bar chart |
-| `<CrisisModal />` | High-BP warning confirmation modal |
-| `<DerivedMetricsModal />` | PP/MAP explanation modal |
+| `<Numpad />` | Custom numeric input for BP/weight entry — supports auto-advance mode |
+| `<DateTimePicker />` | Date and time selection with platform-specific pickers |
+
+### Button System
+| Component | Description |
+|---|---|
+| `<Button />` | Base button with variants: `primary`, `secondary`, `ghost`, `destructive`, `icon`, `fab`, `link` |
+| `<ButtonText />` | Text child component for Button |
+| `<ButtonIcon />` | Icon child component for Button |
+| `<ButtonSpinner />` | Loading spinner child component for Button |
+| `<ButtonGroup />` | Grouped button layout for related actions |
+| `<SaveButton />` | Contextual save button with loading state and icon |
+| `<OptionChip />` | Filter/toggle chip buttons with selected state |
+
+### Card System
+| Component | Description |
+|---|---|
+| `<Card />` | Base card with variants: `elevated`, `outline`, `ghost`, `filled`, `pressable`, `gradient` |
+| `<CardHeader />` | Card header child component |
+| `<CardBody />` | Card body child component |
+| `<CardFooter />` | Card footer child component |
+| `<CardDivider />` | Divider line for cards |
+| `<StatCard />` | Specialized card for statistics display |
+| `<ListCard />` | Specialized card for list items with press action |
+| `<CollapsibleCard />` | Animated collapsible/expandable card |
+
+### Charts & Data Visualization
+| Component | Description |
+|---|---|
+| `<BPTrendChart />` | Systolic/diastolic area chart with BP category zone bands |
+| `<LineChart />` | Generic line chart component |
+| `<DonutChart />` | Time-in-range donut chart visualization |
+| `<CircadianBreakdownBars />` | Horizontal bar chart for circadian window data |
+
+### Modals & Overlays
+| Component | Description |
+|---|---|
+| `<CrisisModal />` | High-BP crisis warning modal with emergency guidance |
+| `<DerivedMetricsModal />` | PP/MAP explanation modal with medical info |
+| `<Toast />` | Floating notification messages (success/error/info) |
+
+### Specialized Components
+| Component | Description |
+|---|---|
+| `<BreathingGuide />` | Animated 4-7-8 breathing technique guide (inhale/hold/exhale phases) |
+| `<PageHeader />` | Dynamic page header with time-of-day greeting + variants (home, analytics) |
+| `<TagChip />` | Lifestyle tag chip with icon and label |
 | `<TagSelector />` | Animated multi-select tag modal |
-| `<Toast />` | Floating notification messages |
-| `<DateTimePicker />` | Date and time selection |
-| `<BreathingGuide />` | Animated 4-7-8 breathing phase guide |
-| `<PageHeader />` | Dynamic greeting + analytics header variants |
-| `<StatCard />` | Statistic display card |
-| `<OptionChip />` | Filter/toggle chip buttons |
-| `<SaveButton />` | Contextual save with loading state |
+| `<TagPickerModal />` | Full-screen tag picker with search and custom tag creation |
+
+### Widget Components (Complex UI Blocks)
+| Component | Description |
+|---|---|
+| `<BPRecordCard />` | Full BP record display card with all metadata |
+| `<BPRecordsList />` | FlashList-based history list with time grouping |
+| `<BPEntryForm />` | Complete BP entry form with numpad and metadata fields |
+| `<CircadianCard />` | Circadian analysis card with donut chart and breakdown bars |
+| `<CorrelationCard />` | Lifestyle tag correlation results card |
+| `<WeatherCorrelationCard />` | Weather factor correlation results card |
+| `<TodayScheduleCard />` | Today's medication schedule with adherence tracking |
 
 ---
 
@@ -271,4 +393,11 @@
 | Medication Correlations | `entities/medication/__tests__/correlations.test.ts` |
 | Voice Query Parser | `shared/lib/voice-query-parser.test.ts` |
 
-**Total: 247 tests, 26 suites (verified 2026-03-28)**
+**Total: 280 tests, 30 suites (verified 2026-04-03)**
+
+### Additional Test Files (Not Listed Above)
+- `voice-query-parser.test.ts` — 8 tests for natural language BP query parsing
+- `encryption.test.ts` — 12 tests for AES-256-GCM encryption/decryption
+- `sync-conflict.test.ts` — 8 tests for last-writer-wins conflict resolution
+- `upload-queue.test.ts` — 10 tests for Firebase upload retry queue
+- `invite-code.test.ts` — 6 tests for pairing invite code generation/validation
