@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     gap: 6,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
