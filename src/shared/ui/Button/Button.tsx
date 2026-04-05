@@ -51,7 +51,7 @@ export function Button({
   style,
   children,
 }: ButtonProps) {
-  const { colors, typography, highContrast } = useTheme();
+  const { colors, typography, highContrast, touchTargetSize } = useTheme();
   const { animatedStyle, onPressIn, onPressOut } = usePressScale(
     variant === 'fab' ? 0.92 : 0.96,
   );
@@ -65,7 +65,7 @@ export function Button({
 
   const containerStyle: ViewStyle = {
     backgroundColor: bgColor,
-    minHeight: sizeConfig.minHeight,
+    minHeight: Math.max(sizeConfig.minHeight, touchTargetSize),
     paddingHorizontal:
       variant === 'icon' || variant === 'fab' ? 0 : sizeConfig.paddingH,
     paddingVertical: variant === 'link' ? 0 : sizeConfig.paddingV,
@@ -73,7 +73,7 @@ export function Button({
       variant === 'fab' || variant === 'icon'
         ? sizeConfig.minHeight / 2
         : 12,
-    borderWidth: borderColor ? (highContrast ? 2 : 1) : 0,
+    borderWidth: borderColor ? (highContrast ? colors.borderWidth : 1) : 0,
     borderColor: borderColor || 'transparent',
     width:
       variant === 'fab' || variant === 'icon'
