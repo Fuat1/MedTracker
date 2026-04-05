@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Vibration, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,6 +9,7 @@ import Animated, {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/use-theme';
 import { useSettingsStore } from '../lib/settings-store';
+import { hapticKeystroke } from '../lib/haptics';
 import { FONTS } from '../config/theme';
 
 interface NumpadProps {
@@ -18,6 +19,8 @@ interface NumpadProps {
   disabled?: boolean;
   compact?: boolean;
   allowDecimal?: boolean;
+  /** Override layout; defaults to user's stored preference */
+  layout?: 'calculator' | 'telephone';
 }
 
 interface KeyButtonProps {
@@ -30,16 +33,25 @@ interface KeyButtonProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const KEYS = [
+// Telephone layout: 1-2-3 top row (legacy default)
+const TELEPHONE_KEYS = [
   ['1', '2', '3'],
   ['4', '5', '6'],
   ['7', '8', '9'],
   ['C', '0', '⌫'],
 ];
 
+// Calculator layout: 7-8-9 top row (SM-007 default)
+const CALCULATOR_KEYS = [
+  ['7', '8', '9'],
+  ['4', '5', '6'],
+  ['1', '2', '3'],
+  ['C', '0', '⌫'],
+];
+
 function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonProps) {
   const { t } = useTranslation('common');
-  const { colors, fontScale } = useTheme();
+  const { colors, fontScale, highContrast } = useTheme();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -47,17 +59,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
   }));
 
   const handlePress = () => {
-    // Haptic feedback - wrapped in try-catch for permission issues
-    try {
-      if (Platform.OS === 'ios') {
-        Vibration.vibrate(10);
-      } else if (Platform.OS === 'android') {
-        Vibration.vibrate(20);
-      }
-    } catch (error) {
-      // Silently fail if vibration permission not granted
-      if (__DEV__) console.debug('Vibration not available:', error);
-    }
+    hapticKeystroke();
 
     scale.value = withSequence(
       withSpring(0.9, { damping: 10, stiffness: 400 }),
@@ -69,7 +71,6 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
 
   const isClear = keyValue === 'C';
   const isBackspace = keyValue === '⌫';
-  const isAction = isClear || isBackspace;
 
   return (
     <AnimatedPressable
@@ -83,6 +84,7 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
               ? colors.numpadBackspaceBg
               : colors.numpadKey,
           borderColor: colors.numpadKeyBorder,
+          borderWidth: highContrast ? colors.borderWidth : 1,
           shadowColor: colors.shadow,
           shadowOpacity: colors.shadowOpacity,
         },
@@ -102,8 +104,8 @@ function KeyButton({ keyValue, keySize, disabled, compact, onPress }: KeyButtonP
           {
             color: colors.numpadKeyText,
             fontSize: compact
-              ? (isAction ? 20 * fontScale : 26 * fontScale)
-              : (isAction ? 26 * fontScale : 32 * fontScale),
+              ? (isClear || isBackspace ? 20 * fontScale : 26 * fontScale)
+              : (isClear || isBackspace ? 26 * fontScale : 32 * fontScale),
           },
           isClear && { color: colors.error },
           disabled && { color: colors.textTertiary },
@@ -122,54 +124,43 @@ export function Numpad({
   disabled = false,
   compact = false,
   allowDecimal = false,
+  layout,
 }: NumpadProps) {
-  const { seniorMode } = useSettingsStore();
+  const { seniorMode, numpadLayout } = useSettingsStore();
+  const effectiveLayout = layout ?? numpadLayout;
 
-  // Dynamic button sizing: compact when category badge is showing (20% reduction)
   const keySize = compact
     ? seniorMode
-      ? { width: 76, height: 58 }   // 20% smaller than senior normal
-      : { width: 84, height: 50 }   // 20% smaller than normal
+      ? { width: 76, height: 58 }
+      : { width: 84, height: 50 }
     : seniorMode
       ? { width: 94, height: 72 }
       : { width: 104, height: 62 };
 
-  // When decimal mode is on, replace 'C' with '.' in the bottom row
+  const baseKeys = effectiveLayout === 'telephone' ? TELEPHONE_KEYS : CALCULATOR_KEYS;
+
+  // Decimal mode: replace 'C' with '.' in bottom row
   const keys = allowDecimal
-    ? [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9'], ['.', '0', '⌫']]
-    : KEYS;
+    ? baseKeys.map((row, i) =>
+        i === 3 ? ['.', '0', '⌫'] : row
+      )
+    : baseKeys;
 
   const handleKeyPress = (key: string) => {
-    if (disabled) {
-      return;
-    }
+    if (disabled) return;
 
     if (key === 'C') {
-      // Clear
       onValueChange('');
     } else if (key === '⌫') {
-      // Backspace
       onValueChange(value.slice(0, -1));
     } else if (key === '.') {
-      // Decimal point: only one allowed, must have a digit already
-      if (value === '' || value.includes('.')) {
-        return;
-      }
-      if (value.length < maxLength) {
-        onValueChange(value + '.');
-      }
+      if (value === '' || value.includes('.')) return;
+      if (value.length < maxLength) onValueChange(value + '.');
     } else {
-      // Number key
       if (value.length < maxLength) {
-        // Prevent leading zeros (except for single 0)
-        if (value === '0' && key === '0') {
-          return;
-        }
-        if (value === '0' && key !== '0') {
-          onValueChange(key);
-        } else {
-          onValueChange(value + key);
-        }
+        if (value === '0' && key === '0') return;
+        if (value === '0' && key !== '0') onValueChange(key);
+        else onValueChange(value + key);
       }
     }
   };
@@ -194,7 +185,6 @@ export function Numpad({
   );
 }
 
-// Minimum touch target 48x48dp per accessibility guidelines
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 4,
@@ -219,13 +209,9 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
-    borderWidth: 1,
   },
   keyText: {
     fontFamily: FONTS.semiBold,
