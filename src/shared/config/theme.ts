@@ -133,18 +133,20 @@ export interface ThemeColors {
   // Shadows
   shadow: string;
   shadowOpacity: number;
+
+  borderWidth: number;
 }
 
 export const lightColors: ThemeColors = {
-  background: '#EDF5F0',
+  background: '#F5F5F5',
   surface: '#ffffff',
   surfaceSecondary: '#f1f5f9',
 
-  textPrimary: '#1a1a2e',
-  textSecondary: '#64748b',
-  textTertiary: '#94a3b8',
+  textPrimary: '#1A1A1A',
+  textSecondary: '#6B7280',
+  textTertiary: '#9CA3AF',
 
-  accent: '#0D9488',
+  accent: '#2563EB',
 
   border: '#e5e7eb',
   borderLight: '#f1f5f9',
@@ -152,8 +154,8 @@ export const lightColors: ThemeColors = {
   error: '#dc2626',
   errorBackground: '#fef2f2',
 
-  gradientStart: '#0D9488',
-  gradientEnd: '#14B8A6',
+  gradientStart: '#1D4ED8',
+  gradientEnd: '#2563EB',
 
   tabBarBackground: '#ffffff',
   tabBarBorder: '#f1f5f9',
@@ -164,18 +166,18 @@ export const lightColors: ThemeColors = {
   numpadClearBg: '#fef2f2',
   numpadBackspaceBg: '#f0f9ff',
 
-  chartLine: '#0D9488',
+  chartLine: '#003B49',
   chartDot: '#ffffff',
-  chartLabel: '#475569',
-  chartLineDiastolic: '#5EEAD4',
+  chartLabel: '#374151',
+  chartLineDiastolic: '#007A78',
   chartZoneNormal: '#dcfce7',
   chartZoneElevated: '#fef9c3',
   chartZoneHigh: '#fecaca',
 
-  toggleTrackActive: '#0D9488',
+  toggleTrackActive: '#2563EB',
   toggleTrackInactive: '#d1d5db',
   toggleThumb: '#ffffff',
-  iconCircleBg: 'rgba(13,148,136,0.12)',
+  iconCircleBg: 'rgba(37,99,235,0.12)',
   successText: '#16a34a',
   successBg: '#f0fdf4',
 
@@ -199,50 +201,52 @@ export const lightColors: ThemeColors = {
 
   shadow: '#000000',
   shadowOpacity: 0.08,
+
+  borderWidth: 1,
 };
 
 export const darkColors: ThemeColors = {
-  background: '#0f172a',
-  surface: '#1e293b',
-  surfaceSecondary: '#2a3441',
+  background: '#121212',
+  surface: '#1E1E1E',
+  surfaceSecondary: '#2C2C2C',
 
-  textPrimary: '#f8fafc',
-  textSecondary: '#94a3b8',
-  textTertiary: '#64748b',
+  textPrimary: 'rgba(255,255,255,0.87)',
+  textSecondary: 'rgba(255,255,255,0.60)',
+  textTertiary: 'rgba(255,255,255,0.38)',
 
-  accent: '#14B8A6',
+  accent: '#60A5FA',
 
   border: '#334155',
-  borderLight: '#1e293b',
+  borderLight: '#1E1E1E',
 
   error: '#f87171',
   errorBackground: '#451a1a',
 
-  gradientStart: '#0D9488',
-  gradientEnd: '#115E59',
+  gradientStart: '#1D4ED8',
+  gradientEnd: '#2563EB',
 
-  tabBarBackground: '#1e293b',
+  tabBarBackground: '#1E1E1E',
   tabBarBorder: '#334155',
 
-  numpadKey: '#2a3441',
-  numpadKeyText: '#f8fafc',
+  numpadKey: '#2C2C2C',
+  numpadKeyText: 'rgba(255,255,255,0.87)',
   numpadKeyBorder: 'rgba(255,255,255,0.06)',
   numpadClearBg: '#3b1c1c',
   numpadBackspaceBg: '#1c2d3b',
 
-  chartLine: '#14B8A6',
-  chartDot: '#1e293b',
-  chartLabel: '#94a3b8',
-  chartLineDiastolic: '#2DD4BF',
+  chartLine: '#60A5FA',
+  chartDot: '#1E1E1E',
+  chartLabel: 'rgba(255,255,255,0.60)',
+  chartLineDiastolic: '#34D399',
   chartZoneNormal: '#14532d',
   chartZoneElevated: '#422006',
   chartZoneHigh: '#450a0a',
 
-  toggleTrackActive: '#14B8A6',
+  toggleTrackActive: '#60A5FA',
   toggleTrackInactive: '#4b5563',
-  toggleThumb: '#f8fafc',
-  iconCircleBg: 'rgba(20,184,166,0.15)',
-  successText: '#4ade80',
+  toggleThumb: 'rgba(255,255,255,0.87)',
+  iconCircleBg: 'rgba(96,165,250,0.15)',
+  successText: '#86EFAC',
   successBg: '#14532d',
 
   infoBg: '#1e3a5f',
@@ -252,8 +256,8 @@ export const darkColors: ThemeColors = {
   warningText: '#fbbf24',
   warningBorder: '#d97706',
 
-  crisisRed: '#f87171',
-  crisisBorder: '#f87171',
+  crisisRed: '#FCA5A5',
+  crisisBorder: '#FCA5A5',
 
   ppColor: '#fbbf24',
   mapColor: '#818cf8',
@@ -265,56 +269,48 @@ export const darkColors: ThemeColors = {
 
   shadow: '#000000',
   shadowOpacity: 0.3,
+
+  borderWidth: 1,
 };
 
 export const highContrastColors: ThemeColors = {
-  // Pure white/black base
   background: '#FFFFFF',
   surface: '#FFFFFF',
   surfaceSecondary: '#F5F5F5',
 
-  // Maximum contrast text
   textPrimary: '#000000',
   textSecondary: '#000000',
   textTertiary: '#4A4A4A',
 
-  // Solid accent (no gradient)
-  accent: '#0D9488',
+  accent: '#1D4ED8',
 
-  // Bold borders (no subtle grays)
   border: '#000000',
   borderLight: '#CCCCCC',
 
-  // High-contrast errors
   error: '#CC0000',
   errorBackground: '#FFE6E6',
 
-  // Solid colors (no gradients - same color for both)
-  gradientStart: '#0D9488',
-  gradientEnd: '#0D9488', // Same = solid color
+  gradientStart: '#1D4ED8',
+  gradientEnd: '#1D4ED8',
 
-  // Tab bar
   tabBarBackground: '#FFFFFF',
   tabBarBorder: '#000000',
 
-  // Numpad - high contrast
   numpadKey: '#FFFFFF',
   numpadKeyText: '#000000',
   numpadKeyBorder: '#000000',
   numpadClearBg: '#FFE6E6',
   numpadBackspaceBg: '#E6F3FF',
 
-  // Charts - solid colors, high contrast
-  chartLine: '#0D9488',
+  chartLine: '#1D4ED8',
   chartDot: '#000000',
   chartLabel: '#000000',
-  chartLineDiastolic: '#14B8A6',
+  chartLineDiastolic: '#007A78',
   chartZoneNormal: '#E8F5E9',
   chartZoneElevated: '#FFF9C4',
   chartZoneHigh: '#FFEBEE',
 
-  // Toggle
-  toggleTrackActive: '#0D9488',
+  toggleTrackActive: '#1D4ED8',
   toggleTrackInactive: '#CCCCCC',
   toggleThumb: '#ffffff',
   iconCircleBg: '#E6E6E6',
@@ -339,9 +335,10 @@ export const highContrastColors: ThemeColors = {
 
   overlay: 'rgba(0,0,0,0.5)',
 
-  // No shadows in high contrast
   shadow: '#000000',
   shadowOpacity: 0,
+
+  borderWidth: 3,
 };
 
 // BP category colors per theme
@@ -354,9 +351,9 @@ export const BP_COLORS_LIGHT: Record<BPCategory, string> = {
 };
 
 export const BP_COLORS_DARK: Record<BPCategory, string> = {
-  normal: '#4ade80',
-  elevated: '#fbbf24',
-  stage_1: '#fb923c',
-  stage_2: '#f87171',
-  crisis: '#ef4444',
+  normal: '#86EFAC',
+  elevated: '#FDE68A',
+  stage_1: '#FDBA74',
+  stage_2: '#FECACA',
+  crisis: '#FCA5A5',
 };
