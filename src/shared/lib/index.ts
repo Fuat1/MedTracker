@@ -140,3 +140,6 @@ export {
   NotificationType,
   type ScheduleReminderParams,
 } from './notification-service';
+
+// Haptics
+export { hapticKeystroke, hapticSave, hapticCrisis } from './haptics';
