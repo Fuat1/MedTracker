@@ -15,7 +15,10 @@ interface UseThemeResult {
   isDark: boolean;
   fontScale: number;
   highContrast: boolean;
+  seniorMode: boolean;
   typography: TypographyScale;
+  touchTargetSize: number;
+  interactiveSpacing: number;
 }
 
 export function useTheme(): UseThemeResult {
@@ -44,5 +47,17 @@ export function useTheme(): UseThemeResult {
   // Pre-computed typography scale (use these in components instead of raw fontScale math)
   const typography = computeTypographyScale(seniorMode);
 
-  return { colors, isDark, fontScale, highContrast, typography };
+  const touchTargetSize = seniorMode ? 56 : 44;
+  const interactiveSpacing = seniorMode ? 16 : 8;
+
+  return {
+    colors,
+    isDark,
+    fontScale,
+    highContrast,
+    seniorMode,
+    typography,
+    touchTargetSize,
+    interactiveSpacing,
+  };
 }
