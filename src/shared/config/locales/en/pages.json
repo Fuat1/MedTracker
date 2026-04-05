@@ -186,6 +186,12 @@
     "error": {
       "title": "Error loading records",
       "subtitle": "Pull down to retry"
+    },
+    "deleteConfirm": {
+      "title": "Edit Reading",
+      "message": "Open this reading to view details or make changes. You can delete it from there.",
+      "confirm": "Continue",
+      "cancel": "Cancel"
     }
   },
   "settings": {

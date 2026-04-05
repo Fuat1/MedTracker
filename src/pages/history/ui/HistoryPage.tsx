@@ -8,6 +8,7 @@ import {
   TextInput,
   useWindowDimensions,
   Switch,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -65,7 +66,7 @@ export function HistoryPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { colors, typography } = useTheme();
-  const { guideline, height: userHeight, weightUnit, dateOfBirth, gender } = useSettingsStore();
+  const { guideline, height: userHeight, weightUnit, dateOfBirth, gender, seniorMode } = useSettingsStore();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: allRecordsRaw, isLoading, isError, refetch, isRefetching } = useBPRecords();
   const { relationships } = useRelationships();
@@ -143,6 +144,28 @@ export function HistoryPage() {
     setModalValue(value);
     setModalVisible(true);
   }, []);
+
+  // Senior Mode confirmation handler for edit/delete navigation
+  const handleRecordPress = useCallback((recordId: string) => {
+    if (seniorMode) {
+      Alert.alert(
+        t('history.deleteConfirm.title'),
+        t('history.deleteConfirm.message'),
+        [
+          { text: t('history.deleteConfirm.cancel'), style: 'cancel' },
+          {
+            text: t('history.deleteConfirm.confirm'),
+            style: 'default',
+            onPress: () => {
+              navigation.navigate('EditReading', { recordId });
+            },
+          },
+        ]
+      );
+    } else {
+      navigation.navigate('EditReading', { recordId });
+    }
+  }, [seniorMode, navigation, t]);
 
   const isHighAlert = useCallback(
     (record: BPRecord) => {
@@ -406,7 +429,7 @@ export function HistoryPage() {
                 tags={tagMap?.[record.id]}
                 onPPPress={handlePPPress}
                 onMAPPress={handleMAPPress}
-                onPress={() => navigation.navigate('EditReading', { recordId: record.id })}
+                onPress={() => handleRecordPress(record.id)}
               />
             )}
           />
