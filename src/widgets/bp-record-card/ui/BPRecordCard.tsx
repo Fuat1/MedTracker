@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import Svg, { Circle, Polygon } from 'react-native-svg';
 import type { BPRecord } from '../../../shared/api';
 import {
   classifyBP,
@@ -19,6 +20,43 @@ import { formatWeight, calculateBMI, getBMICategory } from '../../../entities/us
 import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
+
+/** Geometric SVG icons for HC redundant encoding (HC-005). Min 20×20 px. */
+function HcCategoryIcon({ category, color, size = 20 }: { category: string; color: string; size?: number }) {
+  switch (category) {
+    case 'normal':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20">
+          <Circle cx={10} cy={10} r={8} fill={color} />
+        </Svg>
+      );
+    case 'elevated':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20">
+          <Polygon points="10,2 18,18 2,18" fill={color} />
+        </Svg>
+      );
+    case 'stage_1':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20">
+          <Polygon points="10,2 18,10 10,18 2,10" fill={color} />
+        </Svg>
+      );
+    case 'stage_2':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20">
+          <Polygon points="10,2 18,10 10,18 2,10" fill="none" stroke={color} strokeWidth={2} />
+        </Svg>
+      );
+    case 'crisis':
+    default:
+      return (
+        <Svg width={size} height={size} viewBox="0 0 20 20">
+          <Polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill={color} />
+        </Svg>
+      );
+  }
+}
 
 const WINDOW_ICONS: Record<TimeWindow, string> = {
   morning: 'sunny-outline',
@@ -51,7 +89,7 @@ interface BPRecordCardProps {
 
 export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, onPPPress, onMAPPress, onPress }: BPRecordCardProps) {
   const { t } = useTranslation('common');
-  const { colors, isDark, fontScale, typography } = useTheme();
+  const { colors, isDark, fontScale, typography, highContrast } = useTheme();
   const { guideline, height: userHeight, weightUnit } = useSettingsStore();
   const category = classifyBP(record.systolic, record.diastolic, guideline);
   const { data: customTags = [] } = useCustomTags();
@@ -190,7 +228,15 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
           )}
 
           {/* Category Badge — icon-only in senior mode to save space */}
-          {fontScale > 1 ? (
+          {highContrast ? (
+            <View
+              style={[compactStyles.iconBadge, { backgroundColor: categoryColor + '20', borderWidth: 2, borderColor: categoryColor }]}
+              accessibilityRole="text"
+              accessibilityLabel={categoryLabel}
+            >
+              <HcCategoryIcon category={category} color={categoryColor} size={20} />
+            </View>
+          ) : fontScale > 1 ? (
             <View
               style={[compactStyles.iconBadge, { backgroundColor: categoryColor + '20' }]}
               accessibilityRole="text"
@@ -271,11 +317,20 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
           </View>
 
           {/* Category Badge */}
-          <View
-            style={[styles.badge, { backgroundColor: categoryColor + '15' }]}
-          >
-            <View style={[styles.badgeDot, { backgroundColor: categoryColor }]} />
-            <Text style={[styles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>{categoryLabel}</Text>
+          <View style={[styles.badge, { backgroundColor: categoryColor + '15' }]}>
+            {highContrast ? (
+              <>
+                <HcCategoryIcon category={category} color={categoryColor} size={16} />
+                <Text style={[styles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>
+                  {categoryLabel}: {record.systolic}/{record.diastolic}
+                </Text>
+              </>
+            ) : (
+              <>
+                <View style={[styles.badgeDot, { backgroundColor: categoryColor }]} />
+                <Text style={[styles.badgeText, { color: categoryColor, fontSize: typography.xs }]}>{categoryLabel}</Text>
+              </>
+            )}
           </View>
         </View>
 
