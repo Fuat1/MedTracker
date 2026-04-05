@@ -17,6 +17,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
+import Svg, { Polygon } from 'react-native-svg';
+import { hapticCrisis } from '../lib/haptics';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 
@@ -50,7 +52,7 @@ export function CrisisModal({
 }: CrisisModalProps) {
   const { t: tMedical } = useTranslation('medical');
   const { t: tCommon } = useTranslation('common');
-  const { colors } = useTheme();
+  const { colors, highContrast } = useTheme();
 
   const [step, setStep] = useState<Step>('symptoms');
   const [checkedSymptoms, setCheckedSymptoms] = useState<Set<string>>(new Set());
@@ -78,6 +80,7 @@ export function CrisisModal({
 
   useEffect(() => {
     if (visible) {
+      hapticCrisis();
       backdropOpacity.value = withTiming(1, { duration: 220 });
       cardScale.value = withSpring(1, { damping: 18, stiffness: 240 });
       cardOpacity.value = withTiming(1, { duration: 200 });
@@ -145,7 +148,19 @@ export function CrisisModal({
 
           {/* Icon */}
           <View style={[styles.iconCircle, { backgroundColor: colors.crisisRed, shadowColor: colors.crisisRed }]}>
-            <Icon name="warning" size={32} color={colors.surface} />
+            <Svg width={32} height={32} viewBox="0 0 32 32">
+              <Polygon
+                points="11,2 21,2 30,11 30,21 21,30 11,30 2,21 2,11"
+                fill="none"
+                stroke="white"
+                strokeWidth={2.5}
+              />
+              <Polygon
+                points="12,8 20,8 24,12 24,20 20,24 12,24 8,20 8,12"
+                fill="white"
+                opacity={0.3}
+              />
+            </Svg>
           </View>
 
           {/* Title */}
@@ -156,7 +171,7 @@ export function CrisisModal({
           {/* BP values */}
           <View style={[styles.valuesRow, { backgroundColor: colors.errorBackground, borderColor: colors.crisisBorder }]}>
             <Text style={[styles.valuesText, { color: colors.crisisRed }]}>
-              {systolic}
+              {highContrast ? 'Crisis: ' : ''}{systolic}
               <Text style={[styles.valuesDivider, { color: colors.crisisBorder }]}>/</Text>
               {diastolic}
             </Text>
