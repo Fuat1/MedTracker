@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-04-03 (comprehensive codebase scan)
+> Last verified: 2026-04-05 (theme compliance implementation)
 
 ---
 
@@ -210,6 +210,53 @@
 | Weather City | City search + autocomplete | WeatherSettingsPage |
 | Temperature Unit | °C / °F | WeatherSettingsPage |
 | Family Sharing | Manage relationships, invite, revoke | SharingSettingsPage |
+
+---
+
+## 13.5. Theme & Accessibility Compliance
+
+### Color Palette
+
+- **Medical-blue accent** (`#2563EB`) replacing legacy teal/mint across all themed surfaces
+- **Light mode**: unchanged base white/surface tokens; accent updated to medical-blue
+- **Dark mode**: Material dark `#121212` base, 87% opacity text paradigm (`rgba(255,255,255,0.87)` for primary text), desaturated BP category colors (`BP_COLORS_DARK`) to avoid vibrant hues on dark backgrounds
+- **`borderWidth` token** exposed from `useTheme()` — `3` in High Contrast mode, `1` in standard mode
+
+### High Contrast Mode
+
+- **HC-004**: `"Crisis: "` text prefix prepended to crisis modal title — color is not the sole indicator of crisis state
+- **HC-005**: SVG geometric icons on `<BPRecordCard />` for BP classification — diamond (normal), triangle (elevated), circle (stage 1), pentagon (stage 2), octagon (crisis) — replaces color-only badge
+- **HC-006**: SVG hatching/diagonal-stripe pattern fills overlaid on `<BPTrendChart />` threshold bands — replaces color-only zone shading
+- **`colors.borderWidth: 3`** applied to: `<Numpad />` keys, `<SaveButton />`, `<Button />`, `<OptionChip />`, `<TagChip />`, `<PageHeader />` search badge — enforces visible borders in all interactive elements
+- **`colors.shadowOpacity`** token: `0` in High Contrast mode (shadows suppressed to avoid depth-only cues)
+
+### Senior Mode
+
+- **`touchTargetSize: 56`** — minimum touch target raised from 44pt to 56pt; applied to `<Button />` min-height, `<SaveButton />`, `<Numpad />` keys
+- **`interactiveSpacing: 16`** — increased gap between interactive elements to reduce mis-taps
+- **SM-006**: Permanent confirmation dialog before destructive actions — `<HistoryPage />` shows AlertDialog before editing or deleting readings when `seniorMode` is enabled (cannot be bypassed)
+- **SM-007**: Calculator numpad layout set as default when Senior Mode is enabled — `numpadLayout` setting auto-set to `'calculator'` on Senior Mode activation
+
+### Numpad Layout
+
+- **Telephone layout** (default): `1 2 3 / 4 5 6 / 7 8 9 / 0` — standard phone keypad order
+- **Calculator layout**: `7 8 9 / 4 5 6 / 1 2 3 / 0` — calculator keypad order, default for Senior Mode
+- **User toggle** available in AppSettingsPage
+- `numpadLayout` field persisted in `settings-store.ts` (Zustand + AsyncStorage)
+
+### Haptic Feedback
+
+- **`hapticKeystroke()`** — light vibration (10ms) on each numpad key press
+- **`hapticSave()`** — success pattern (50ms on, 30ms off, 50ms on) when a BP reading is saved
+- **`hapticCrisis()`** — urgent pattern (100ms on, 50ms off, 100ms on, 50ms off, 200ms on) triggered on crisis modal mount
+- Implemented via `Vibration` API (React Native built-in) — no native module dependency
+- Exported from `src/shared/lib/haptics.ts`; barrel-exported via `src/shared/lib/index.ts`
+
+### AppSettingsPage Changes
+
+- **3-chip theme selector** (Light / Dark / System) — replaces previous toggle; uses `<OptionChip />` group
+- **Numpad layout toggle** — new setting row: Telephone / Calculator chip selector
+- Settings persist to `settings-store.ts` and apply on next render cycle
 
 ---
 
