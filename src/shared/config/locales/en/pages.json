@@ -194,18 +194,15 @@
     "theme": {
       "title": "Theme",
       "description": "Choose your preferred color theme",
-      "light": {
-        "label": "Light Mode",
-        "description": "Light background with dark text"
-      },
-      "dark": {
-        "label": "Dark Mode",
-        "description": "Dark background with light text"
-      },
-      "system": {
-        "label": "System Default",
-        "description": "Follow system theme settings"
-      }
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "numpadLayout": {
+      "label": "Numpad Layout",
+      "description": "Choose key order for BP entry",
+      "calculator": "Calculator (7-8-9)",
+      "telephone": "Telephone (1-2-3)"
     },
     "seniorMode": {
       "label": "Senior Mode",

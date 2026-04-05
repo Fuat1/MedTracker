@@ -17,7 +17,7 @@ type Props = NativeStackScreenProps<SettingsStackParamList, 'AppSettings'>;
 export function AppSettingsPage({ navigation }: Props) {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { colors, isDark, typography } = useTheme();
+  const { colors, typography } = useTheme();
 
   const {
     language,
@@ -26,12 +26,14 @@ export function AppSettingsPage({ navigation }: Props) {
     highContrast,
     preferredEntryMode,
     voiceLoggingEnabled,
+    numpadLayout,
     setLanguage,
     setTheme,
     setSeniorMode,
     setHighContrast,
     setPreferredEntryMode,
     setVoiceLoggingEnabled,
+    setNumpadLayout,
   } = useSettingsStore();
 
   const insets = useSafeAreaInsets();
@@ -46,14 +48,14 @@ export function AppSettingsPage({ navigation }: Props) {
     });
   }, [t]);
 
-  const handleThemeToggle = (value: boolean) => {
-    setTheme(value ? 'dark' : 'light');
+  const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+    setTheme(newTheme);
     showSavedToast(t('settings.theme.title'));
   };
 
-  const handleSystemTheme = () => {
-    setTheme('system');
-    showSavedToast(t('settings.theme.title'));
+  const handleNumpadLayoutChange = (layout: 'calculator' | 'telephone') => {
+    setNumpadLayout(layout);
+    showSavedToast(t('settings.numpadLayout.label'));
   };
 
   const handleLanguageChange = (newLanguage: Language) => {
@@ -80,8 +82,6 @@ export function AppSettingsPage({ navigation }: Props) {
     setVoiceLoggingEnabled(value);
     showSavedToast(t('settings.voiceLogging.label'));
   };
-
-  const isDarkToggled = theme === 'dark' || (theme === 'system' && isDark);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -144,48 +144,66 @@ export function AppSettingsPage({ navigation }: Props) {
         <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.cardMargin}>
           <Card variant="elevated" size="lg" style={styles.cardRadius}>
             <CardBody>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg, marginBottom: 16 }]}>
-                {t('settings.theme.title')}
-              </Text>
-
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelRow}>
-                  <Icon name="moon" size={20} color={colors.textSecondary} />
-                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                    {t('settings.darkMode')}
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="color-palette-outline" size={20} color={colors.accent} />
+                </View>
+                <View style={styles.cardHeaderTextCol}>
+                  <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                    {t('settings.theme.title')}
                   </Text>
                 </View>
-                <Switch
-                  value={isDarkToggled}
-                  onValueChange={handleThemeToggle}
-                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-                  thumbColor={colors.toggleThumb}
-                  accessibilityRole="switch"
-                  accessibilityLabel={t('settings.darkMode')}
+              </View>
+              <View style={styles.chipRow}>
+                <OptionChip
+                  label={t('settings.theme.light')}
+                  selected={theme === 'light'}
+                  onPress={() => handleThemeChange('light')}
+                />
+                <OptionChip
+                  label={t('settings.theme.dark')}
+                  selected={theme === 'dark'}
+                  onPress={() => handleThemeChange('dark')}
+                />
+                <OptionChip
+                  label={t('settings.theme.system')}
+                  selected={theme === 'system'}
+                  onPress={() => handleThemeChange('system')}
                 />
               </View>
+            </CardBody>
+          </Card>
+        </Animated.View>
 
-              {theme !== 'system' && (
-                <Pressable
-                  onPress={handleSystemTheme}
-                  style={styles.systemThemeLink}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('settings.useSystemDefault')}
-                >
-                  <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-                  <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
-                    {t('settings.useSystemDefault')}
+        {/* Numpad Layout Card */}
+        <Animated.View entering={FadeInUp.delay(150).duration(400)} style={styles.cardMargin}>
+          <Card variant="elevated" size="lg" style={styles.cardRadius}>
+            <CardBody>
+              <View style={styles.cardHeaderRow}>
+                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
+                  <Icon name="keypad-outline" size={20} color={colors.accent} />
+                </View>
+                <View style={styles.cardHeaderTextCol}>
+                  <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
+                    {t('settings.numpadLayout.label')}
                   </Text>
-                </Pressable>
-              )}
-              {theme === 'system' && (
-                <View style={styles.systemThemeLink}>
-                  <Icon name="phone-portrait-outline" size={14} color={colors.accent} />
-                  <Text style={[styles.systemThemeText, { color: colors.accent, fontSize: typography.sm }]}>
-                    {t('settings.theme.system.label')}
+                  <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                    {t('settings.numpadLayout.description')}
                   </Text>
                 </View>
-              )}
+              </View>
+              <View style={styles.chipRow}>
+                <OptionChip
+                  label={t('settings.numpadLayout.calculator')}
+                  selected={numpadLayout === 'calculator'}
+                  onPress={() => handleNumpadLayoutChange('calculator')}
+                />
+                <OptionChip
+                  label={t('settings.numpadLayout.telephone')}
+                  selected={numpadLayout === 'telephone'}
+                  onPress={() => handleNumpadLayoutChange('telephone')}
+                />
+              </View>
             </CardBody>
           </Card>
         </Animated.View>
