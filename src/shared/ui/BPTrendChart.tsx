@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LineChart as GiftedLineChart } from 'react-native-gifted-charts';
+import Svg, { Defs, Pattern, Rect, Line, Circle as SvgCircle } from 'react-native-svg';
 import { useTheme } from '../lib/use-theme';
 import { FONTS } from '../config/theme';
 import { BP_THRESHOLDS } from '../config/bp-guidelines';
@@ -44,7 +45,7 @@ export function BPTrendChart({
   legendLabels = { systolic: 'Systolic', diastolic: 'Diastolic', pp: 'PP', map: 'MAP' },
   guidelineId = 'aha_acc',
 }: BPTrendChartProps) {
-  const { colors, typography } = useTheme();
+  const { colors, typography, highContrast } = useTheme();
 
   const guideline = BP_THRESHOLDS[guidelineId] || BP_THRESHOLDS.aha_acc;
   const normalThreshold = guideline.normalBelow.systolic;
@@ -90,7 +91,7 @@ export function BPTrendChart({
       {
         data: systolicData,
         color: colors.chartLine,
-        thickness: 2.5,
+        thickness: highContrast ? 3 : 2.5,
         dataPointsColor: colors.chartLine,
         dataPointsRadius: 4,
         startFillColor: colors.chartLine + '1F',
@@ -137,7 +138,7 @@ export function BPTrendChart({
     }
 
     return sets;
-  }, [systolicData, diastolicData, data, showPP, showMAP, colors]);
+  }, [systolicData, diastolicData, data, showPP, showMAP, colors, highContrast]);
 
   // Tooltip renderer
   const renderTooltip = useMemo(() => {
@@ -209,6 +210,49 @@ export function BPTrendChart({
 
   // Calculate point spacing — comfortable for touch but scrollable when dense
   const chartInnerWidth = width - 40;
+
+  const renderHCOverlay = () => {
+    if (!highContrast) return null;
+
+    // Use the same width/height as the chart area
+    const chartW = chartInnerWidth;
+    const chartH = height;
+
+    const yMin = 60;
+    const yMax = 180;
+    const yRange = yMax - yMin;
+    const pixelsPerUnit = chartH / yRange;
+
+    // Y positions (0 = top of chart)
+    const stage1Y = chartH - (130 - yMin) * pixelsPerUnit;
+    const stage2Y = chartH - (140 - yMin) * pixelsPerUnit;
+
+    return (
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <Svg width={chartW} height={chartH}>
+          <Defs>
+            <Pattern id="hatch" patternUnits="userSpaceOnUse" width={8} height={8} patternTransform="rotate(45)">
+              <Line x1={0} y1={0} x2={0} y2={8} stroke="#000" strokeWidth={1.5} opacity={0.25} />
+            </Pattern>
+            <Pattern id="dots" patternUnits="userSpaceOnUse" width={6} height={6}>
+              <SvgCircle cx={3} cy={3} r={1.2} fill="#000" opacity={0.3} />
+            </Pattern>
+            <Pattern id="crosshatch" patternUnits="userSpaceOnUse" width={8} height={8}>
+              <Line x1={0} y1={0} x2={8} y2={8} stroke="#000" strokeWidth={1.5} opacity={0.3} />
+              <Line x1={8} y1={0} x2={0} y2={8} stroke="#000" strokeWidth={1.5} opacity={0.3} />
+            </Pattern>
+          </Defs>
+          {stage1Y > stage2Y && (
+            <Rect x={0} y={stage2Y} width={chartW} height={stage1Y - stage2Y} fill="url(#hatch)" />
+          )}
+          {stage2Y > 0 && (
+            <Rect x={0} y={0} width={chartW} height={stage2Y} fill="url(#dots)" />
+          )}
+          <Rect x={0} y={0} width={chartW} height={Math.min(10, stage2Y)} fill="url(#crosshatch)" />
+        </Svg>
+      </View>
+    );
+  };
   const idealSpacing = data.length <= 1
     ? 0
     : Math.floor(chartInnerWidth / (data.length - 1));
@@ -217,79 +261,82 @@ export function BPTrendChart({
 
   return (
     <View>
-      <GiftedLineChart
-        dataSet={datasets}
-        height={height}
-        width={chartInnerWidth}
-        areaChart
-        curved
-        isAnimated
-        animationDuration={800}
-        animateOnDataChange
+      <View style={{ position: 'relative' }}>
+        <GiftedLineChart
+          dataSet={datasets}
+          height={height}
+          width={chartInnerWidth}
+          areaChart
+          curved
+          isAnimated
+          animationDuration={800}
+          animateOnDataChange
 
-        maxValue={yAxisMax}
-        yAxisOffset={yAxisMin}
-        noOfSections={noOfSections}
-        yAxisLabelTexts={yAxisLabelTexts}
+          maxValue={yAxisMax}
+          yAxisOffset={yAxisMin}
+          noOfSections={noOfSections}
+          yAxisLabelTexts={yAxisLabelTexts}
 
-        rulesType="dashed"
-        rulesColor={colors.border + '80'}
-        dashWidth={4}
-        dashGap={4}
+          rulesType="dashed"
+          rulesColor={colors.border + '80'}
+          dashWidth={4}
+          dashGap={4}
 
-        yAxisColor="transparent"
-        yAxisTextStyle={{
-          color: colors.textSecondary,
-          fontSize: typography.xs,
-          fontFamily: FONTS.regular,
-        }}
+          yAxisColor="transparent"
+          yAxisTextStyle={{
+            color: colors.textSecondary,
+            fontSize: typography.xs,
+            fontFamily: FONTS.regular,
+          }}
 
-        xAxisColor={colors.border}
-        hideDataPoints={false}
+          xAxisColor={colors.border}
+          hideDataPoints={false}
 
-        spacing={spacing}
-        initialSpacing={15}
-        endSpacing={15}
+          spacing={spacing}
+          initialSpacing={15}
+          endSpacing={15}
 
-        disableScroll={!needsScroll}
-        scrollToEnd={needsScroll}
-        showScrollIndicator={needsScroll}
-        nestedScrollEnabled={needsScroll}
+          disableScroll={!needsScroll}
+          scrollToEnd={needsScroll}
+          showScrollIndicator={needsScroll}
+          nestedScrollEnabled={needsScroll}
 
-        backgroundColor="transparent"
+          backgroundColor="transparent"
 
-        pointerConfig={{
-          pointerLabelComponent: renderTooltip,
-          showPointerStrip: true,
-          pointerStripColor: colors.textTertiary + '40',
-          pointerStripWidth: 1,
-          pointerColor: colors.chartLine,
-          radius: 5,
-          pointerLabelWidth: 160,
-          pointerLabelHeight: showPP || showMAP ? 110 : 70,
-          autoAdjustPointerLabelPosition: true,
-          shiftPointerLabelX: -80,
-          shiftPointerLabelY: -90,
-        }}
+          pointerConfig={{
+            pointerLabelComponent: renderTooltip,
+            showPointerStrip: true,
+            pointerStripColor: colors.textTertiary + '40',
+            pointerStripWidth: 1,
+            pointerColor: colors.chartLine,
+            radius: 5,
+            pointerLabelWidth: 160,
+            pointerLabelHeight: showPP || showMAP ? 110 : 70,
+            autoAdjustPointerLabelPosition: true,
+            shiftPointerLabelX: -80,
+            shiftPointerLabelY: -90,
+          }}
 
-        showReferenceLine1
-        referenceLine1Position={normalThreshold}
-        referenceLine1Config={{
-          color: colors.textTertiary + '50',
-          dashWidth: 4,
-          dashGap: 4,
-          thickness: 1,
-        }}
+          showReferenceLine1
+          referenceLine1Position={normalThreshold}
+          referenceLine1Config={{
+            color: colors.textTertiary + '50',
+            dashWidth: 4,
+            dashGap: 4,
+            thickness: 1,
+          }}
 
-        showReferenceLine2
-        referenceLine2Position={highThreshold}
-        referenceLine2Config={{
-          color: colors.error + '50',
-          dashWidth: 4,
-          dashGap: 4,
-          thickness: 1,
-        }}
-      />
+          showReferenceLine2
+          referenceLine2Position={highThreshold}
+          referenceLine2Config={{
+            color: colors.error + '50',
+            dashWidth: 4,
+            dashGap: 4,
+            thickness: 1,
+          }}
+        />
+        {renderHCOverlay()}
+      </View>
 
       {/* Legend */}
       <View style={styles.legend}>
