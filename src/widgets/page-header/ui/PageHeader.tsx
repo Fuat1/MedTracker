@@ -15,7 +15,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ variant, title }: PageHeaderProps) {
   const { t } = useTranslation('pages');
-  const { colors, typography } = useTheme();
+  const { colors, typography, highContrast } = useTheme();
   const { userName } = useSettingsStore();
 
   return (
@@ -37,7 +37,13 @@ export function PageHeader({ variant, title }: PageHeaderProps) {
       <View
         style={[
           styles.badge,
-          { backgroundColor: colors.surface, shadowColor: colors.shadow },
+          {
+            backgroundColor: colors.surface,
+            shadowColor: colors.shadow,
+            shadowOpacity: colors.shadowOpacity,
+            borderWidth: highContrast ? 2 : 0,
+            borderColor: highContrast ? colors.border : 'transparent',
+          },
         ]}
       >
         <Icon name="shield-checkmark" size={20} color={colors.accent} />
