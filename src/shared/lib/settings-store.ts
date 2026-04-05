@@ -13,6 +13,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 export type EntryMode = 'quickLog' | 'guided' | null;
 export type WeatherLocationMode = 'gps' | 'city';
 export type TemperatureUnit = 'celsius' | 'fahrenheit';
+export type NumpadLayout = 'calculator' | 'telephone';
 
 interface SettingsState {
   unit: BPUnit;
@@ -40,6 +41,7 @@ interface SettingsState {
   defaultWeight: number | null; // kg
   heightUnit: HeightUnit;
   weightUnit: WeightUnit;
+  numpadLayout: NumpadLayout;
   setUnit: (unit: BPUnit) => void;
   setGuideline: (guideline: BPGuideline) => void;
   setDefaultLocation: (location: MeasurementLocation) => void;
@@ -61,6 +63,7 @@ interface SettingsState {
   setGender: (gender: Gender | null) => void;
   setHeightUnit: (unit: HeightUnit) => void;
   setWeightUnit: (unit: WeightUnit) => void;
+  setNumpadLayout: (layout: NumpadLayout) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -89,6 +92,7 @@ export const useSettingsStore = create<SettingsState>()(
       defaultWeight: null,
       heightUnit: 'cm',
       weightUnit: 'kg',
+      numpadLayout: 'calculator',
       setUnit: (unit) => set({ unit }),
       setGuideline: (guideline) => set({ guideline }),
       setDefaultLocation: (location) => set({ defaultLocation: location }),
@@ -114,6 +118,7 @@ export const useSettingsStore = create<SettingsState>()(
       setDefaultWeight: (weight) => set({ defaultWeight: weight }),
       setHeightUnit: (unit) => set({ heightUnit: unit }),
       setWeightUnit: (unit) => set({ weightUnit: unit }),
+      setNumpadLayout: (layout) => set({ numpadLayout: layout }),
     }),
     {
       name: 'medtracker-settings',
