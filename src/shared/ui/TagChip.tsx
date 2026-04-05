@@ -15,8 +15,9 @@ interface TagChipProps {
 }
 
 export function TagChip({ icon, label, selected, onPress, onLongPress, fontScale = 1, disabled }: TagChipProps) {
-  const { colors } = useTheme();
+  const { colors, highContrast } = useTheme();
   const iconSize = Math.round(14 * fontScale);
+  const borderWidth = highContrast ? 2 : 1;
 
   return (
     <Pressable
@@ -25,6 +26,7 @@ export function TagChip({ icon, label, selected, onPress, onLongPress, fontScale
         {
           backgroundColor: selected ? colors.accent + '18' : colors.surfaceSecondary,
           borderColor: selected ? colors.accent : colors.border,
+          borderWidth,
         },
       ]}
       onPress={onPress}
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
     minHeight: 44,
   },
   chipText: {

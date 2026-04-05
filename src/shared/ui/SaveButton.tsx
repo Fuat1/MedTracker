@@ -1,7 +1,8 @@
-﻿import React from 'react';
+import React from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../lib/use-theme';
+import { hapticSave } from '../lib/haptics';
 import { FONTS } from '../config/theme';
 
 interface SaveButtonProps {
@@ -13,18 +14,34 @@ interface SaveButtonProps {
 }
 
 export function SaveButton({ label, isValid, isLoading, onPress, fontScale = 1 }: SaveButtonProps) {
-  const { colors } = useTheme();
+  const { colors, touchTargetSize, highContrast } = useTheme();
+
+  const handlePress = () => {
+    hapticSave();
+    onPress();
+  };
+
   return (
     <Pressable
-      style={[styles.button, { backgroundColor: isValid ? colors.accent : colors.border }]}
-      onPress={onPress}
+      style={[
+        styles.button,
+        {
+          backgroundColor: isValid ? colors.accent : colors.border,
+          minHeight: touchTargetSize,
+          borderWidth: highContrast ? colors.borderWidth : 0,
+          borderColor: highContrast ? colors.textPrimary : 'transparent',
+        },
+      ]}
+      onPress={handlePress}
       disabled={!isValid || isLoading}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !isValid || isLoading }}
     >
       <Icon name="checkmark-circle" size={20} color={colors.surface} />
-      <Text style={[styles.buttonText, { fontSize: 16 * fontScale, color: colors.surface }]}>{label}</Text>
+      <Text style={[styles.buttonText, { fontSize: 16 * fontScale, color: colors.surface }]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
