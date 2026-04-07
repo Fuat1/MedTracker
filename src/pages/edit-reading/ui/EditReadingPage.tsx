@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Numpad, DateTimePicker, Toast, CrisisModal, SaveButton, DerivedMetricsModal } from '../../../shared/ui';
+import { Numpad, DateTimePicker, Toast, CrisisModal, SaveButton, DerivedMetricsModal, LoadingState } from '../../../shared/ui';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { useToast } from '../../../shared/lib';
@@ -229,9 +229,7 @@ export function EditReadingPage() {
   if (!allRecords) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.accent} />
-        </View>
+        <LoadingState />
       </SafeAreaView>
     );
   }

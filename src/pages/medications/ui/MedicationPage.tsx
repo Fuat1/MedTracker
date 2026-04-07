@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';import { FlashList } from '@shopify/flash-list';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/lib/use-theme';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Button, ButtonIcon } from '../../../shared/ui';
+import { Card, Button, ButtonIcon, EmptyState, LoadingState } from '../../../shared/ui';
 import { useManageMedications } from '../../../features/track-medication/useManageMedications';
 import { Medication } from '../../../shared/api/medication-repository';
 import MedicationModal from './MedicationModal';
@@ -13,7 +12,7 @@ import MedicationModal from './MedicationModal';
 export default function MedicationPage() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const { medications, isLoading, deleteMedication } = useManageMedications();
 
@@ -46,10 +45,11 @@ export default function MedicationPage() {
     try { times = JSON.parse(item.reminder_times || '[]'); } catch {}
 
     return (
-      <Pressable
-        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      <Card
+        variant="pressable"
+        size="md"
+        style={styles.medCard}
         onPress={() => handleOpenEdit(item)}
-        accessibilityRole="button"
         accessibilityLabel={t('medication:editMedication', {defaultValue: 'Edit medication {{name}}', name: item.name})}
       >
         <View style={styles.cardHeader}>
@@ -81,7 +81,7 @@ export default function MedicationPage() {
               : t('medication:noReminders', 'No reminders set')}
           </Text>
         </View>
-      </Pressable>
+      </Card>
     );
   };
 
@@ -97,19 +97,13 @@ export default function MedicationPage() {
       </View>
 
       {isLoading ? (
-        <View style={styles.center}>
-          <Text style={{ color: colors.textSecondary }}>{t('common:loading', 'Loading...')}</Text>
-        </View>
+        <LoadingState message={t('common:loading', 'Loading...')} />
       ) : medications.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Icon name="medical-outline" size={64} color={colors.textTertiary} />
-          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-            {t('medication:emptyTitle', 'No medications yet')}
-          </Text>
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-            {t('medication:emptyState', 'Add your medications to track adherence and set daily reminders.')}
-          </Text>
-        </View>
+        <EmptyState
+          icon="💊"
+          title={t('medication:emptyTitle', 'No medications yet')}
+          subtitle={t('medication:emptyState', 'Add your medications to track adherence and set daily reminders.')}
+        />
       ) : (
         <FlashList
           data={medications}
@@ -161,9 +155,9 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  card: {
+  medCard: {
+    padding: 0,
     borderRadius: 16,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   cardHeader: {
@@ -211,30 +205,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito-Medium',
     fontWeight: '500',
     fontSize: 13,
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-    gap: 12,
-  },
-  emptyTitle: {
-    fontFamily: 'Nunito-Bold',
-    fontWeight: '700',
-    fontSize: 20,
-  },
-  emptyText: {
-    fontFamily: 'Nunito-Regular',
-    fontWeight: '400',
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
   },
   fab: {
     position: 'absolute',

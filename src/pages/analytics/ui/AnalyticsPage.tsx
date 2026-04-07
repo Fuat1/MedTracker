@@ -40,6 +40,8 @@ import {
   CardHeader,
   CardBody,
   StatCard,
+  ProfileBadgeRow,
+  InfoHintRow,
 } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
@@ -173,34 +175,14 @@ export function AnalyticsPage() {
 
         {/* Profile Context Row */}
         {hasProfileData && (
-          <Animated.View
-            entering={FadeInUp.delay(30).duration(400)}
-            style={styles.profileRow}
-          >
-            {profileAge != null && (
-              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
-                <Icon name="person-outline" size={12} color={colors.textTertiary} />
-                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t('analytics.profile.age', { age: profileAge })}
-                </Text>
-              </View>
-            )}
-            {gender != null && (
-              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
-                <Icon name="male-female-outline" size={12} color={colors.textTertiary} />
-                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t(`settings.personalization.gender${gender.charAt(0).toUpperCase() + gender.slice(1)}` as any)}
-                </Text>
-              </View>
-            )}
-            {profileBmi != null && (
-              <View style={[styles.profileBadge, { backgroundColor: colors.surfaceSecondary }]}>
-                <Icon name="body-outline" size={12} color={colors.textTertiary} />
-                <Text style={[styles.profileBadgeText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {`BMI ${profileBmi.value.toFixed(1)} · ${tCommon(`bmi.${profileBmi.category}` as any)}`}
-                </Text>
-              </View>
-            )}
+          <Animated.View entering={FadeInUp.delay(30).duration(400)} style={styles.profileRow}>
+            <ProfileBadgeRow
+              badges={[
+                ...(profileAge != null ? [{ icon: 'person-outline', label: t('analytics.profile.age', { age: profileAge }) }] : []),
+                ...(gender != null ? [{ icon: 'male-female-outline', label: t(`settings.personalization.gender${gender.charAt(0).toUpperCase() + gender.slice(1)}` as any) }] : []),
+                ...(profileBmi != null ? [{ icon: 'body-outline', label: `BMI ${profileBmi.value.toFixed(1)} · ${tCommon(`bmi.${profileBmi.category}` as any)}` }] : []),
+              ]}
+            />
           </Animated.View>
         )}
 
@@ -287,20 +269,10 @@ export function AnalyticsPage() {
               {(showPP || showMAP) && (
                 <View style={styles.ppMapHints}>
                   {showPP && (
-                    <View style={[styles.ppMapHintRow, { backgroundColor: colors.ppColor + '12' }]}>
-                      <Icon name="pulse" size={14} color={colors.ppColor} />
-                      <Text style={[styles.ppMapHintText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                        {t('analytics.toggles.ppHint')}
-                      </Text>
-                    </View>
+                    <InfoHintRow icon="pulse" text={t('analytics.toggles.ppHint')} color={colors.ppColor} />
                   )}
                   {showMAP && (
-                    <View style={[styles.ppMapHintRow, { backgroundColor: colors.mapColor + '12' }]}>
-                      <Icon name="analytics" size={14} color={colors.mapColor} />
-                      <Text style={[styles.ppMapHintText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                        {t('analytics.toggles.mapHint')}
-                      </Text>
-                    </View>
+                    <InfoHintRow icon="analytics" text={t('analytics.toggles.mapHint')} color={colors.mapColor} />
                   )}
                 </View>
               )}
@@ -795,21 +767,6 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  ppMapHintRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  ppMapHintText: {
-    fontFamily: FONTS.regular,
-    fontWeight: '400',
-    flex: 1,
-    lineHeight: 18,
-  },
-
   // Disclaimer
   disclaimerText: {
     fontFamily: FONTS.regular,
@@ -854,17 +811,5 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 20,
     paddingBottom: 4,
-  },
-  profileBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-  },
-  profileBadgeText: {
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
   },
 });

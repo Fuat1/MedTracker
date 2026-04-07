@@ -44,3 +44,8 @@
 # Don't warn about missing classes from optional dependencies
 -dontwarn com.facebook.react.**
 -dontwarn com.swmansion.**
+
+# pdfbox-android: JP2/JPEG2000 support requires com.gemalto.jp2 which is not bundled.
+# This filter is unused in MedTracker — suppress the missing class error.
+-dontwarn com.gemalto.jp2.**
+-keep class com.gemalto.jp2.** { *; }

@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
-  Switch,
   ScrollView,
   StyleSheet,
   Pressable,
@@ -16,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '@/shared/lib/use-theme';
 import { FONTS } from '@/shared/config/theme';
-import { Card, CardBody, Button, ButtonText, ButtonIcon } from '@/shared/ui';
+import { Card, CardBody, Button, ButtonText, ButtonIcon, SettingRow } from '@/shared/ui';
 import {
   useRevokeRelationship,
   useUpdateSharingConfig,
@@ -30,36 +29,6 @@ import type { SettingsStackParamList } from '@/app/navigation';
 import { getLinkedUsers } from '@/shared/api/bp-repository';
 
 type NavProp = NativeStackNavigationProp<SettingsStackParamList, 'FamilySharing'>;
-
-// ─── Sharing Toggle Row ───────────────────────────────────────────────────────
-
-interface SharingToggleProps {
-  label: string;
-  value: boolean;
-  onValueChange: (val: boolean) => void;
-  colors: ReturnType<typeof useTheme>['colors'];
-  typography: ReturnType<typeof useTheme>['typography'];
-}
-
-function SharingToggle({ label, value, onValueChange, colors, typography }: SharingToggleProps) {
-  return (
-    <View style={styles.toggleRow}>
-      <Text style={[styles.toggleLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-        {label}
-      </Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: colors.border, true: colors.accent }}
-        thumbColor={colors.surface}
-        accessible
-        accessibilityRole="switch"
-        accessibilityLabel={label}
-        accessibilityState={{ checked: value }}
-      />
-    </View>
-  );
-}
 
 // ─── Linked Person Card ───────────────────────────────────────────────────────
 
@@ -122,40 +91,30 @@ function LinkedPersonCard({
 
         {!isPending && (
           <View style={styles.sharingToggles}>
-            <SharingToggle
+            <SettingRow
               label={t('familySharing.crisisAlerts')}
               value={sharing.crisisAlertsEnabled}
               onValueChange={(v) => onUpdateSharing(relationship.id, isInitiator, { crisisAlertsEnabled: v })}
-              colors={colors}
-              typography={typography}
             />
-            <SharingToggle
+            <SettingRow
               label={t('familySharing.shareWeight')}
               value={sharing.shareWeight}
               onValueChange={(v) => onUpdateSharing(relationship.id, isInitiator, { shareWeight: v })}
-              colors={colors}
-              typography={typography}
             />
-            <SharingToggle
+            <SettingRow
               label={t('familySharing.shareNotes')}
               value={sharing.shareNotes}
               onValueChange={(v) => onUpdateSharing(relationship.id, isInitiator, { shareNotes: v })}
-              colors={colors}
-              typography={typography}
             />
-            <SharingToggle
+            <SettingRow
               label={t('familySharing.shareMedications')}
               value={sharing.shareMedications}
               onValueChange={(v) => onUpdateSharing(relationship.id, isInitiator, { shareMedications: v })}
-              colors={colors}
-              typography={typography}
             />
-            <SharingToggle
+            <SettingRow
               label={t('familySharing.shareTags')}
               value={sharing.shareTags}
               onValueChange={(v) => onUpdateSharing(relationship.id, isInitiator, { shareTags: v })}
-              colors={colors}
-              typography={typography}
             />
           </View>
         )}
@@ -386,8 +345,6 @@ const styles = StyleSheet.create({
   personName: { fontFamily: FONTS.semiBold, fontWeight: '600' },
   pendingBadge: { fontFamily: FONTS.regular, fontWeight: '400', marginTop: 2 },
   sharingToggles: { gap: 2 },
-  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
-  toggleLabel: { fontFamily: FONTS.regular, fontWeight: '400', flex: 1, marginRight: 8 },
   emptyState: { alignItems: 'center', gap: 8, paddingVertical: 16 },
   emptyTitle: { fontFamily: FONTS.semiBold, fontWeight: '600', textAlign: 'center' },
   emptySubtitle: { fontFamily: FONTS.regular, fontWeight: '400', textAlign: 'center' },

@@ -45,7 +45,14 @@
       "Read(//c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/subagent-driven-development/**)",
       "Bash(grep -r export.*onAuthStateChanged c:/Users/fuats/Desktop/Workdir/MedTracker/node_modules/@react-native-firebase/auth/lib/modular/index.js)",
       "Bash(python -m json.tool)",
-      "Read(//dev/**)"
+      "Read(//dev/**)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Read(//c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/subagent-driven-development/**)",
+      "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/**)",
+      "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/pages/**)",
+      "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/widgets/**)",
+      "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/**)",
+      "Bash(bash /tmp/pattern_check.sh)"
     ],
     "additionalDirectories": [
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib",

@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
-  Switch,
   StyleSheet,
   ScrollView,
   Pressable,
@@ -20,7 +19,7 @@ import {
   type TemperatureUnit,
 } from '../../../shared/lib/settings-store';
 import { useTheme } from '../../../shared/lib/use-theme';
-import { OptionChip, Card, CardBody } from '../../../shared/ui';
+import { OptionChip, Card, CardBody, CardHeader, SettingRow } from '../../../shared/ui';
 import { FONTS } from '../../../shared/config/theme';
 import { searchCities, type GeocodingResult } from '../../../shared/api/weather-client';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -126,37 +125,12 @@ export function WeatherSettingsPage({ navigation }: Props) {
         <Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
           <Card variant="elevated" size="lg" style={styles.cardRadius}>
             <CardBody>
-              <View style={styles.settingRow}>
-                <View style={styles.settingInfo}>
-                  <Text
-                    style={[
-                      styles.settingLabel,
-                      { color: colors.textPrimary, fontSize: typography.sm },
-                    ]}
-                  >
-                    {t('settings.weather.toggle.label')}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.settingDescription,
-                      { color: colors.textSecondary, fontSize: typography.xs },
-                    ]}
-                  >
-                    {t('settings.weather.toggle.description')}
-                  </Text>
-                </View>
-                <Switch
-                  value={weatherEnabled}
-                  onValueChange={handleToggle}
-                  trackColor={{
-                    false: colors.toggleTrackInactive,
-                    true: colors.toggleTrackActive,
-                  }}
-                  thumbColor={colors.toggleThumb}
-                  accessibilityRole="switch"
-                  accessibilityLabel={t('settings.weather.toggle.label')}
-                />
-              </View>
+              <SettingRow
+                label={t('settings.weather.toggle.label')}
+                description={t('settings.weather.toggle.description')}
+                value={weatherEnabled}
+                onValueChange={handleToggle}
+              />
             </CardBody>
           </Card>
         </Animated.View>
@@ -170,24 +144,7 @@ export function WeatherSettingsPage({ navigation }: Props) {
             >
               <Card variant="elevated" size="lg" style={styles.cardRadius}>
                 <CardBody>
-                  <View style={styles.cardHeaderRow}>
-                    <View
-                      style={[
-                        styles.iconCircle,
-                        { backgroundColor: colors.iconCircleBg },
-                      ]}
-                    >
-                      <Icon name="location-outline" size={20} color={colors.accent} />
-                    </View>
-                    <Text
-                      style={[
-                        styles.cardTitle,
-                        { color: colors.textPrimary, fontSize: typography.lg },
-                      ]}
-                    >
-                      {t('settings.weather.location.title')}
-                    </Text>
-                  </View>
+                  <CardHeader icon="location-outline" title={t('settings.weather.location.title')} />
 
                   <View style={styles.chipRow}>
                     <OptionChip
@@ -333,28 +290,7 @@ export function WeatherSettingsPage({ navigation }: Props) {
             >
               <Card variant="elevated" size="lg" style={styles.cardRadius}>
                 <CardBody>
-                  <View style={styles.cardHeaderRow}>
-                    <View
-                      style={[
-                        styles.iconCircle,
-                        { backgroundColor: colors.iconCircleBg },
-                      ]}
-                    >
-                      <Icon
-                        name="thermometer-outline"
-                        size={20}
-                        color={colors.accent}
-                      />
-                    </View>
-                    <Text
-                      style={[
-                        styles.cardTitle,
-                        { color: colors.textPrimary, fontSize: typography.lg },
-                      ]}
-                    >
-                      {t('settings.weather.temperature.title')}
-                    </Text>
-                  </View>
+                  <CardHeader icon="thermometer-outline" title={t('settings.weather.temperature.title')} />
 
                   <View style={styles.chipRow}>
                     <OptionChip
@@ -439,46 +375,10 @@ const styles = StyleSheet.create({
   cardRadius: {
     borderRadius: 20,
   },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 16,
-  },
-  cardTitle: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: 12,
-  },
-  settingLabel: {
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
-  },
-  settingDescription: {
-    fontFamily: FONTS.regular,
-    marginTop: 4,
-    lineHeight: 18,
   },
   citySection: {
     marginTop: 16,

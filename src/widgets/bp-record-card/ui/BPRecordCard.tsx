@@ -20,6 +20,7 @@ import { formatWeight, calculateBMI, getBMICategory } from '../../../entities/us
 import type { TimeWindow } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { BP_COLORS_LIGHT, BP_COLORS_DARK, FONTS } from '../../../shared/config/theme';
+import { DetailChip } from '../../../shared/ui';
 
 /** Geometric SVG icons for HC redundant encoding (HC-005). Min 20×20 px. */
 function HcCategoryIcon({ category, color, size = 20 }: { category: string; color: string; size?: number }) {
@@ -337,58 +338,24 @@ export function BPRecordCard({ record, variant = 'full', isMorningSurge, tags, o
         {/* Pulse and Metadata Row */}
         <View style={styles.detailsRow}>
           {record.pulse && (
-            <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-              <Icon name="pulse" size={14} color={colors.textSecondary} />
-              <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                {record.pulse} {t('units.bpm')}
-              </Text>
-            </View>
+            <DetailChip icon="pulse" label={`${record.pulse} ${t('units.bpm')}`} />
           )}
-          <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-            <Icon name="body-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-              {locationLabels[record.location] || record.location}
-            </Text>
-          </View>
-          <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-            <Icon name="walk-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-              {postureLabels[record.posture] || record.posture}
-            </Text>
-          </View>
+          <DetailChip icon="body-outline" label={locationLabels[record.location] || record.location} />
+          <DetailChip icon="walk-outline" label={postureLabels[record.posture] || record.posture} />
           {tags && tags.map(tag => {
             const display = resolveTag(tag);
             if (!display) return null;
-            return (
-              <View
-                key={tag}
-                style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}
-              >
-                <Icon name={display.icon} size={14} color={colors.textSecondary} />
-                <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {display.label}
-                </Text>
-              </View>
-            );
+            return <DetailChip key={tag} icon={display.icon} label={display.label} />;
           })}
           {record.weight != null && (
-            <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-              <Icon name="scale-outline" size={14} color={colors.textSecondary} />
-              <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                {formatWeight(record.weight, weightUnit)}
-              </Text>
-            </View>
+            <DetailChip icon="scale-outline" label={formatWeight(record.weight, weightUnit)} />
           )}
           {record.weight != null && userHeight != null && (() => {
             const bmi = calculateBMI(record.weight, userHeight);
             if (bmi == null) return null;
             const cat = getBMICategory(bmi);
             return (
-              <View style={[styles.detailChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-                <Text style={[styles.detailChipText, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                  {t('bmi.label')}: {bmi} ({t(`bmi.${cat}` as any)})
-                </Text>
-              </View>
+              <DetailChip label={`${t('bmi.label')}: ${bmi} (${t(`bmi.${cat}` as any)})`} />
             );
           })()}
         </View>
@@ -605,19 +572,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
     marginBottom: 10,
-  },
-  detailChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  detailChipText: {
-    fontFamily: FONTS.medium,
-    fontWeight: '500',
   },
   timestampRow: {
     flexDirection: 'row',

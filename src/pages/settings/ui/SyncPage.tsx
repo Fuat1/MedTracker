@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, Switch, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { FONTS } from '../../../shared/config/theme';
-import { Card, CardBody, CardDivider, Button, ButtonText, ButtonGroup } from '../../../shared/ui';
+import { Card, CardBody, CardDivider, CardHeader, Button, ButtonText, ButtonGroup, SettingRow } from '../../../shared/ui';
 import { useSyncHealthPlatform } from '../../../features/health-sync/useSyncHealthPlatform';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SettingsStackParamList } from '../../../app/navigation/index';
@@ -65,19 +65,7 @@ export function SyncPage({ navigation }: Props) {
         <Animated.View entering={FadeInUp.duration(400)} style={styles.cardMargin}>
           <Card variant="elevated" size="lg" style={styles.cardRadius}>
             <CardBody>
-              <View style={styles.cardHeaderRow}>
-                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-                  <Icon name="fitness-outline" size={20} color={colors.accent} />
-                </View>
-                <View style={styles.cardHeaderTextCol}>
-                  <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                    {platformName}
-                  </Text>
-                  <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                    {t('settings.healthSync.description', { defaultValue: `${platformName} Sync`, platform: platformName })}
-                  </Text>
-                </View>
-              </View>
+              <CardHeader icon="fitness-outline" title={platformName} />
 
               <Button
                 variant="primary"
@@ -102,14 +90,7 @@ export function SyncPage({ navigation }: Props) {
         <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.cardMargin}>
           <Card variant="elevated" size="lg" style={styles.cardRadius}>
             <CardBody>
-              <View style={styles.cardHeaderRow}>
-                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-                  <Icon name="lock-closed" size={20} color={colors.accent} />
-                </View>
-                <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                  {t('settings.dataPrivacy.title')}
-                </Text>
-              </View>
+              <CardHeader icon="lock-closed" title={t('settings.dataPrivacy.title')} />
 
               <View style={styles.settingRow}>
                 <Text style={[styles.settingLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
@@ -122,22 +103,12 @@ export function SyncPage({ navigation }: Props) {
 
               <CardDivider />
 
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelRow}>
-                  <Icon name="finger-print" size={20} color={colors.textSecondary} />
-                  <Text style={[styles.settingLabel, { color: colors.textPrimary, fontSize: typography.sm }]}>
-                    {t('settings.dataPrivacy.biometricLock')}
-                  </Text>
-                </View>
-                <Switch
-                  value={biometricEnabled}
-                  onValueChange={handleBiometricToggle}
-                  trackColor={{ false: colors.toggleTrackInactive, true: colors.toggleTrackActive }}
-                  thumbColor={colors.toggleThumb}
-                  accessibilityRole="switch"
-                  accessibilityLabel={t('settings.dataPrivacy.biometricLock')}
-                />
-              </View>
+              <SettingRow
+                icon="finger-print"
+                label={t('settings.dataPrivacy.biometricLock')}
+                value={biometricEnabled}
+                onValueChange={handleBiometricToggle}
+              />
             </CardBody>
           </Card>
         </Animated.View>
@@ -146,27 +117,20 @@ export function SyncPage({ navigation }: Props) {
         <Animated.View entering={FadeInUp.delay(200).duration(400)} style={styles.cardMargin}>
           <Card variant="elevated" size="lg" style={styles.cardRadius}>
             <CardBody>
-              <View style={styles.cardHeaderRow}>
-                <View style={[styles.iconCircle, { backgroundColor: colors.iconCircleBg }]}>
-                  <Icon name="cloud-outline" size={20} color={colors.accent} />
-                </View>
-                <View style={styles.cardHeaderTextCol}>
-                  <Text style={[styles.cardTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
-                    {t('settings.cloudSync.title')}
-                  </Text>
-                  <Text style={[styles.cardSubtitle, { color: colors.textSecondary, fontSize: typography.xs }]}>
-                    {t('settings.cloudSync.lastBackup', { time: t('settings.cloudSync.neverSynced') })}
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={handleCloudAction}
-                  style={styles.syncIconBtn}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('settings.cloudSync.syncNow')}
-                >
-                  <Icon name="sync-outline" size={22} color={colors.accent} />
-                </Pressable>
-              </View>
+              <CardHeader
+                icon="cloud-outline"
+                title={t('settings.cloudSync.title')}
+                action={
+                  <Pressable
+                    onPress={handleCloudAction}
+                    style={styles.syncIconBtn}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('settings.cloudSync.syncNow')}
+                  >
+                    <Icon name="sync-outline" size={22} color={colors.accent} />
+                  </Pressable>
+                }
+              />
 
               <View style={[styles.warningBanner, { backgroundColor: colors.warningBg, borderColor: colors.warningBorder }]}>
                 <Icon name="warning-outline" size={18} color={colors.warningText} />
@@ -241,41 +205,11 @@ const styles = StyleSheet.create({
   flexOne: {
     flex: 1,
   },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 16,
-  },
-  cardHeaderTextCol: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontFamily: FONTS.semiBold,
-    fontWeight: '600',
-  },
-  cardSubtitle: {
-    fontFamily: FONTS.regular,
-    marginTop: 2,
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
-  },
-  settingLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
   },
   settingLabel: {
     fontFamily: FONTS.medium,
