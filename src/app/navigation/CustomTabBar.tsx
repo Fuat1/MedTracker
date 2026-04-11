@@ -15,7 +15,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../shared/lib/use-theme';
 import { useSettingsStore } from '../../shared/lib/settings-store';
+import { useNavigationMode } from '../../shared/lib/use-navigation-mode';
 import { FONTS } from '../../shared/config/theme';
+import { NAV_BUTTON_BAR_EXTRA } from '../../shared/config/layout';
 import type { RootStackParamList } from './index';
 
 const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
@@ -38,6 +40,8 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
   const stackNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { preferredEntryMode, setPreferredEntryMode } = useSettingsStore();
+  const { mode } = useNavigationMode();
+  const navExtraPad = mode === 'buttons' ? NAV_BUTTON_BAR_EXTRA : 0;
 
   // Split: 2 left | FAB | 2 right
   const leftTabs = state.routes.slice(0, 2);
@@ -155,7 +159,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       style={[
         styles.container,
         {
-          paddingBottom: Math.max(insets.bottom, 8),
+          paddingBottom: Math.max(insets.bottom, 8) + navExtraPad,
           backgroundColor: colors.tabBarBackground,
           borderTopColor: colors.tabBarBorder,
         },
