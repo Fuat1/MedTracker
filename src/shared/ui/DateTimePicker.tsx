@@ -1,3 +1,58 @@
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type CalendarCell = {
+  date: Date;
+  isCurrentMonth: boolean;
+};
+
+// ─── Pure helpers (exported for testing) ──────────────────────────────────────
+
+/**
+ * Builds a 6×7 (42-cell) calendar grid for the given year/month.
+ * Cells outside the current month are marked isCurrentMonth: false.
+ * month is 0-indexed (0 = January).
+ */
+export function buildCalendarGrid(year: number, month: number): CalendarCell[] {
+  const firstDay = new Date(year, month, 1);
+  const startOffset = firstDay.getDay(); // 0 = Sunday
+  const cells: CalendarCell[] = [];
+
+  // Leading cells from previous month
+  for (let i = startOffset - 1; i >= 0; i--) {
+    cells.push({ date: new Date(year, month, -i), isCurrentMonth: false });
+  }
+
+  // Current month days
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    cells.push({ date: new Date(year, month, d), isCurrentMonth: true });
+  }
+
+  // Trailing cells to fill the 42-cell grid
+  const trailing = 42 - cells.length;
+  for (let d = 1; d <= trailing; d++) {
+    cells.push({ date: new Date(year, month + 1, d), isCurrentMonth: false });
+  }
+
+  return cells;
+}
+
+/** Returns true if two Date values fall on the same calendar day. */
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+/** Returns true if `date` is strictly after the current moment. */
+export function isFuture(date: Date): boolean {
+  return date.getTime() > Date.now();
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 import React, { useState } from 'react';
 import {
   View,
