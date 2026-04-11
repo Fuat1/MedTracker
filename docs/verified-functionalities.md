@@ -1,6 +1,6 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-04-05 (theme compliance implementation)
+> Last verified: 2026-04-11 (navigation bar detection)
 
 ---
 
@@ -448,3 +448,16 @@
 - `sync-conflict.test.ts` — 8 tests for last-writer-wins conflict resolution
 - `upload-queue.test.ts` — 10 tests for Firebase upload retry queue
 - `invite-code.test.ts` — 6 tests for pairing invite code generation/validation
+
+## 19. Navigation Bar Detection
+
+- App detects gesture vs 3-button software navigation via a native module on both Android and iOS
+- Android: queries `Settings.Secure.navigation_mode` (0/1 = buttons, 2 = gesture) via `NavigationBarModule.kt`
+- iOS: reads keyWindow `safeAreaInsets.bottom` (> 0 = gesture device, 0 = home-button device) via `NavigationBarModule.swift`
+- `useNavigationMode()` hook in `src/shared/lib/` caches result module-level; subsequent renders pay zero async cost
+- Returns `'gesture' | 'buttons' | 'unknown'`; unknown on missing module = no crash, no visual change
+- `CustomTabBar` adds `NAV_BUTTON_BAR_EXTRA` (16dp) to `paddingBottom` when `mode === 'buttons'`
+- `MedicationPage` list adds the same extra padding via `navExtraPad`
+- `HomePage` and `HistoryPage` use `useBottomTabBarHeight()` which auto-propagates the taller tab bar
+- `NAV_BUTTON_BAR_EXTRA = 16` lives in `src/shared/config/layout.ts` — easy to tune without touching components
+- 4 unit tests covering: missing module, gesture result, buttons result, unexpected string normalization
