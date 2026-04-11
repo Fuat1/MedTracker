@@ -78,10 +78,14 @@
   },
   "dateTime": {
     "selectTime": "Select Date & Time",
-    "day": "Day",
-    "hour": "Hour",
-    "minute": "Minute",
-    "setToNow": "Set to Now"
+    "setToNow": "Set to Now",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "selectDay": "{{day}} {{month}} {{year}}",
+    "incrementHour": "Increase hour",
+    "decrementHour": "Decrease hour",
+    "incrementMinute": "Increase minute",
+    "decrementMinute": "Decrease minute"
   },
   "tags": {
     "salt": "High Salt",
