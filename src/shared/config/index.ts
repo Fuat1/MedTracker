@@ -68,3 +68,6 @@ export * from './profile-constants';
 
 // Firebase configuration
 export * from './firebase';
+
+// Layout constants
+export * from './layout';

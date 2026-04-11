@@ -143,3 +143,7 @@ export {
 
 // Haptics
 export { hapticKeystroke, hapticSave, hapticCrisis } from './haptics';
+
+// Navigation bar detection
+export { getNativeNavigationMode, type NavigationMode } from './native-navigation-bar';
+export { useNavigationMode } from './use-navigation-mode';
