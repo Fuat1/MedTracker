@@ -354,7 +354,7 @@
 | Component | Description |
 |---|---|
 | `<Numpad />` | Custom numeric input for BP/weight entry — supports auto-advance mode |
-| `<DateTimePicker />` | Date and time selection with platform-specific pickers |
+| `<DateTimePicker />` | Bottom sheet with calendar grid (month navigation, future days greyed) + ± buttons for hour (step 1, wraps 0–23) and minute (step 5, wraps 0–55). "Set to Now" shortcut. Backdrop tap dismisses as Cancel. Props unchanged: `value`, `onChange`, `disabled`. |
 
 ### Button System
 | Component | Description |
