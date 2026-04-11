@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';import {
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { useNavigationMode } from '../../../shared/lib/use-navigation-mode';
+import { NAV_BUTTON_BAR_EXTRA } from '../../../shared/config/layout';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Card, Button, ButtonIcon, EmptyState, LoadingState } from '../../../shared/ui';
 import { useManageMedications } from '../../../features/track-medication/useManageMedications';
@@ -15,6 +17,8 @@ export default function MedicationPage() {
   const { colors } = useTheme();
 
   const { medications, isLoading, deleteMedication } = useManageMedications();
+  const { mode } = useNavigationMode();
+  const navExtraPad = mode === 'buttons' ? NAV_BUTTON_BAR_EXTRA : 0;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMedication, setEditingMedication] = useState<Medication | null>(null);
@@ -109,7 +113,7 @@ export default function MedicationPage() {
           data={medications}
           keyExtractor={(item) => item.id}
           renderItem={renderMedicationCard}
-          contentContainerStyle={{ ...styles.list, paddingBottom: insets.bottom + 100 }}
+          contentContainerStyle={{ ...styles.list, paddingBottom: insets.bottom + 100 + navExtraPad }}
         />
       )}
 
