@@ -1,5 +1,31 @@
 jest.mock('react-native-vector-icons/Ionicons', () => 'Icon');
 
+jest.mock('react-native-reanimated', () => ({
+  useSharedValue: (v) => ({ value: v }),
+  useAnimatedStyle: (fn) => fn(),
+  withSpring: (v) => v,
+  withTiming: (v) => v,
+  createAnimatedComponent: (c) => c,
+  FlatList: 'FlatList',
+  ScrollView: 'ScrollView',
+  View: 'View',
+  default: {
+    createAnimatedComponent: (c) => c,
+    View: 'View',
+    call: () => {},
+  },
+}));
+
+jest.mock('react-native-gesture-handler', () => ({
+  Pressable: 'Pressable',
+  GestureHandlerRootView: ({ children }) => children,
+  ScrollView: 'ScrollView',
+  FlatList: 'FlatList',
+  TouchableOpacity: 'TouchableOpacity',
+  State: {},
+  Directions: {},
+}));
+
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
