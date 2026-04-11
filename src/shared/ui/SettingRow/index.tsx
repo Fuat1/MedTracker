@@ -23,9 +23,9 @@ export function SettingRow({
   icon,
   iconColor,
 }: SettingRowProps) {
-  const {colors, typography} = useTheme();
+  const {colors, typography, touchTargetSize, interactiveSpacing} = useTheme();
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, {gap: interactiveSpacing, minHeight: touchTargetSize}]}>
       {icon && (
         <View style={[styles.iconCircle, {backgroundColor: colors.iconCircleBg}]}>
           <Icon name={icon} size={18} color={iconColor ?? colors.accent} />
@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   iconCircle: {
     width: 36,

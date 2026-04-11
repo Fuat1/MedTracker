@@ -110,8 +110,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 56,
+    minHeight: 56,
   },
   retryText: {
     fontSize: 15,

@@ -19,7 +19,9 @@ import { FONTS } from '../../../shared/config/theme';
 import { LIFESTYLE_TAGS } from '../../../entities/lifestyle-tag';
 import { CUSTOM_TAG_ICONS } from '../../../shared/config/custom-tag-icons';
 import { makeCustomTagKey } from '../../../shared/types/custom-tag';
+import { makeMedicationTagKey, isMedicationTagKey } from '../../../shared/types/medication-tag';
 import { useCustomTags, useCreateCustomTag, useDeleteCustomTag } from '../../../features/manage-tags';
+import { useManageMedications } from '../../../features/track-medication/useManageMedications';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
 
 interface TagPickerModalProps {
@@ -39,12 +41,20 @@ export function TagPickerModal({
 }: TagPickerModalProps) {
   const { t } = useTranslation('widgets');
   const { t: tCommon } = useTranslation('common');
-  const { colors, fontScale, typography } = useTheme();
+  const { colors, fontScale, typography, touchTargetSize } = useTheme();
   const insets = useSafeAreaInsets();
 
   const { data: customTags = [] } = useCustomTags();
   const createCustomTag = useCreateCustomTag();
   const deleteCustomTag = useDeleteCustomTag();
+
+  const { medications = [] } = useManageMedications();
+  const hasMedications = medications.length > 0;
+
+  // Derived: is any specific medication (or the generic 'medication' tag) active?
+  const selectedMedicationKeys = selectedTags.filter(isMedicationTagKey);
+  const isMedicationActive =
+    selectedTags.includes('medication') || selectedMedicationKeys.length > 0;
 
   // Sheet animation
   const backdropOpacity = useSharedValue(0);
@@ -63,6 +73,9 @@ export function TagPickerModal({
   const [newLabel, setNewLabel] = useState('');
   const [newIcon, setNewIcon] = useState(CUSTOM_TAG_ICONS[0]);
 
+  // Medication sub-picker state
+  const [showMedPicker, setShowMedPicker] = useState(false);
+
   useEffect(() => {
     if (visible) {
       backdropOpacity.value = withTiming(1, { duration: 200 });
@@ -74,6 +87,7 @@ export function TagPickerModal({
       setShowCreateForm(false);
       setNewLabel('');
       setNewIcon(CUSTOM_TAG_ICONS[0]);
+      setShowMedPicker(false);
     }
   }, [visible, backdropOpacity, slideAnim]);
 
@@ -95,6 +109,27 @@ export function TagPickerModal({
       onTagsChange(selectedTags.filter(existing => existing !== tag));
     } else {
       onTagsChange([...selectedTags, tag]);
+    }
+  };
+
+  const handleMedicationChipPress = () => {
+    if (hasMedications) {
+      // Open/close the inline medication sub-picker
+      setShowMedPicker(prev => !prev);
+    } else {
+      // No medications saved — fall back to simple toggle
+      toggleTag('medication');
+    }
+  };
+
+  const toggleMedicationTag = (tagKey: TagKey) => {
+    const isSelected = selectedTags.includes(tagKey);
+    // Remove the generic 'medication' boolean tag when specific ones are chosen
+    const withoutGeneric = selectedTags.filter(t => t !== 'medication');
+    if (isSelected) {
+      onTagsChange(withoutGeneric.filter(t => t !== tagKey));
+    } else {
+      onTagsChange([...withoutGeneric, tagKey]);
     }
   };
 
@@ -193,18 +228,74 @@ export function TagPickerModal({
             {hasCustomTags ? t('tagSelector.builtInSection') : undefined}
           </Text>
           <View style={styles.chipsGrid}>
-            {LIFESTYLE_TAGS.map(tagMeta => (
-              <TagChip
-                key={tagMeta.key}
-                icon={tagMeta.icon}
-                label={tCommon(tagMeta.labelKey as any)}
-                selected={selectedTags.includes(tagMeta.key)}
-                onPress={() => toggleTag(tagMeta.key)}
-                fontScale={fontScale}
-                disabled={disabled}
-              />
-            ))}
+            {LIFESTYLE_TAGS.map(tagMeta => {
+              if (tagMeta.key === 'medication') {
+                return (
+                  <TagChip
+                    key={tagMeta.key}
+                    icon={tagMeta.icon}
+                    label={tCommon(tagMeta.labelKey as any)}
+                    selected={isMedicationActive || showMedPicker}
+                    onPress={handleMedicationChipPress}
+                    fontScale={fontScale}
+                    disabled={disabled}
+                  />
+                );
+              }
+              return (
+                <TagChip
+                  key={tagMeta.key}
+                  icon={tagMeta.icon}
+                  label={tCommon(tagMeta.labelKey as any)}
+                  selected={selectedTags.includes(tagMeta.key)}
+                  onPress={() => toggleTag(tagMeta.key)}
+                  fontScale={fontScale}
+                  disabled={disabled}
+                />
+              );
+            })}
           </View>
+
+          {/* Medication sub-picker — expands when medication chip is tapped */}
+          {showMedPicker && (
+            <View style={[styles.medPickerSection, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+              <View style={styles.medPickerHeader}>
+                <Text style={[styles.medPickerLabel, { color: colors.textSecondary, fontSize: typography.xs }]}>
+                  {t('tagSelector.medPicker.sectionLabel')}
+                </Text>
+                <Pressable
+                  onPress={() => setShowMedPicker(false)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('tagSelector.medPicker.collapse')}
+                >
+                  <Icon name="chevron-up" size={14} color={colors.textTertiary} />
+                </Pressable>
+              </View>
+              {medications.length === 0 ? (
+                <Text style={[styles.medPickerEmpty, { color: colors.textTertiary, fontSize: typography.xs }]}>
+                  {t('tagSelector.medPicker.empty')}
+                </Text>
+              ) : (
+                <View style={styles.chipsGrid}>
+                  {medications.map(med => {
+                    const tagKey = makeMedicationTagKey(med.id);
+                    return (
+                      <TagChip
+                        key={tagKey}
+                        icon="medkit-outline"
+                        label={`${med.name} · ${med.dosage}`}
+                        selected={selectedTags.includes(tagKey)}
+                        onPress={() => toggleMedicationTag(tagKey)}
+                        fontScale={fontScale}
+                        disabled={disabled}
+                      />
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Custom tags section */}
           {hasCustomTags && (
@@ -301,7 +392,7 @@ export function TagPickerModal({
               {/* Form actions */}
               <View style={styles.createFormActions}>
                 <Pressable
-                  style={[styles.cancelBtn, { borderColor: colors.border }]}
+                  style={[styles.cancelBtn, { borderColor: colors.border, minHeight: touchTargetSize }]}
                   onPress={() => {
                     setShowCreateForm(false);
                     setNewLabel('');
@@ -319,6 +410,7 @@ export function TagPickerModal({
                     styles.saveBtn,
                     {
                       backgroundColor: newLabel.trim() ? colors.accent : colors.border,
+                      minHeight: touchTargetSize,
                     },
                   ]}
                   onPress={handleSaveCustomTag}
@@ -335,7 +427,7 @@ export function TagPickerModal({
           ) : (
             /* Create new tag button */
             <Pressable
-              style={[styles.createTagBtn, { borderColor: colors.accent }]}
+              style={[styles.createTagBtn, { borderColor: colors.accent, minHeight: touchTargetSize }]}
               onPress={() => setShowCreateForm(true)}
               disabled={disabled}
               accessibilityRole="button"
@@ -458,7 +550,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     marginTop: 8,
     marginBottom: 4,
-    minHeight: 44,
   },
   createTagBtnText: {
     fontFamily: FONTS.semiBold,
@@ -509,7 +600,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
-    minHeight: 44,
     justifyContent: 'center',
   },
   cancelBtnText: {
@@ -521,7 +611,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
-    minHeight: 44,
     justifyContent: 'center',
   },
   saveBtnText: {
@@ -538,5 +627,33 @@ const styles = StyleSheet.create({
   doneText: {
     fontFamily: FONTS.bold,
     fontWeight: '700',
+  },
+
+  // Medication sub-picker
+  medPickerSection: {
+    marginTop: 8,
+    marginBottom: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 12,
+    gap: 10,
+  },
+  medPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  medPickerLabel: {
+    fontFamily: FONTS.semiBold,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  medPickerEmpty: {
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    paddingVertical: 8,
   },
 });

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Medication, MedicationInput } from '../../../shared/api/medication-repository';
+import { FONTS } from '../../../shared/config/theme';
 import { useManageMedications } from '../../../features/track-medication/useManageMedications';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,7 +32,7 @@ function frequencyLabel(freq: string, t: (key: string, fallback: string) => stri
 
 export default function MedicationModal({ visible, onClose, medication }: Props) {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, typography, touchTargetSize } = useTheme();
   const insets = useSafeAreaInsets();
   const { addMedication, updateMedication, isAdding, isUpdating } = useManageMedications();
 
@@ -105,17 +106,17 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <TouchableOpacity onPress={onClose} style={styles.headerBtn}>
-              <Text style={[styles.cancelText, { color: colors.accent }]}>
+              <Text style={[styles.cancelText, { color: colors.accent, fontSize: typography.lg }]}>
                 {t('common:cancel', 'Cancel')}
               </Text>
             </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary, fontSize: typography.lg }]}>
               {medication
                 ? t('medication:edit', 'Edit Medication')
                 : t('medication:add', 'Add Medication')}
             </Text>
             <TouchableOpacity onPress={handleSave} style={styles.headerBtn} disabled={!canSave}>
-              <Text style={[styles.saveText, { color: canSave ? colors.accent : colors.textTertiary }]}>
+              <Text style={[styles.saveText, { color: canSave ? colors.accent : colors.textTertiary, fontSize: typography.lg }]}>
                 {isLoading ? '…' : t('common:save', 'Save')}
               </Text>
             </TouchableOpacity>
@@ -123,11 +124,11 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
 
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
             {/* Name */}
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+            <Text style={[styles.label, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {t('medication:name', 'MEDICATION NAME')}
             </Text>
             <TextInput
-              style={[styles.input, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface }]}
+              style={[styles.input, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface, fontSize: typography.md }]}
               value={name}
               onChangeText={setName}
               placeholder={t('medication:namePlaceholder', 'e.g. Amlodipine')}
@@ -136,11 +137,11 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
             />
 
             {/* Dosage */}
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+            <Text style={[styles.label, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {t('medication:dosage', 'DOSAGE')}
             </Text>
             <TextInput
-              style={[styles.input, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface }]}
+              style={[styles.input, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface, fontSize: typography.md }]}
               value={dosage}
               onChangeText={setDosage}
               placeholder={t('medication:dosagePlaceholder', 'e.g. 5mg, 1 tablet')}
@@ -149,7 +150,7 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
             />
 
             {/* Frequency */}
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+            <Text style={[styles.label, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {t('medication:frequency', 'FREQUENCY')}
             </Text>
             <View style={styles.frequencyRow}>
@@ -165,7 +166,7 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
                 >
                   <Text style={[
                     styles.freqChipText,
-                    { color: frequency === freq ? colors.accent : colors.textSecondary },
+                    { color: frequency === freq ? colors.accent : colors.textSecondary, fontSize: typography.xs },
                   ]}>
                     {frequencyLabel(freq, t)}
                   </Text>
@@ -174,12 +175,12 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
             </View>
 
             {/* Reminders */}
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+            <Text style={[styles.label, { color: colors.textSecondary, fontSize: typography.xs }]}>
               {t('medication:reminders', 'DAILY REMINDERS')}
             </Text>
             <View style={styles.reminderInputRow}>
               <TextInput
-                style={[styles.input, styles.reminderInput, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface }]}
+                style={[styles.input, styles.reminderInput, { color: colors.textPrimary, borderColor: colors.border, backgroundColor: colors.surface, fontSize: typography.md }]}
                 value={newReminder}
                 onChangeText={(v) => { setNewReminder(v); setReminderError(''); }}
                 placeholder="08:00"
@@ -190,19 +191,19 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
                 onSubmitEditing={handleAddReminder}
               />
               <TouchableOpacity
-                style={[styles.addBtn, { backgroundColor: colors.accent }]}
+                style={[styles.addBtn, { backgroundColor: colors.accent, width: touchTargetSize, height: touchTargetSize }]}
                 onPress={handleAddReminder}
               >
                 <Icon name="add" size={22} color="#FFF" />
               </TouchableOpacity>
             </View>
             {reminderError ? (
-              <Text style={[styles.errorText, { color: colors.error }]}>{reminderError}</Text>
+              <Text style={[styles.errorText, { color: colors.error, fontSize: typography.xs }]}>{reminderError}</Text>
             ) : null}
 
             <View style={styles.chipRow}>
               {reminders.length === 0 ? (
-                <Text style={[styles.noReminders, { color: colors.textTertiary }]}>
+                <Text style={[styles.noReminders, { color: colors.textTertiary, fontSize: typography.sm }]}>
                   {t('medication:noReminders', 'No reminders set')}
                 </Text>
               ) : reminders.map(time => (
@@ -211,13 +212,13 @@ export default function MedicationModal({ visible, onClose, medication }: Props)
                   style={[styles.timeChip, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => removeReminder(time)}
                 >
-                  <Text style={[styles.timeChipText, { color: colors.textPrimary }]}>{time}</Text>
+                  <Text style={[styles.timeChipText, { color: colors.textPrimary, fontSize: typography.sm }]}>{time}</Text>
                   <Icon name="close-circle" size={16} color={colors.textSecondary} />
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={[styles.hint, { color: colors.textTertiary }]}>
+            <Text style={[styles.hint, { color: colors.textTertiary, fontSize: typography.xs }]}>
               {t('medication:reminderHint', 'Tap a time chip to remove it')}
             </Text>
           </ScrollView>
@@ -250,19 +251,16 @@ const styles = StyleSheet.create({
     minWidth: 64,
   },
   headerTitle: {
-    fontFamily: 'Nunito-Bold',
+    fontFamily: FONTS.bold,
     fontWeight: '700',
-    fontSize: 17,
   },
   cancelText: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 17,
   },
   saveText: {
-    fontFamily: 'Nunito-SemiBold',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 17,
     textAlign: 'right',
   },
   scrollContent: {
@@ -270,9 +268,8 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   label: {
-    fontFamily: 'Nunito-SemiBold',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 11,
     letterSpacing: 0.8,
     marginTop: 20,
     marginBottom: 8,
@@ -282,9 +279,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 14,
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 16,
   },
   frequencyRow: {
     flexDirection: 'row',
@@ -298,9 +294,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   freqChipText: {
-    fontFamily: 'Nunito-SemiBold',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 13,
   },
   reminderInputRow: {
     flexDirection: 'row',
@@ -311,16 +306,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addBtn: {
-    width: 50,
-    height: 50,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   errorText: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 13,
     marginTop: 6,
   },
   chipRow: {
@@ -339,20 +331,17 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   timeChipText: {
-    fontFamily: 'Nunito-SemiBold',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 14,
   },
   noReminders: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 14,
     fontStyle: 'italic',
   },
   hint: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 12,
     marginTop: 8,
   },
 });

@@ -127,7 +127,7 @@ function LinkedPersonCard({
 
 export function SharingSettingsPage() {
   const { t } = useTranslation('pages');
-  const { colors, typography } = useTheme();
+  const { colors, typography, touchTargetSize } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NavProp>();
   const { signOut, deleteAccount, user: firebaseUser } = useFirebaseAuth();
@@ -222,7 +222,7 @@ export function SharingSettingsPage() {
       <Animated.View entering={FadeInDown.duration(300)} style={styles.header}>
         <Pressable
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
+          style={[styles.backButton, { minHeight: touchTargetSize, minWidth: touchTargetSize }]}
           accessibilityRole="button"
           accessibilityLabel={t('common.back', { defaultValue: 'Back' })}
         >
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  backButton: { padding: 4, minWidth: 44, minHeight: 44, justifyContent: 'center' },
+  backButton: { padding: 4, justifyContent: 'center' },
   headerTitle: { flex: 1, textAlign: 'center', fontFamily: FONTS.bold, fontWeight: '700' },
   headerRight: { minWidth: 44 },
   scrollContent: { paddingHorizontal: 16, gap: 12 },

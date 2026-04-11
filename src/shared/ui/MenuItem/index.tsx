@@ -24,7 +24,7 @@ export function MenuItem({
   showChevron = true,
   rightElement,
 }: MenuItemProps) {
-  const {colors, typography} = useTheme();
+  const {colors, typography, touchTargetSize} = useTheme();
   return (
     <Pressable
       style={[
@@ -32,6 +32,7 @@ export function MenuItem({
         {
           backgroundColor: colors.surface,
           shadowColor: colors.shadow,
+          minHeight: touchTargetSize,
         },
       ]}
       onPress={onPress}

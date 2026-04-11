@@ -10,7 +10,7 @@ import { Medication } from '../../shared/api/medication-repository';
 
 export default function TodayScheduleCard() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
   const { medications, todayLogs, logDose, isLogging } = useTodayMedicationSchedule();
 
   if (medications.length === 0) return null;
@@ -34,7 +34,7 @@ export default function TodayScheduleCard() {
         <CardBody style={styles.cardBodyNoPadding}>
           <View style={styles.header}>
             <Icon name="medical" size={18} color={colors.accent} />
-            <Text style={[styles.title, { color: colors.textPrimary }]}>
+            <Text style={[styles.title, { color: colors.textPrimary, fontSize: typography.md }]}>
               {t('medication:todayTitle', 'Today\'s Medications')}
             </Text>
           </View>
@@ -46,8 +46,8 @@ export default function TodayScheduleCard() {
             return (
               <View key={med.id} style={[styles.row, { borderTopColor: colors.border }]}>
                 <View style={styles.info}>
-                  <Text style={[styles.name, { color: colors.textPrimary }]}>{med.name}</Text>
-                  <Text style={[styles.detail, { color: colors.textSecondary }]}>
+                  <Text style={[styles.name, { color: colors.textPrimary, fontSize: typography.sm }]}>{med.name}</Text>
+                  <Text style={[styles.detail, { color: colors.textSecondary, fontSize: typography.xs }]}>
                     {med.dosage}{times.length > 0 ? ` · ${times.join(', ')}` : ''}
                   </Text>
                 </View>
@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-SemiBold',
     fontWeight: '600',
-    fontSize: 15,
   },
   row: {
     flexDirection: 'row',
@@ -104,12 +103,10 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: 'Nunito-SemiBold',
     fontWeight: '600',
-    fontSize: 14,
   },
   detail: {
     fontFamily: 'Nunito-Regular',
     fontWeight: '400',
-    fontSize: 12,
     marginTop: 2,
   },
   markBtn: {

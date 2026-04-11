@@ -52,7 +52,7 @@ export function CrisisModal({
 }: CrisisModalProps) {
   const { t: tMedical } = useTranslation('medical');
   const { t: tCommon } = useTranslation('common');
-  const { colors, highContrast } = useTheme();
+  const { colors, highContrast, touchTargetSize } = useTheme();
 
   const [step, setStep] = useState<Step>('symptoms');
   const [checkedSymptoms, setCheckedSymptoms] = useState<Set<string>>(new Set());
@@ -144,7 +144,7 @@ export function CrisisModal({
         <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
 
           {/* Top stripe */}
-          <View style={[styles.stripe, { backgroundColor: colors.crisisRed }]} />
+          <View style={[styles.stripe, { backgroundColor: colors.crisisRed, minHeight: touchTargetSize }]} />
 
           {/* Icon */}
           <View style={[styles.iconCircle, { backgroundColor: colors.crisisRed, shadowColor: colors.crisisRed }]}>
@@ -195,7 +195,7 @@ export function CrisisModal({
                       key={key}
                       style={[
                         styles.symptomRow,
-                        { borderBottomColor: colors.borderLight },
+                        { borderBottomColor: colors.borderLight, minHeight: touchTargetSize },
                         checked && { backgroundColor: colors.errorBackground },
                       ]}
                       onPress={() => toggleSymptom(key)}
@@ -206,7 +206,7 @@ export function CrisisModal({
                       <View style={[
                         styles.checkbox,
                         { borderColor: checked ? colors.crisisRed : colors.border },
-                        checked && { backgroundColor: colors.crisisRed },
+                        checked && { backgroundColor: colors.crisisRed, minHeight: touchTargetSize },
                       ]}>
                         {checked && <Icon name="checkmark" size={14} color={colors.surface} />}
                       </View>
@@ -219,7 +219,7 @@ export function CrisisModal({
               </ScrollView>
               <View style={styles.buttons}>
                 <Pressable
-                  style={[styles.cancelButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+                  style={[styles.cancelButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, minHeight: touchTargetSize }]}
                   onPress={onCancel}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.cancel')}
@@ -229,7 +229,7 @@ export function CrisisModal({
                   </Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.confirmButton, { backgroundColor: colors.crisisRed }]}
+                  style={[styles.confirmButton, { backgroundColor: colors.crisisRed, minHeight: touchTargetSize }]}
                   onPress={handleSymptomsNext}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.continue')}
@@ -245,7 +245,7 @@ export function CrisisModal({
           {/* Step: EMERGENCY — symptoms present → call 911 */}
           {step === 'emergency' && (
             <>
-              <View style={[styles.emergencyBanner, { backgroundColor: colors.crisisRed }]}>
+              <View style={[styles.emergencyBanner, { backgroundColor: colors.crisisRed, minHeight: touchTargetSize }]}>
                 <Icon name="call" size={22} color={colors.surface} />
                 <Text style={[styles.emergencyTitle, { color: colors.surface }]}>
                   {tMedical('crisis.emergency.title')}
@@ -259,7 +259,7 @@ export function CrisisModal({
               </Text>
               <View style={styles.buttons}>
                 <Pressable
-                  style={[styles.confirmButton, styles.fullWidth, { backgroundColor: colors.crisisRed }]}
+                  style={[styles.confirmButton, styles.fullWidth, { backgroundColor: colors.crisisRed, minHeight: touchTargetSize }]}
                   onPress={handleCall911}
                   accessibilityRole="button"
                   accessibilityLabel={tMedical('crisis.emergency.title')}
@@ -272,7 +272,7 @@ export function CrisisModal({
               </View>
               <View style={[styles.buttons, styles.buttonsSpaced]}>
                 <Pressable
-                  style={[styles.cancelButton, styles.fullWidth, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+                  style={[styles.cancelButton, styles.fullWidth, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, minHeight: touchTargetSize }]}
                   onPress={onConfirm}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.saveAnyway')}
@@ -303,7 +303,7 @@ export function CrisisModal({
               </Text>
               <View style={styles.buttons}>
                 <Pressable
-                  style={[styles.cancelButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+                  style={[styles.cancelButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, minHeight: touchTargetSize }]}
                   onPress={onCancel}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.cancel')}
@@ -313,7 +313,7 @@ export function CrisisModal({
                   </Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.confirmButton, { backgroundColor: colors.crisisRed }]}
+                  style={[styles.confirmButton, { backgroundColor: colors.crisisRed, minHeight: touchTargetSize }]}
                   onPress={onConfirm}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.saveAnyway')}
@@ -437,7 +437,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderRadius: 8,
     gap: 10,
-    minHeight: 44,
   },
   checkbox: {
     width: 22,
@@ -529,7 +528,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    minHeight: 44,
   },
   cancelText: {
     fontSize: 14,
@@ -544,7 +542,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    minHeight: 44,
   },
   confirmText: {
     fontSize: 14,

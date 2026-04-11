@@ -37,7 +37,7 @@ const TAB_LABEL_KEYS = {
 export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { colors, touchTargetSize } = useTheme();
   const stackNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { preferredEntryMode, setPreferredEntryMode } = useSettingsStore();
   const { mode } = useNavigationMode();
@@ -131,7 +131,7 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     return (
       <Pressable
         key={route.key}
-        style={styles.tabButton}
+        style={[styles.tabButton, { minHeight: touchTargetSize }]}
         onPress={onPress}
         accessibilityRole="tab"
         accessibilityLabel={t(labelKey)}
@@ -221,7 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
-    minHeight: 48,
   },
   tabLabel: {
     fontSize: 11,

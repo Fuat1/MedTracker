@@ -24,7 +24,7 @@ interface BPReadingFormProps {
 }
 
 export function BPReadingForm({variant, title, subtitle, autoAdvance, onDismiss}: BPReadingFormProps) {
-  const {colors, fontScale, typography} = useTheme();
+  const {colors, fontScale, typography, touchTargetSize} = useTheme();
 
   const {
     systolic, diastolic, pulse,
@@ -88,7 +88,7 @@ export function BPReadingForm({variant, title, subtitle, autoAdvance, onDismiss}
           )}
         </View>
         <Pressable
-          style={[styles.closeButton, {backgroundColor: colors.surfaceSecondary}]}
+          style={[styles.closeButton, {backgroundColor: colors.surfaceSecondary, width: touchTargetSize, height: touchTargetSize, borderRadius: touchTargetSize / 2}]}
           onPress={onDismiss}
           accessibilityRole="button"
           accessibilityLabel={tCommon('buttons.close' as any)}
@@ -476,9 +476,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -488,7 +485,7 @@ const styles = StyleSheet.create({
 
   // ── Top sections ──
   topSectionFull: {paddingTop: 8},
-  topSectionCompact: {flex: 1, justifyContent: 'center', paddingTop: 4},
+  topSectionCompact: {paddingTop: 12},
 
   dateTimeWrapper: {
     flexDirection: 'row',
@@ -689,5 +686,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
-  saveRow: {paddingHorizontal: 16, paddingTop: 10, paddingBottom: 8},
+  saveRow: {paddingHorizontal: 16, paddingTop: 10, paddingBottom: 22},
 });

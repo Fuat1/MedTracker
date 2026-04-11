@@ -16,7 +16,7 @@ interface TagSelectorProps {
 export function TagSelector({ selectedTags, onTagsChange, disabled }: TagSelectorProps) {
   const { t } = useTranslation('widgets');
   const { t: tCommon } = useTranslation('common');
-  const { colors, fontScale, typography } = useTheme();
+  const { colors, fontScale, typography, touchTargetSize } = useTheme();
   const [expanded, setExpanded] = useState(selectedTags.length > 0);
 
   const toggleTag = (tag: LifestyleTag) => {
@@ -30,7 +30,7 @@ export function TagSelector({ selectedTags, onTagsChange, disabled }: TagSelecto
   return (
     <View style={styles.container}>
       <Pressable
-        style={styles.header}
+        style={[styles.header, {minHeight: touchTargetSize}]}
         onPress={() => setExpanded(!expanded)}
         accessibilityRole="button"
         accessibilityLabel={t('tagSelector.title')}
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 44,
   },
   headerLeft: {
     flexDirection: 'row',

@@ -16,7 +16,7 @@ export function CollapsibleCard({
   children,
   testID,
 }: CollapsibleCardProps) {
-  const {colors, typography} = useTheme();
+  const {colors, typography, touchTargetSize} = useTheme();
   const {t} = useTranslation();
   const {toggle, expanded, animatedStyle} = useCollapse(defaultExpanded);
 
@@ -28,7 +28,7 @@ export function CollapsibleCard({
         accessibilityState={{expanded}}
         accessibilityLabel={title}
         accessibilityHint={t('shared.collapsibleCard.hint')}
-        style={styles.header}>
+        style={[styles.header, {minHeight: touchTargetSize}]}>
         <Text
           style={{
             color: colors.textPrimary,
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 44,
   },
   content: {
     overflow: 'hidden',

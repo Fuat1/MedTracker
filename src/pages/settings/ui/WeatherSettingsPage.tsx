@@ -30,7 +30,7 @@ type Props = NativeStackScreenProps<SettingsStackParamList, 'WeatherSettings'>;
 export function WeatherSettingsPage({ navigation }: Props) {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { colors, typography } = useTheme();
+  const { colors, typography, touchTargetSize } = useTheme();
   const insets = useSafeAreaInsets();
 
   const {
@@ -211,7 +211,7 @@ export function WeatherSettingsPage({ navigation }: Props) {
                               onPress={() => handleCitySelect(city)}
                               style={[
                                 styles.cityResult,
-                                { borderBottomColor: colors.borderLight },
+                                { borderBottomColor: colors.borderLight, minHeight: touchTargetSize },
                               ]}
                               accessibilityRole="button"
                               accessibilityLabel={`${city.name}, ${city.country}`}
@@ -412,7 +412,6 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    minHeight: 44,
   },
   cityName: {
     flex: 1,

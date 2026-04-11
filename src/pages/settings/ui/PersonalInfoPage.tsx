@@ -25,7 +25,7 @@ type Props = NativeStackScreenProps<SettingsStackParamList, 'PersonalInfo'>;
 export function PersonalInfoPage({ navigation }: Props) {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { colors, typography } = useTheme();
+  const { colors, typography, touchTargetSize } = useTheme();
 
   const {
     defaultLocation,
@@ -441,7 +441,7 @@ export function PersonalInfoPage({ navigation }: Props) {
 
               <View style={styles.actions}>
                 <Pressable
-                  style={[styles.actionButton, { backgroundColor: colors.surfaceSecondary }]}
+                  style={[styles.actionButton, { backgroundColor: colors.surfaceSecondary, minHeight: touchTargetSize }]}
                   onPress={handleDobCancel}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.cancel')}
@@ -451,7 +451,7 @@ export function PersonalInfoPage({ navigation }: Props) {
                   </Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.actionButton, styles.actionButtonPrimary, { backgroundColor: colors.accent }]}
+                  style={[styles.actionButton, styles.actionButtonPrimary, { backgroundColor: colors.accent, minHeight: touchTargetSize }]}
                   onPress={handleDobSave}
                   accessibilityRole="button"
                   accessibilityLabel={tCommon('buttons.done')}
@@ -637,7 +637,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
-    minHeight: 48,
   },
   actionButtonPrimary: {},
   actionButtonText: {
