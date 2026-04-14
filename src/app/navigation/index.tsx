@@ -8,7 +8,7 @@ import BootSplash from 'react-native-bootsplash';
 import notifee, { EventType } from '@notifee/react-native';
 import { Toast } from '../../shared/ui';
 import { useToastStore } from '../../shared/lib/toast-store';
-import { HistoryPage, SettingsPage, EditReadingPage, MedicationPage, VoiceConfirmationPage, MetricHomePage, MetricHistoryPage, MetricNewReadingPage } from '../../pages';
+import { SettingsPage, EditReadingPage, MedicationPage, VoiceConfirmationPage, MetricHomePage, MetricHistoryPage, MetricNewReadingPage } from '../../pages';
 import { PersonalInfoPage } from '../../pages/settings/ui/PersonalInfoPage';
 import { ClassificationPage } from '../../pages/settings/ui/ClassificationPage';
 import { AppSettingsPage } from '../../pages/settings/ui/AppSettingsPage';
