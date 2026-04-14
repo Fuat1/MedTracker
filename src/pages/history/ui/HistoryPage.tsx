@@ -515,9 +515,11 @@ export function HistoryPage() {
             {/* PP/MAP Toggles */}
             <View style={styles.togglesRow}>
               <View style={styles.toggleItem}>
-                <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                  {t('analytics.toggles.showPP')}
-                </Text>
+                <View style={styles.toggleLabelWrap}>
+                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.toggles.showPP')}
+                  </Text>
+                </View>
                 <Switch
                   value={showPP}
                   onValueChange={setShowPP}
@@ -528,9 +530,11 @@ export function HistoryPage() {
                 />
               </View>
               <View style={styles.toggleItem}>
-                <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                  {t('analytics.toggles.showMAP')}
-                </Text>
+                <View style={styles.toggleLabelWrap}>
+                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                    {t('analytics.toggles.showMAP')}
+                  </Text>
+                </View>
                 <Switch
                   value={showMAP}
                   onValueChange={setShowMAP}
@@ -776,9 +780,11 @@ export function HistoryPage() {
                   <Icon name="checkmark" size={18} color={colors.accent} />
                 )}
               </View>
-              <Text style={[styles.checkboxLabel, { color: colors.textPrimary, fontSize: typography.md }]}>
-                {t('analytics.export.includePPMAP')}
-              </Text>
+              <View style={styles.checkboxLabelWrap}>
+                <Text style={[styles.checkboxLabel, { color: colors.textPrimary, fontSize: typography.md }]}>
+                  {t('analytics.export.includePPMAP')}
+                </Text>
+              </View>
             </Pressable>
 
             <View style={styles.exportButtonsRow}>
@@ -908,6 +914,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.semiBold,
     fontWeight: '600',
   },
+  filterTabIcon: {
+    marginRight: 4,
+  },
 
   // Analytics scroll
   analyticsScrollContent: {
@@ -1033,9 +1042,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   toggleItem: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  toggleLabelWrap: {
+    flex: 1,
   },
   toggleLabel: {
     fontFamily: FONTS.medium,
@@ -1158,6 +1171,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkboxLabelWrap: {
+    flex: 1,
   },
   checkboxLabel: {
     fontFamily: FONTS.medium,

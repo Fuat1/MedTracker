@@ -39,6 +39,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardDivider,
   StatCard,
   ProfileBadgeRow,
   InfoHintRow,
@@ -56,7 +57,7 @@ type PeriodKey = '7d' | '14d' | '30d' | '90d' | 'all' | 'custom';
 export function AnalyticsPage() {
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { colors, typography } = useTheme();
+  const { colors, typography, seniorMode } = useTheme();
   const { width: screenWidth } = useWindowDimensions();
   const { data: allRecords } = useBPRecords();
   const { exportPdf, downloadPdf, isExporting, activeAction } = useExportPdf();
@@ -236,11 +237,13 @@ export function AnalyticsPage() {
             <CardHeader title={t('analytics.bpTrends')} />
             <CardBody>
               {/* PP/MAP Toggles */}
-              <View style={styles.togglesRow}>
-                <View style={styles.toggleItem}>
-                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                    {t('analytics.toggles.showPP')}
-                  </Text>
+              <View style={[styles.togglesRow, seniorMode && styles.togglesRowColumn]}>
+                <View style={[styles.toggleItem, seniorMode && styles.toggleItemFull]}>
+                  <View style={styles.toggleLabelWrap}>
+                    <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                      {t('analytics.toggles.showPP')}
+                    </Text>
+                  </View>
                   <Switch
                     value={showPP}
                     onValueChange={setShowPP}
@@ -250,10 +253,12 @@ export function AnalyticsPage() {
                     accessibilityLabel={t('analytics.toggles.showPP')}
                   />
                 </View>
-                <View style={styles.toggleItem}>
-                  <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
-                    {t('analytics.toggles.showMAP')}
-                  </Text>
+                <View style={[styles.toggleItem, seniorMode && styles.toggleItemFull]}>
+                  <View style={styles.toggleLabelWrap}>
+                    <Text style={[styles.toggleLabel, { color: colors.textSecondary, fontSize: typography.sm }]}>
+                      {t('analytics.toggles.showMAP')}
+                    </Text>
+                  </View>
                   <Switch
                     value={showMAP}
                     onValueChange={setShowMAP}
@@ -296,6 +301,74 @@ export function AnalyticsPage() {
                   map: 'MAP',
                 }}
               />
+
+              <CardDivider />
+
+              {/* Include PP/MAP Checkbox */}
+              <Pressable
+                style={styles.checkboxRow}
+                onPress={() => setIncludePPMAPInExport(!includePPMAPInExport)}
+                accessibilityRole="checkbox"
+                accessibilityLabel={t('analytics.export.includePPMAP')}
+                accessibilityState={{ checked: includePPMAPInExport }}
+              >
+                <View style={[styles.checkbox, { borderColor: colors.border }]}>
+                  {includePPMAPInExport && (
+                    <Icon name="checkmark" size={18} color={colors.accent} />
+                  )}
+                </View>
+                <View style={styles.checkboxLabelWrap}>
+                  <Text style={[styles.checkboxLabel, { color: colors.textPrimary, fontSize: typography.md }]}>
+                    {t('analytics.export.includePPMAP')}
+                  </Text>
+                </View>
+              </Pressable>
+
+              <ButtonGroup direction="row" spacing="lg">
+                {/* Save to Device */}
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onPress={() =>
+                    downloadPdf(records, {
+                      period: getPeriodLabel(),
+                      doctorNote: doctorNote.trim() || undefined,
+                      includePPMAP: includePPMAPInExport,
+                    })
+                  }
+                  isDisabled={isExporting}
+                  isLoading={activeAction === 'save'}
+                  accessibilityLabel={t('analytics.savePdf')}
+                  style={styles.exportBtn}
+                >
+                  <ButtonIcon as={Icon} name="download-outline" />
+                  <ButtonText>
+                    {activeAction === 'save' ? t('analytics.savingPdf') : t('analytics.savePdf')}
+                  </ButtonText>
+                </Button>
+
+                {/* Share PDF */}
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onPress={() =>
+                    exportPdf(records, {
+                      period: getPeriodLabel(),
+                      doctorNote: doctorNote.trim() || undefined,
+                      includePPMAP: includePPMAPInExport,
+                    })
+                  }
+                  isDisabled={isExporting}
+                  isLoading={activeAction === 'share'}
+                  accessibilityLabel={t('analytics.exportPdf')}
+                  style={styles.exportBtn}
+                >
+                  <ButtonIcon as={Icon} name="share-outline" />
+                  <ButtonText>
+                    {activeAction === 'share' ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
+                  </ButtonText>
+                </Button>
+              </ButtonGroup>
             </CardBody>
           </Card>
         </Animated.View>
@@ -509,72 +582,6 @@ export function AnalyticsPage() {
           {t('analytics.disclaimer')}
         </Text>
 
-        {/* Export PDF Button */}
-        <Animated.View entering={FadeInUp.delay(350).duration(500)} style={styles.exportContainer}>
-          {/* Include PP/MAP Checkbox */}
-          <Pressable
-            style={styles.checkboxRow}
-            onPress={() => setIncludePPMAPInExport(!includePPMAPInExport)}
-            accessibilityRole="checkbox"
-            accessibilityLabel={t('analytics.export.includePPMAP')}
-            accessibilityState={{ checked: includePPMAPInExport }}
-          >
-            <View style={[styles.checkbox, { borderColor: colors.border }]}>
-              {includePPMAPInExport && (
-                <Icon name="checkmark" size={18} color={colors.accent} />
-              )}
-            </View>
-            <Text style={[styles.checkboxLabel, { color: colors.textPrimary, fontSize: typography.md }]}>
-              {t('analytics.export.includePPMAP')}
-            </Text>
-          </Pressable>
-
-          <ButtonGroup direction="row" spacing="lg">
-            {/* Save to Device */}
-            <Button
-              variant="secondary"
-              size="lg"
-              onPress={() =>
-                downloadPdf(records, {
-                  period: getPeriodLabel(),
-                  doctorNote: doctorNote.trim() || undefined,
-                  includePPMAP: includePPMAPInExport,
-                })
-              }
-              isDisabled={isExporting}
-              isLoading={activeAction === 'save'}
-              accessibilityLabel={t('analytics.savePdf')}
-              style={styles.exportBtn}
-            >
-              <ButtonIcon as={Icon} name="download-outline" />
-              <ButtonText>
-                {activeAction === 'save' ? t('analytics.savingPdf') : t('analytics.savePdf')}
-              </ButtonText>
-            </Button>
-
-            {/* Share PDF */}
-            <Button
-              variant="primary"
-              size="lg"
-              onPress={() =>
-                exportPdf(records, {
-                  period: getPeriodLabel(),
-                  doctorNote: doctorNote.trim() || undefined,
-                  includePPMAP: includePPMAPInExport,
-                })
-              }
-              isDisabled={isExporting}
-              isLoading={activeAction === 'share'}
-              accessibilityLabel={t('analytics.exportPdf')}
-              style={styles.exportBtn}
-            >
-              <ButtonIcon as={Icon} name="share-outline" />
-              <ButtonText>
-                {activeAction === 'share' ? t('analytics.generatingPdf') : t('analytics.exportPdf')}
-              </ButtonText>
-            </Button>
-          </ButtonGroup>
-        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -754,10 +761,21 @@ const styles = StyleSheet.create({
     gap: 20,
     marginBottom: 16,
   },
+  togglesRowColumn: {
+    flexDirection: 'column',
+    gap: 12,
+  },
   toggleItem: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  toggleItemFull: {
+    justifyContent: 'space-between',
+  },
+  toggleLabelWrap: {
+    flex: 1,
   },
   toggleLabel: {
     fontFamily: FONTS.medium,
@@ -778,15 +796,13 @@ const styles = StyleSheet.create({
   },
 
   // Export
-  exportContainer: {
-    paddingHorizontal: 20,
-  },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     marginBottom: 16,
     paddingVertical: 8,
+    alignSelf: 'stretch',
   },
   checkbox: {
     width: 24,
@@ -795,6 +811,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkboxLabelWrap: {
+    flex: 1,
   },
   checkboxLabel: {
     fontFamily: FONTS.medium,
