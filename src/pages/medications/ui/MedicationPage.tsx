@@ -7,6 +7,7 @@ import { useNavigationMode } from '../../../shared/lib/use-navigation-mode';
 import { NAV_BUTTON_BAR_EXTRA } from '../../../shared/config/layout';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Card, Button, ButtonIcon, EmptyState, LoadingState } from '../../../shared/ui';
+import { FONTS } from '../../../shared/config/theme';
 import { useManageMedications } from '../../../features/track-medication/useManageMedications';
 import { Medication } from '../../../shared/api/medication-repository';
 import MedicationModal from './MedicationModal';
@@ -14,7 +15,7 @@ import MedicationModal from './MedicationModal';
 export default function MedicationPage() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
 
   const { medications, isLoading, deleteMedication } = useManageMedications();
   const { mode } = useNavigationMode();
@@ -62,8 +63,8 @@ export default function MedicationPage() {
               <Icon name="medical" size={20} color={colors.accent} />
             </View>
             <View>
-              <Text style={[styles.medName, { color: colors.textPrimary }]}>{item.name}</Text>
-              <Text style={[styles.medDosage, { color: colors.textSecondary }]}>{item.dosage}</Text>
+              <Text style={[styles.medName, { color: colors.textPrimary, fontSize: typography.lg }]}>{item.name}</Text>
+              <Text style={[styles.medDosage, { color: colors.textSecondary, fontSize: typography.sm }]}>{item.dosage}</Text>
             </View>
           </View>
           <Pressable
@@ -79,7 +80,7 @@ export default function MedicationPage() {
 
         <View style={[styles.reminderRow, { borderTopColor: colors.border }]}>
           <Icon name="alarm-outline" size={15} color={colors.accent} />
-          <Text style={[styles.reminderText, { color: colors.textSecondary }]}>
+          <Text style={[styles.reminderText, { color: colors.textSecondary, fontSize: typography.xs }]}>
             {times.length > 0
               ? times.join(' · ')
               : t('medication:noReminders', 'No reminders set')}
@@ -92,10 +93,10 @@ export default function MedicationPage() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>
+        <Text style={[styles.title, { color: colors.textPrimary, fontSize: typography['2xl'] }]}>
           {t('medication:title', 'Medications')}
         </Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+        <Text style={[styles.subtitle, { color: colors.textSecondary, fontSize: typography.sm }]}>
           {t('medication:subtitle', 'Track adherence & set reminders')}
         </Text>
       </View>
@@ -141,28 +142,25 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 16,
+    paddingBottom: 6,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   title: {
-    fontFamily: 'Nunito-Bold',
+    fontFamily: FONTS.bold,
     fontWeight: '700',
-    fontSize: 28,
   },
   subtitle: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 14,
-    marginTop: 2,
   },
   list: {
     padding: 16,
-    gap: 12,
   },
   medCard: {
     padding: 0,
     borderRadius: 16,
     overflow: 'hidden',
+    marginBottom: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -184,14 +182,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   medName: {
-    fontFamily: 'Nunito-SemiBold',
+    fontFamily: FONTS.semiBold,
     fontWeight: '600',
-    fontSize: 17,
   },
   medDosage: {
-    fontFamily: 'Nunito-Regular',
+    fontFamily: FONTS.regular,
     fontWeight: '400',
-    fontSize: 14,
     marginTop: 2,
   },
   deleteButton: {
@@ -206,9 +202,8 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   reminderText: {
-    fontFamily: 'Nunito-Medium',
+    fontFamily: FONTS.medium,
     fontWeight: '500',
-    fontSize: 13,
   },
   fab: {
     position: 'absolute',
