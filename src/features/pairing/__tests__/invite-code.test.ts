@@ -11,7 +11,6 @@ import {
 
 // Polyfill crypto for Node/Jest
 if (typeof globalThis.crypto === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const nodeCrypto = require('crypto');
   Object.defineProperty(globalThis, 'crypto', {
     value: nodeCrypto.webcrypto,

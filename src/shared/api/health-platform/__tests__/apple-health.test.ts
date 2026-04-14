@@ -1,6 +1,5 @@
 import { AppleHealthService } from '../apple-health';
 import AppleHealthKit from 'react-native-health';
-import { generateUUID } from '../../../lib';
 
 jest.mock('react-native-health', () => ({
   Constants: {

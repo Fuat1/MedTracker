@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { Button, ButtonText, ButtonIcon } from '../index';
+import { Button, ButtonText } from '../index';
 
 // Mock reanimated — use inline mock (do NOT use react-native-reanimated/mock)
 jest.mock('react-native-reanimated', () => {

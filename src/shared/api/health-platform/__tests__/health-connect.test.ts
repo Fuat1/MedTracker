@@ -6,7 +6,6 @@ import {
   insertRecords,
   readRecords,
   getSdkStatus,
-  SdkAvailabilityStatus,
 } from 'react-native-health-connect';
 
 jest.mock('react-native-health-connect', () => ({
