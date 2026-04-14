@@ -53,7 +53,7 @@ export function isFuture(date: Date): boolean {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -62,6 +62,14 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -87,22 +95,55 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
   const [viewYear, setViewYear] = useState(value.getFullYear());
   const [viewMonth, setViewMonth] = useState(value.getMonth());
 
+  // Animation shared values (matches TagPickerModal)
+  const backdropOpacity = useSharedValue(0);
+  const slideAnim = useSharedValue(400);
+
+  const backdropAnimStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+  const sheetAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: slideAnim.value }],
+  }));
+
+  useEffect(() => {
+    if (modalVisible) {
+      backdropOpacity.value = withTiming(1, { duration: 200 });
+      slideAnim.value = withSpring(0, { damping: 22, stiffness: 320 });
+    }
+  }, [modalVisible, backdropOpacity, slideAnim]);
+
+  const closeSheet = (afterClose: () => void) => {
+    backdropOpacity.value = withTiming(0, { duration: 160 });
+    slideAnim.value = withTiming(400, { duration: 180 }, () => {
+      runOnJS(afterClose)();
+    });
+  };
+
   const openSheet = () => {
     if (disabled) return;
     setTempDate(value);
     setViewYear(value.getFullYear());
     setViewMonth(value.getMonth());
+    // Reset to offscreen before showing so entrance animation plays
+    backdropOpacity.value = 0;
+    slideAnim.value = 400;
     setModalVisible(true);
   };
 
   const handleDone = () => {
-    onChange(tempDate);
-    setModalVisible(false);
+    const committed = tempDate;
+    closeSheet(() => {
+      onChange(committed);
+      setModalVisible(false);
+    });
   };
 
   const handleCancel = () => {
-    setTempDate(value);
-    setModalVisible(false);
+    closeSheet(() => {
+      setTempDate(value);
+      setModalVisible(false);
+    });
   };
 
   const handleSetToNow = () => {
@@ -214,23 +255,24 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
       <Modal
         visible={modalVisible}
         transparent
-        animationType="slide"
+        animationType="none"
         onRequestClose={handleCancel}
       >
-        <View style={styles.modalContainer}>
+        <GestureHandlerRootView style={styles.modalContainer}>
           {/* Backdrop — tap to cancel */}
           <TouchableWithoutFeedback onPress={handleCancel} accessible={false}>
-            <View style={styles.overlay} />
+            <Animated.View style={[styles.overlay, backdropAnimStyle]} />
           </TouchableWithoutFeedback>
 
           {/* Sheet */}
-          <View
+          <Animated.View
             style={[
               styles.sheet,
               {
                 backgroundColor: colors.surface,
                 paddingBottom: insets.bottom + 16,
               },
+              sheetAnimStyle,
             ]}
           >
             {/* Drag handle */}
@@ -238,9 +280,14 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
 
             {/* Header row */}
             <View style={styles.header}>
-              <Text style={[styles.title, { color: colors.textPrimary }]}>
-                {t('dateTime.selectTime')}
-              </Text>
+              <View style={styles.headerLeft}>
+                <Text style={[styles.title, { color: colors.textPrimary }]}>
+                  {t('dateTime.selectTime')}
+                </Text>
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                  {t('dateTime.subtitle')}
+                </Text>
+              </View>
               <Pressable
                 onPress={handleSetToNow}
                 accessibilityRole="button"
@@ -427,8 +474,8 @@ export function DateTimePicker({ value, onChange, disabled }: DateTimePickerProp
                 <ButtonText>{t('buttons.done')}</ButtonText>
               </Button>
             </View>
-          </View>
-        </View>
+          </Animated.View>
+        </GestureHandlerRootView>
       </Modal>
     </>
   );
@@ -457,7 +504,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   sheet: {
@@ -476,13 +523,23 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 16,
+  },
+  headerLeft: {
+    flex: 1,
+    marginRight: 8,
   },
   title: {
     fontSize: 18,
     fontFamily: FONTS.bold,
     fontWeight: '700',
+  },
+  subtitle: {
+    fontSize: 12,
+    fontFamily: FONTS.regular,
+    fontWeight: '400',
+    marginTop: 2,
   },
   setToNowLink: {
     fontSize: 13,
