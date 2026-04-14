@@ -77,9 +77,11 @@ export { useTheme } from './use-theme';
 // Record utilities
 export {
   groupRecordsByTimePeriod,
+  groupMetricRecordsByTimePeriod,
   filterRecords,
   formatTimeSplit,
   type RecordSection,
+  type MetricRecordSection,
   type HistoryFilterType,
 } from './record-utils';
 

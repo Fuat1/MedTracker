@@ -8,6 +8,11 @@ export interface RecordSection {
   data: BPRecord[];
 }
 
+export interface MetricRecordSection<T> {
+  titleKey: string;
+  data: T[];
+}
+
 /**
  * Groups BP records into time-based sections (Today, Yesterday, Last Week, Older).
  * Expects records sorted by timestamp DESC (newest first).
@@ -51,6 +56,47 @@ export function groupRecordsByTimePeriod(records: BPRecord[]): RecordSection[] {
   if (older.length > 0) {
     sections.push({ titleKey: 'history.sections.older', data: older });
   }
+
+  return sections;
+}
+
+/**
+ * Generic version of groupRecordsByTimePeriod for any metric record type.
+ * Requires records to have a `timestamp` field (Unix seconds, newest first).
+ * Returns sections with i18n title keys identical to the BP version.
+ */
+export function groupMetricRecordsByTimePeriod<T extends { timestamp: number }>(
+  records: T[],
+): MetricRecordSection<T>[] {
+  if (records.length === 0) return [];
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
+  const yesterdayStart = todayStart - 86400;
+  const lastWeekStart = todayStart - 7 * 86400;
+
+  const today: T[] = [];
+  const yesterday: T[] = [];
+  const lastWeek: T[] = [];
+  const older: T[] = [];
+
+  for (const record of records) {
+    if (record.timestamp >= todayStart) {
+      today.push(record);
+    } else if (record.timestamp >= yesterdayStart) {
+      yesterday.push(record);
+    } else if (record.timestamp >= lastWeekStart) {
+      lastWeek.push(record);
+    } else {
+      older.push(record);
+    }
+  }
+
+  const sections: MetricRecordSection<T>[] = [];
+  if (today.length > 0) sections.push({ titleKey: 'history.sections.today', data: today });
+  if (yesterday.length > 0) sections.push({ titleKey: 'history.sections.yesterday', data: yesterday });
+  if (lastWeek.length > 0) sections.push({ titleKey: 'history.sections.lastWeek', data: lastWeek });
+  if (older.length > 0) sections.push({ titleKey: 'history.sections.older', data: older });
 
   return sections;
 }

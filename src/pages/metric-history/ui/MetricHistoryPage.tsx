@@ -5,8 +5,7 @@
  *
  * Structure:
  *   - PageHeader (title variant)
- *   - MetricRecordsList — sections grouped by calendar week ("This week",
- *     "Last week", or "Mon DD – Mon DD" for older weeks)
+ *   - MetricRecordsList — sections grouped by Today / Yesterday / Last Week / Older
  *
  * BP: BPRecordCard renders for each record via MetricRecordCard override.
  * Future metrics: GenericRecordCard via MetricRecordCard fallback.
@@ -23,65 +22,13 @@ import { useTranslation } from 'react-i18next';
 import { useMetricRecords } from '../../../entities/health-metric';
 import { getActiveMetricConfig } from '../../../shared/config/metric-registry';
 import { useTheme } from '../../../shared/lib/use-theme';
+import { groupMetricRecordsByTimePeriod } from '../../../shared/lib/record-utils';
 import { MetricRecordCard } from '../../../widgets/metric-record-card';
 import { MetricRecordsList } from '../../../widgets/metric-records-list';
 import { PageHeader } from '../../../widgets/page-header';
 import type { RootStackParamList } from '../../../app/navigation';
 
 const config = getActiveMetricConfig();
-
-/**
- * Groups records into sections by calendar week.
- * Returns sections ordered newest first with human-readable titles.
- */
-function groupByWeek<TRecord extends { id: string; timestamp: number }>(
-  records: TRecord[],
-  tHistory: (key: string) => string,
-): Array<{ title: string; data: TRecord[] }> {
-  if (records.length === 0) return [];
-
-  const now = new Date();
-  // Start of this week (Monday)
-  const dayOfWeek = now.getDay(); // 0=Sun
-  const daysSinceMonday = (dayOfWeek + 6) % 7;
-  const startOfThisWeek = new Date(now);
-  startOfThisWeek.setHours(0, 0, 0, 0);
-  startOfThisWeek.setDate(now.getDate() - daysSinceMonday);
-
-  const startOfLastWeek = new Date(startOfThisWeek);
-  startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
-
-  const map = new Map<string, TRecord[]>();
-
-  for (const record of records) {
-    const date = new Date(record.timestamp);
-    let key: string;
-
-    if (date >= startOfThisWeek) {
-      key = tHistory('filters.thisWeek') || 'This week';
-    } else if (date >= startOfLastWeek) {
-      key = tHistory('filters.lastWeek') || 'Last week';
-    } else {
-      // Group by calendar week: "Mon DD – Sun DD MMM YYYY"
-      const weekMonday = new Date(date);
-      const d = (date.getDay() + 6) % 7;
-      weekMonday.setDate(date.getDate() - d);
-      weekMonday.setHours(0, 0, 0, 0);
-      const weekSunday = new Date(weekMonday);
-      weekSunday.setDate(weekMonday.getDate() + 6);
-
-      const fmt = (d: Date) =>
-        d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-
-      key = `${fmt(weekMonday)} – ${fmt(weekSunday)} ${weekSunday.getFullYear()}`;
-    }
-
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(record);
-  }
-
-  return Array.from(map.entries()).map(([title, data]) => ({ title, data }));
-}
 
 export function MetricHistoryPage() {
   const { t } = useTranslation('pages');
@@ -96,8 +43,13 @@ export function MetricHistoryPage() {
     isRefetching,
   } = useMetricRecords(config);
 
+  // Translate titleKeys → title strings for MetricRecordsList
   const sections = useMemo(
-    () => groupByWeek(records, (key) => t(key as any) as string),
+    () =>
+      groupMetricRecordsByTimePeriod(records).map(section => ({
+        title: t(section.titleKey as any) as string,
+        data: section.data,
+      })),
     [records, t],
   );
 

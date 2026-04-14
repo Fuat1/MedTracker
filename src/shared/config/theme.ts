@@ -357,3 +357,23 @@ export const BP_COLORS_DARK: Record<BPCategory, string> = {
   stage_2: '#FECACA',
   crisis: '#FCA5A5',
 };
+
+// ─── Generic Metric Category Colors ─────────────────────────────────────────
+
+import type { MetricCategory } from './metric-types';
+
+/**
+ * Returns a lookup map of category id → color for a given set of categories.
+ * Reads colorLight/colorDark from each MetricCategory definition so colors are
+ * defined once in the config — not duplicated here.
+ */
+export function getMetricCategoryColors(
+  categories: ReadonlyArray<MetricCategory>,
+  isDark: boolean,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const cat of categories) {
+    result[cat.id] = isDark ? cat.colorDark : cat.colorLight;
+  }
+  return result;
+}
