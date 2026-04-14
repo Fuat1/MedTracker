@@ -1,49 +1,10 @@
 import { open, type DB } from '@op-engineering/op-sqlite';
 import { DB_CONFIG } from '../config';
 import { getOrCreateEncryptionKey } from '../lib/encryption-key';
+import { getAllMetricConfigs } from '../config/metric-registry';
+import { buildCreateTableSQL, buildCreateTagsTableSQL } from './metric-sql-builder';
 
 let db: DB | null = null;
-
-const CREATE_TABLE_SQL = `
-  CREATE TABLE IF NOT EXISTS bp_records (
-    id TEXT PRIMARY KEY NOT NULL,
-    systolic INTEGER NOT NULL CHECK(systolic BETWEEN 40 AND 300),
-    diastolic INTEGER NOT NULL CHECK(diastolic BETWEEN 30 AND 200),
-    pulse INTEGER CHECK(pulse BETWEEN 30 AND 250),
-    timestamp INTEGER NOT NULL,
-    timezone_offset INTEGER DEFAULT 0,
-    location TEXT DEFAULT 'left_arm',
-    posture TEXT DEFAULT 'sitting',
-    notes TEXT,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    is_synced INTEGER DEFAULT 0,
-    CHECK(systolic > diastolic)
-  );
-`;
-
-const CREATE_INDEX_SQL = `
-  CREATE INDEX IF NOT EXISTS idx_bp_records_timestamp
-  ON bp_records(timestamp DESC);
-`;
-
-const CREATE_BP_TAGS_TABLE_SQL = `
-  CREATE TABLE IF NOT EXISTS bp_tags (
-    id         TEXT PRIMARY KEY NOT NULL,
-    record_id  TEXT NOT NULL,
-    tag        TEXT NOT NULL,
-    created_at INTEGER NOT NULL,
-    FOREIGN KEY (record_id) REFERENCES bp_records(id) ON DELETE CASCADE
-  );
-`;
-
-const CREATE_BP_TAGS_IDX_RECORD_SQL = `
-  CREATE INDEX IF NOT EXISTS idx_bp_tags_record_id ON bp_tags(record_id);
-`;
-
-const CREATE_BP_TAGS_IDX_TAG_SQL = `
-  CREATE INDEX IF NOT EXISTS idx_bp_tags_tag ON bp_tags(tag);
-`;
 
 const CREATE_CUSTOM_TAGS_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS custom_tags (
@@ -128,12 +89,17 @@ export async function initDatabase(): Promise<DB> {
     const encryptionKey = await getOrCreateEncryptionKey();
     db = open({ name: DB_CONFIG.name, encryptionKey });
 
-    // Create tables
-    await db.execute(CREATE_TABLE_SQL);
-    await db.execute(CREATE_INDEX_SQL);
-    await db.execute(CREATE_BP_TAGS_TABLE_SQL);
-    await db.execute(CREATE_BP_TAGS_IDX_RECORD_SQL);
-    await db.execute(CREATE_BP_TAGS_IDX_TAG_SQL);
+    // Create metric tables (driven by MetricRegistry)
+    for (const config of getAllMetricConfigs()) {
+      await db.execute(buildCreateTableSQL(config));
+      const tagsSQL = buildCreateTagsTableSQL(config);
+      if (tagsSQL) await db.execute(tagsSQL);
+      for (const indexSQL of config.db.indexes ?? []) {
+        await db.execute(indexSQL);
+      }
+    }
+
+    // Create app-level tables (not metric-specific)
     await db.execute(CREATE_CUSTOM_TAGS_TABLE_SQL);
     await db.execute(CREATE_MEDICATIONS_TABLE_SQL);
     await db.execute(CREATE_MEDICATION_LOGS_TABLE_SQL);

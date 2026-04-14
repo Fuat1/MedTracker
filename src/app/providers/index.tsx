@@ -4,7 +4,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import BootSplash from 'react-native-bootsplash';
 import { initDatabase, closeDatabase } from '../../shared/api';
+import { registerMetric } from '../../shared/config/metric-registry';
+import { bpConfig } from '../../entities/blood-pressure/config';
 import '../../shared/lib/i18n'; // Initialize i18n
+
+// Register metrics before database init (executed at module load time)
+registerMetric(bpConfig);
 import '../../shared/lib/i18n-types'; // Import type definitions
 import { useSettingsStore } from '../../shared/lib/settings-store';
 import { useTheme } from '../../shared/lib/use-theme';

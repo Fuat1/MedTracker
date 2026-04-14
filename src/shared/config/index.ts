@@ -71,3 +71,7 @@ export * from './firebase';
 
 // Layout constants
 export * from './layout';
+
+// Metric template — config-first health metric system
+export * from './metric-types';
+export * from './metric-registry';

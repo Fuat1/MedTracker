@@ -1,63 +1,38 @@
-import { getDatabase } from './db';
-import { generateUUID, getCurrentTimestamp } from '../lib';
+/**
+ * BP Tags Repository
+ *
+ * Thin delegate that preserves the existing public API while delegating
+ * to the generic MetricTagsRepository via bpConfig.
+ *
+ * See: docs/superpowers/specs/2026-04-14-metric-template-refactor.md Phase 2
+ */
+
+import {
+  getTagsForMetricRecord,
+  saveTagsForMetricRecord,
+  getTagsForMetricRecords,
+} from './metric-tags-repository';
+import { bpConfig } from '../../entities/blood-pressure/config';
 
 /** A tag key is either a built-in LifestyleTag or a "custom:<uuid>" string */
-export type TagKey = string;
-
-interface BPTagRow {
-  id: string;
-  record_id: string;
-  tag: string;
-  created_at: number;
-}
+export type { TagKey } from './metric-tags-repository';
 
 /** Returns all tags for a single record */
-export async function getTagsForRecord(recordId: string): Promise<TagKey[]> {
-  const db = getDatabase();
-  const result = await db.execute(
-    'SELECT tag FROM bp_tags WHERE record_id = ? ORDER BY created_at ASC',
-    [recordId],
-  );
-  const rows = (result.rows ?? []) as Array<{ tag: string }>;
-  return rows.map(r => r.tag);
+export async function getTagsForRecord(recordId: string): Promise<string[]> {
+  return getTagsForMetricRecord(bpConfig, recordId);
 }
 
 /** Replaces all tags for a record (delete + insert) */
 export async function saveTagsForRecord(
   recordId: string,
-  tags: TagKey[],
+  tags: string[],
 ): Promise<void> {
-  const db = getDatabase();
-  const now = getCurrentTimestamp();
-
-  await db.execute('DELETE FROM bp_tags WHERE record_id = ?', [recordId]);
-
-  for (const tag of tags) {
-    await db.execute(
-      'INSERT INTO bp_tags (id, record_id, tag, created_at) VALUES (?, ?, ?, ?)',
-      [generateUUID(), recordId, tag, now],
-    );
-  }
+  return saveTagsForMetricRecord(bpConfig, recordId, tags);
 }
 
 /** Returns a map of recordId → tag[] for a set of record IDs */
 export async function getTagsForRecords(
   recordIds: string[],
-): Promise<Record<string, TagKey[]>> {
-  if (recordIds.length === 0) return {};
-  const db = getDatabase();
-
-  const placeholders = recordIds.map(() => '?').join(',');
-  const result = await db.execute(
-    `SELECT record_id, tag FROM bp_tags WHERE record_id IN (${placeholders}) ORDER BY created_at ASC`,
-    recordIds,
-  );
-
-  const rows = (result.rows ?? []) as unknown as BPTagRow[];
-  const map: Record<string, TagKey[]> = {};
-  for (const row of rows) {
-    if (!map[row.record_id]) map[row.record_id] = [];
-    map[row.record_id].push(row.tag);
-  }
-  return map;
+): Promise<Record<string, string[]>> {
+  return getTagsForMetricRecords(bpConfig, recordIds);
 }

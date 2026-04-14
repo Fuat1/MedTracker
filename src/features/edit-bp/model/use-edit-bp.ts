@@ -1,12 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateBPRecord } from '../../../shared/api/bp-repository';
-import { saveTagsForRecord } from '../../../shared/api/bp-tags-repository';
-import { validateBPValues } from '../../../entities/blood-pressure';
-import { BP_RECORDS_QUERY_KEY } from '../../record-bp';
-import { BP_TAGS_QUERY_KEY } from '../../manage-tags';
+import { useEditMetric } from '../../edit-metric';
+import { bpConfig } from '../../../entities/blood-pressure/config';
 import { useUploadRecord } from '../../sync';
 import type { MeasurementLocation, MeasurementPosture } from '../../../shared/config';
 import type { TagKey } from '../../../shared/api/bp-tags-repository';
+import type { BPRecord } from '../../../shared/api/bp-repository';
 
 export interface EditBPInput {
   id: string;
@@ -22,41 +19,48 @@ export interface EditBPInput {
 }
 
 export function useEditBP() {
-  const queryClient = useQueryClient();
   const { uploadRecord } = useUploadRecord();
 
-  return useMutation({
-    mutationFn: async (input: EditBPInput) => {
-      const { id, systolic, diastolic, pulse, timestamp, location, posture, notes, weight, tags } = input;
-
-      const validation = validateBPValues(systolic, diastolic, pulse ?? null);
-      if (!validation.isValid) {
-        throw new Error(validation.errors.join(', '));
-      }
-
-      const updated = await updateBPRecord(id, {
-        systolic,
-        diastolic,
-        pulse: pulse ?? null,
-        timestamp,
-        location,
-        posture,
-        notes: notes ?? null,
-        weight: weight ?? null,
-      });
-
-      await saveTagsForRecord(id, tags ?? []);
-
-      return updated;
-    },
-    onSuccess: (updated) => {
-      queryClient.invalidateQueries({ queryKey: BP_RECORDS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: BP_TAGS_QUERY_KEY });
-
-      // Fire-and-forget Firestore sync — never blocks BP save
+  const mutation = useEditMetric<BPRecord>(bpConfig, {
+    onAfterUpdate: (updated) => {
+      // Fire-and-forget Firestore sync — never blocks BP edit
       if (updated) {
         void uploadRecord(updated.id);
       }
     },
   });
+
+  return {
+    ...mutation,
+    mutate: (input: EditBPInput) =>
+      mutation.mutate({
+        id: input.id,
+        updates: {
+          systolic:  input.systolic,
+          diastolic: input.diastolic,
+          pulse:     input.pulse ?? null,
+          timestamp: input.timestamp,
+          location:  input.location,
+          posture:   input.posture,
+          notes:     input.notes ?? null,
+          weight:    input.weight ?? null,
+        },
+        tags: input.tags,
+      }),
+    mutateAsync: (input: EditBPInput) =>
+      mutation.mutateAsync({
+        id: input.id,
+        updates: {
+          systolic:  input.systolic,
+          diastolic: input.diastolic,
+          pulse:     input.pulse ?? null,
+          timestamp: input.timestamp,
+          location:  input.location,
+          posture:   input.posture,
+          notes:     input.notes ?? null,
+          weight:    input.weight ?? null,
+        },
+        tags: input.tags,
+      }),
+  };
 }
