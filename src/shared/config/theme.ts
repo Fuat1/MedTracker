@@ -357,3 +357,24 @@ export const BP_COLORS_DARK: Record<BPCategory, string> = {
   stage_2: '#FECACA',
   crisis: '#FCA5A5',
 };
+
+/** Dark-mode card background colors — deep/saturated so white text reads clearly. */
+export const BP_CARD_COLORS_DARK: Record<BPCategory, string> = {
+  normal: '#14532d',   // deep green
+  elevated: '#78350f', // deep amber
+  stage_1: '#7c2d12',  // deep orange
+  stage_2: '#7f1d1d',  // deep red
+  crisis: '#500d0d',   // very deep red
+};
+
+/**
+ * Dark-mode chart fill colors — vivid enough to be visible as segment/bar fills
+ * against a dark surface, unlike the pastel BP_COLORS_DARK which are for text labels.
+ */
+export const BP_CHART_COLORS_DARK: Record<BPCategory, string> = {
+  normal: '#4ade80',   // green-400
+  elevated: '#fbbf24', // amber-400
+  stage_1: '#fb923c',  // orange-400
+  stage_2: '#f87171',  // red-400
+  crisis: '#ef4444',   // red-500
+};

@@ -17,7 +17,7 @@ import { calculateAge, calculateBMI, getBMICategory } from '../../../entities/us
 import { useSettingsStore, computeWeeklyAverage, computeAmPmComparison } from '../../../shared/lib';
 import { useTheme } from '../../../shared/lib/use-theme';
 import { DerivedMetricsModal, BPTrendChart } from '../../../shared/ui';
-import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
+import { FONTS, BP_COLORS_LIGHT, BP_CARD_COLORS_DARK } from '../../../shared/config/theme';
 import { PageHeader } from '../../../widgets/page-header';
 import TodayScheduleCard from '../../../widgets/medication-adherence/TodayScheduleCard';
 
@@ -28,10 +28,11 @@ function getBPCardGradient(
   fallbackEnd: string,
 ): [string, string] {
   if (!category) return [fallbackStart, fallbackEnd];
-  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
+  // Dark mode uses deep/saturated backgrounds so white text reads clearly.
+  // Light mode uses vivid category colors which already have good contrast.
+  const bpColors = isDark ? BP_CARD_COLORS_DARK : BP_COLORS_LIGHT;
   const color = bpColors[category as keyof typeof bpColors];
   if (!color) return [fallbackStart, fallbackEnd];
-  // Use the category color as base, darken slightly for gradient end
   return [color, color];
 }
 

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { computeCircadianBreakdown, detectMorningSurge, useTheme } from '../../../shared/lib';
 import { useSettingsStore } from '../../../shared/lib/settings-store';
 import { computeTimeInRange } from '../../../entities/blood-pressure';
-import { FONTS, BP_COLORS_LIGHT, BP_COLORS_DARK } from '../../../shared/config/theme';
+import { FONTS, BP_COLORS_LIGHT, BP_CHART_COLORS_DARK } from '../../../shared/config/theme';
 import { DonutChart, CircadianBreakdownBars, Card, CardBody } from '../../../shared/ui';
 import type { DonutSegment, CircadianWindowData } from '../../../shared/ui';
 import type { BPRecord } from '../../../shared/api/bp-repository';
@@ -23,7 +23,7 @@ export function CircadianCard({ records, allRecords }: CircadianCardProps) {
   const { t: tMedical } = useTranslation('medical');
   const { colors, isDark, typography } = useTheme();
   const guideline = useSettingsStore(state => state.guideline);
-  const bpColors = isDark ? BP_COLORS_DARK : BP_COLORS_LIGHT;
+  const bpColors = isDark ? BP_CHART_COLORS_DARK : BP_COLORS_LIGHT;
 
   const circadianBreakdown = useMemo(
     () => computeCircadianBreakdown(records),
