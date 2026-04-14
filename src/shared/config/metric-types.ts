@@ -269,6 +269,13 @@ export interface ComponentOverrides {
   /** Replaces the default crisis modal */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   CrisisModal?: React.ComponentType<any>;
+  /**
+   * Renders inside MetricCircadianCard on the home page.
+   * Only consulted when config.circadian.enabled is true.
+   * Receives { records, allRecords } props.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  CircadianCard?: React.ComponentType<any>;
 }
 
 // ─── Export Config ────────────────────────────────────────────────────────────

@@ -6,10 +6,13 @@ import BootSplash from 'react-native-bootsplash';
 import { initDatabase, closeDatabase } from '../../shared/api';
 import { registerMetric } from '../../shared/config/metric-registry';
 import { bpConfig } from '../../entities/blood-pressure/config';
+import { bpComponents } from './bp-components';
 import '../../shared/lib/i18n'; // Initialize i18n
 
 // Register metrics before database init (executed at module load time)
-registerMetric(bpConfig);
+// Merge config (pure data, lives in entities/) with component overrides
+// (widget references, must live in app/ to satisfy FSD layer constraints)
+registerMetric({ ...bpConfig, components: bpComponents });
 import '../../shared/lib/i18n-types'; // Import type definitions
 import { useSettingsStore } from '../../shared/lib/settings-store';
 import { useTheme } from '../../shared/lib/use-theme';
