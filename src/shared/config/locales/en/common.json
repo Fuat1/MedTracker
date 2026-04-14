@@ -78,6 +78,7 @@
   },
   "dateTime": {
     "selectTime": "Select Date & Time",
+    "subtitle": "When was this reading taken?",
     "setToNow": "Set to Now",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",

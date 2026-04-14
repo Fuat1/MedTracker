@@ -46,7 +46,12 @@
     "confirmDelete": "Delete \"{{label}}\"?",
     "confirmDeleteSubtitle": "This will remove the tag from all readings.",
     "deleteConfirm": "Delete",
-    "deleteCancel": "Cancel"
+    "deleteCancel": "Cancel",
+    "medPicker": {
+      "sectionLabel": "Which medication?",
+      "empty": "No medications saved yet — add one in the Medications tab",
+      "collapse": "Hide"
+    }
   },
   "correlationCard": {
     "title": "Lifestyle Insights",
