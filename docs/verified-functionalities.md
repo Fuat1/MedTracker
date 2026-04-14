@@ -1,14 +1,15 @@
 # MedTracker — Verified Implemented Functionalities
 
-> Last verified: 2026-04-11 (navigation bar detection)
+> Last verified: 2026-04-12 (BPReadingForm widget extraction)
 
 ---
 
 ## 1. Blood Pressure Recording
 
 - **Full BP entry** (systolic, diastolic, pulse) via Numpad — no TextInput
-- **NewReadingPage** — guided entry mode with manual field switching
-- **Quick Log** mode with auto-advance numpad for faster entry (QuickLogPage)
+- **NewReadingPage** — guided entry mode with manual field switching (`variant="full"`)
+- **Quick Log** mode with auto-advance numpad for faster entry (`variant="compact"`)
+- Both flows backed by shared `BPReadingForm` widget (`src/widgets/bp-reading-form`) with `useBPReadingForm` hook — pages are thin shells
 - **Voice logging** (iOS Siri Shortcuts) via deep link `medtracker://log?sys=X&dia=Y`
 - **VoiceConfirmationPage** — review and edit voice-entered readings before saving; supports natural language queries via voice-query-parser
 - **Edit reading** — EditReadingPage with full field updates (systolic, diastolic, pulse, weight, location, posture, timestamp, tags)

@@ -52,14 +52,29 @@
       "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/pages/**)",
       "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/widgets/**)",
       "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/**)",
-      "Bash(bash /tmp/pattern_check.sh)"
+      "Bash(bash /tmp/pattern_check.sh)",
+      "Bash(sort -t: -k2 -rn)",
+      "Read(//c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/**)",
+      "Bash(C:/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/scripts/start-server.sh --project-dir \"c:/Users/fuats/Desktop/Workdir/MedTracker\")",
+      "Read(//c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/**)",
+      "Bash(\"/c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"c:/Users/fuats/Desktop/Workdir/MedTracker\")",
+      "Bash(\"/c/Users/fuats/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"c:/Users/fuats/Desktop/Workdir/MedTracker\" --port 54321)",
+      "Bash(head -15 src/shared/ui/Button/button-animations.ts)",
+      "Bash(head -15 src/shared/ui/Button/button-animations.tsx)",
+      "Read(//c/Users/fuats/.claude/projects/c--Users-fuats-Desktop-Workdir-MedTracker/memory/**)",
+      "Read(//c/Users/fuats/Desktop/Workdir/MedTracker/src/shared/ui/**)",
+      "Read(//c/tmp/**)",
+      "Bash(grep -rn \"groupRecordsByTimePeriod\\\\|analytics-utils\\\\|circadian-utils\\\\|record-utils\" /c/Users/fuats/Desktop/Workdir/MedTracker/.worktrees/metric-template/src/pages/metric-home/ /c/Users/fuats/Desktop/Workdir/MedTracker/.worktrees/metric-template/src/pages/metric-history/ /c/Users/fuats/Desktop/Workdir/MedTracker/.worktrees/metric-template/src/widgets/metric-*)",
+      "Bash(grep -rn \"no-void\" /c/Users/fuats/Desktop/Workdir/MedTracker/.worktrees/metric-template/.eslintrc* /c/Users/fuats/Desktop/Workdir/MedTracker/.worktrees/metric-template/eslint.config*)",
+      "Bash(grep -v \"//\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\lib",
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\sync\\lib",
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\pages\\family-sharing\\ui",
       "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\shared\\config\\locales\\en",
-      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\auth\\lib"
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\src\\features\\auth\\lib",
+      "C:\\Users\\fuats\\Desktop\\Workdir\\MedTracker\\.worktrees\\metric-template\\src\\entities"
     ]
   }
 }

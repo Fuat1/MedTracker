@@ -106,6 +106,7 @@ npx react-native run-ios            # Build iOS
 - **Weather Correlation Design**: `docs/superpowers/specs/2026-03-28-weather-correlation-design.md`
 - **Card & Button Usage**: `docs/card-button-usage.md` (variants, patterns, examples)
 - **Medical Disclaimers**: `docs/medical-disclaimers.md` (required disclaimer text)
+- **Metric Template Refactor Plan**: `docs/superpowers/specs/2026-04-14-metric-template-refactor.md` (config-first MetricConfig<T> architecture, 10-phase plan to make app a reusable health metric template)
 
 ## Verified Functionalities Doc (MUST)
 
