@@ -85,7 +85,6 @@ export function WeatherCorrelationCard({
                   correlation={c}
                   colors={colors}
                   typography={typography}
-                  t={t}
                 />
               ))}
 
@@ -118,10 +117,10 @@ interface CorrelationRowProps {
   correlation: WeatherCorrelation;
   colors: ReturnType<typeof useTheme>['colors'];
   typography: ReturnType<typeof useTheme>['typography'];
-  t: ReturnType<typeof useTranslation>['t'];
 }
 
-function CorrelationRow({ correlation, colors, typography, t }: CorrelationRowProps) {
+function CorrelationRow({ correlation, colors, typography }: CorrelationRowProps) {
+  const { t } = useTranslation('widgets');
   const isHigher = correlation.avgSystolicDelta > 0;
   const delta = Math.abs(correlation.avgSystolicDelta);
   const icon = getMetricIcon(correlation.metric);

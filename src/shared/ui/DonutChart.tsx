@@ -72,6 +72,7 @@ export function DonutChart({
         donut
         radius={radius}
         innerRadius={innerRadius}
+        innerCircleColor={colors.surface}
         isAnimated
         animationDuration={800}
         focusOnPress

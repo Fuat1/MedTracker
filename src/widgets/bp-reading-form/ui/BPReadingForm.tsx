@@ -24,7 +24,8 @@ interface BPReadingFormProps {
 }
 
 export function BPReadingForm({variant, title, subtitle, autoAdvance, onDismiss}: BPReadingFormProps) {
-  const {colors, fontScale, typography, touchTargetSize} = useTheme();
+  const {colors, fontScale, typography} = useTheme();
+  const {t: tValidation} = useTranslation('validation');
 
   const {
     systolic, diastolic, pulse,
@@ -57,7 +58,6 @@ export function BPReadingForm({variant, title, subtitle, autoAdvance, onDismiss}
   const pulseOutOfRange = pulseNum != null && (pulseNum < BP_LIMITS.pulse.min || pulseNum > BP_LIMITS.pulse.max);
   const sysLeDia = systolicNum != null && diastolicNum != null && systolicNum <= diastolicNum;
 
-  const {t: tValidation} = require('react-i18next').useTranslation('validation');
   const fieldWarning = sysOutOfRange
     ? tCommon('common.systolic') + ': ' + tValidation('errors.systolicRange', {min: BP_LIMITS.systolic.min, max: BP_LIMITS.systolic.max})
     : diaOutOfRange
@@ -88,7 +88,7 @@ export function BPReadingForm({variant, title, subtitle, autoAdvance, onDismiss}
           )}
         </View>
         <Pressable
-          style={[styles.closeButton, {backgroundColor: colors.surfaceSecondary, width: touchTargetSize, height: touchTargetSize, borderRadius: touchTargetSize / 2}]}
+          style={[styles.closeButton, {backgroundColor: colors.surfaceSecondary}]}
           onPress={onDismiss}
           accessibilityRole="button"
           accessibilityLabel={tCommon('buttons.close' as any)}

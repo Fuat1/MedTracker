@@ -284,12 +284,12 @@ export function EditReadingPage() {
       <Toast message={toastMsg} type={toastType} visible={toastVisible} onHide={hideToast} />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={80}
       >
         <ScrollView
-          style={{ flex: 1 }}
+          style={styles.container}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

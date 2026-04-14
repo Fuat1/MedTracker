@@ -37,7 +37,7 @@ const TAB_LABEL_KEYS = {
 export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
-  const { colors, touchTargetSize } = useTheme();
+  const { colors, fontScale, touchTargetSize } = useTheme();
   const stackNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { preferredEntryMode, setPreferredEntryMode } = useSettingsStore();
   const { mode } = useNavigationMode();
@@ -47,15 +47,15 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const leftTabs = state.routes.slice(0, 2);
   const rightTabs = state.routes.slice(2, 4);
 
-  const navigateToMode = (mode: 'quickLog' | 'guided') => {
-    if (mode === 'quickLog') {
+  const navigateToMode = (entryMode: 'quickLog' | 'guided') => {
+    if (entryMode === 'quickLog') {
       stackNav.navigate('QuickLog');
     } else {
       stackNav.navigate('PreMeasurement');
     }
   };
 
-  const askRemember = (mode: 'quickLog' | 'guided') => {
+  const askRemember = (entryMode: 'quickLog' | 'guided') => {
     Alert.alert(
       t('entryMode.rememberTitle'),
       t('entryMode.rememberMessage'),
@@ -63,13 +63,13 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         {
           text: t('entryMode.rememberNo'),
           style: 'cancel',
-          onPress: () => navigateToMode(mode),
+          onPress: () => navigateToMode(entryMode),
         },
         {
           text: t('entryMode.rememberYes'),
           onPress: () => {
-            setPreferredEntryMode(mode);
-            navigateToMode(mode);
+            setPreferredEntryMode(entryMode);
+            navigateToMode(entryMode);
           },
         },
       ],
@@ -139,13 +139,16 @@ export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       >
         <Icon
           name={isFocused ? icons.active : icons.inactive}
-          size={24}
+          size={Math.round(24 * fontScale)}
           color={isFocused ? colors.accent : colors.textTertiary}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: isFocused ? colors.accent : colors.textTertiary },
+            {
+              color: isFocused ? colors.accent : colors.textTertiary,
+              fontSize: Math.round(11 * fontScale),
+            },
           ]}
         >
           {t(labelKey)}
@@ -223,7 +226,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tabLabel: {
-    fontSize: 11,
     fontFamily: FONTS.medium,
     fontWeight: '500',
     marginTop: 2,

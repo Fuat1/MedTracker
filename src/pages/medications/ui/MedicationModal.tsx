@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, Modal, TextInput,
-  TouchableOpacity, ScrollView, Platform,
+  TouchableOpacity, ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../shared/lib/use-theme';

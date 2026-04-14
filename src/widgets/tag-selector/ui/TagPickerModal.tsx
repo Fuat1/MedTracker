@@ -125,9 +125,9 @@ export function TagPickerModal({
   const toggleMedicationTag = (tagKey: TagKey) => {
     const isSelected = selectedTags.includes(tagKey);
     // Remove the generic 'medication' boolean tag when specific ones are chosen
-    const withoutGeneric = selectedTags.filter(t => t !== 'medication');
+    const withoutGeneric = selectedTags.filter(tag => tag !== 'medication');
     if (isSelected) {
-      onTagsChange(withoutGeneric.filter(t => t !== tagKey));
+      onTagsChange(withoutGeneric.filter(tag => tag !== tagKey));
     } else {
       onTagsChange([...withoutGeneric, tagKey]);
     }

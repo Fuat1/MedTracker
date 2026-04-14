@@ -80,24 +80,18 @@ export function AuthPage({ onSkip }: AuthPageProps) {
             label={t('auth.tabGoogle')}
             active={activeTab === 'google'}
             onPress={() => setActiveTab('google')}
-            colors={colors}
-            fontScale={fontScale}
           />
           {Platform.OS === 'ios' && (
             <TabButton
               label={t('auth.tabApple')}
               active={activeTab === 'apple'}
               onPress={() => setActiveTab('apple')}
-              colors={colors}
-              fontScale={fontScale}
             />
           )}
           <TabButton
             label={t('auth.tabEmail')}
             active={activeTab === 'email'}
             onPress={() => setActiveTab('email')}
-            colors={colors}
-            fontScale={fontScale}
           />
         </Animated.View>
 
@@ -228,14 +222,10 @@ function TabButton({
   label,
   active,
   onPress,
-  colors,
-  fontScale,
 }: {
   label: string;
   active: boolean;
   onPress: () => void;
-  colors: ReturnType<typeof useTheme>['colors'];
-  fontScale: number;
 }) {
   return (
     <Button

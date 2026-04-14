@@ -31,7 +31,7 @@ export function VoiceConfirmationPage() {
   const [diaStr, setDiaStr] = useState(
     route.params?.dia ?? (parsed.dia !== undefined ? String(parsed.dia) : ''),
   );
-  const [pulseStr, setPulseStr] = useState(
+  const [pulseStr, _setPulseStr] = useState(
     route.params?.pulse ?? (parsed.pulse !== undefined ? String(parsed.pulse) : ''),
   );
 
