@@ -8,7 +8,7 @@ import BootSplash from 'react-native-bootsplash';
 import notifee, { EventType } from '@notifee/react-native';
 import { Toast } from '../../shared/ui';
 import { useToastStore } from '../../shared/lib/toast-store';
-import { HomePage, HistoryPage, SettingsPage, NewReadingPage, EditReadingPage, MedicationPage, VoiceConfirmationPage } from '../../pages';
+import { HistoryPage, SettingsPage, EditReadingPage, MedicationPage, VoiceConfirmationPage, MetricHomePage, MetricHistoryPage, MetricNewReadingPage } from '../../pages';
 import { PersonalInfoPage } from '../../pages/settings/ui/PersonalInfoPage';
 import { ClassificationPage } from '../../pages/settings/ui/ClassificationPage';
 import { AppSettingsPage } from '../../pages/settings/ui/AppSettingsPage';
@@ -137,8 +137,8 @@ function TabNavigator() {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomePage} />
-      <Tab.Screen name="History" component={HistoryPage} />
+      <Tab.Screen name="Home" component={MetricHomePage} />
+      <Tab.Screen name="History" component={MetricHistoryPage} />
       <Tab.Screen name="Medications" component={MedicationPage} />
       <Tab.Screen name="Settings" component={SettingsNavigator} />
     </Tab.Navigator>
@@ -213,7 +213,7 @@ export function Navigation() {
           />
           <Stack.Screen
             name="NewReading"
-            component={NewReadingPage}
+            component={MetricNewReadingPage}
             options={{
               presentation: 'modal',
               animation: 'slide_from_bottom',

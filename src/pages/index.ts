@@ -5,3 +5,6 @@ export { NewReadingPage } from './new-reading';
 export { EditReadingPage } from './edit-reading';
 export { default as MedicationPage } from './medications/ui/MedicationPage';
 export { VoiceConfirmationPage } from './voice-logging/ui/VoiceConfirmationPage';
+export { MetricHomePage } from './metric-home';
+export { MetricHistoryPage } from './metric-history';
+export { MetricNewReadingPage } from './metric-new-reading';
